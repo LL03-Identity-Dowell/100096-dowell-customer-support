@@ -1,3 +1,15 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.ticket_container {
+  @apply flex justify-between items-center;
+}
+
+.main_cont {
+  @apply flex flex-col justify-center items-center max-w-md mx-auto pb-12 px-4 bg-white rounded shadow;
+}
+
+.radio_style {
+  @apply inline-flex items-center mr-3 cursor-pointer;
+}
