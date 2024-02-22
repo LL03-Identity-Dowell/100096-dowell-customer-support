@@ -1,0 +1,43 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.ticket_container {
+  @apply flex justify-between items-center;
+}
+
+.main_cont {
+  @apply flex flex-col justify-center items-center max-w-md mx-auto pb-12 px-4 bg-white rounded shadow;
+}
+
+.radio_style {
+  @apply inline-flex items-center mr-3 cursor-pointer;
+}
+
+@layer utilities {
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  .animate-fadeIn {
+    animation: fadeIn 0.6s ease-out;
+  }
+
+  @keyframes slideIn {
+    from {
+      transform: translateY(-100%);
+    }
+    to {
+      transform: translateY(-50%);
+    }
+  }
+
+  .animate-slideIn {
+    animation: slideIn 0.6s ease-out;
+  }
+}
