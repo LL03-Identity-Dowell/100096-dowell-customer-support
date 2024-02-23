@@ -1,12 +1,11 @@
 {
-  "homepage": "https://100096-customer-support/melese-2121.github.io/chat_app_frontend",
   "name": "chat_app_frontend",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist",
+    "deploy": "git push origin HEAD:Melese-frontend",
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
