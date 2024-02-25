@@ -5,8 +5,7 @@ import "./index.css";
 import { BrowserRouter } from "react-router-dom";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <BrowserRouter basename="/100096-customer-support/">
-    {" "}
+  <BrowserRouter basename="/100096-dowell-customer-support/">
     <React.StrictMode>
       <App />
     </React.StrictMode>
