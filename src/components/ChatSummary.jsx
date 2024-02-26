@@ -35,9 +35,9 @@ const Chat = () => {
     }
   };
   return (
-    <div className={`flex px-2 py-6 pointer-events-none sm:p-6`}>
-      <div className="max-w-md w-full bg-white shadow-lg rounded-md  border-2 border-gray-200 pointer-events-auto">
-        <div className="flex justify-between bg-[#22694de1]  border-b border-gray-200 px-4 py-4">
+    <div className={`flex pointer-events-none w-[100%] px-3 `}>
+      <div className=" bg-white shadow-lg rounded-md  border-2 w-[100%] border-gray-200 pointer-events-auto">
+        <div className="flex justify-between bg-[#22694de1]  border-b border-gray-200 px-4 py-4 w-[100%]">
           <h2 className="text-lg font-medium text-white uppercase">
             Summary of Last Chat
           </h2>
@@ -61,20 +61,20 @@ const Chat = () => {
             </svg>
           </button>
         </div>
-        <div className="px-0 py-0 ">
-          <div className="flex justify-center gap-4 mb-7 w-full pt-2">
-            <div className="mr-auto w-full flex justify-center gap-5 ">
-              <button className="bg-gray-300 hover:bg-gray-400 text-black font-bold py-2 px-1.5 text-sm md:w-27 rounded-md align-middle">
+        <div className="w-[100%]">
+          <div className="flex justify-center gap-4 mb-7  pt-2 font-sans text-sm w-[100%]">
+            <div className="mr-auto flex justify-center gap-5 w-[100%]">
+              <button className="bg-gray-300 hover:bg-gray-400 text-black font-bold py-2 px-1.5 text-sm  rounded-md">
                 <input
                   type="checkbox"
                   className="form-checkbox h-4 w-4 mr-1 text-indigo-600 transition duration-150 ease-in-out"
                 />
                 Verify ID
               </button>
-              <button className="bg-gray-300 hover:bg-gray-400 text-black font-bold py-2 px-1 md:w-27 rounded-md">
+              <button className="bg-gray-300 hover:bg-gray-400 text-black font-bold py-2 px-1  rounded-md">
                 Reopen Ticket
               </button>
-              <button className="bg-gray-300 hover:bg-gray-400 text-black font-bold py-2 px-1 md:w-27 rounded-md">
+              <button className="bg-gray-300 hover:bg-gray-400 text-black font-bold py-2 px-1  rounded-md">
                 Close Ticket
               </button>
 
@@ -87,7 +87,7 @@ const Chat = () => {
             Logout
           </button> */}
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 font-sans text-sm">
             <p className="ml-2 text-lg">Level:</p>
             <button className="bg-gray-300 hover:bg-gray-350 px-3 py-0.5 mb-2 text-[#287757e1] rounded-full">
               1
@@ -123,7 +123,7 @@ const Chat = () => {
               {messages.map((message) => (
                 <div
                   key={message.id}
-                  className={`flex ${
+                  className={`flex font-sans text-sm ${
                     message.sender === "user" ? "justify-start" : "justify-end"
                   }`}
                 >
@@ -188,7 +188,7 @@ const Chat = () => {
             />
             <button
               onClick={handleSendButtonClick}
-              className="ml-4 bg-[#22694de1] text-white py-2 px-4 rounded-lg shadow-md hover:bg-[#37755ce1] focus:outline-none focus:bg-blue-600"
+              className="ml-2 font-sans text-sm bg-[#22694de1] text-white py-2 px-4 rounded-lg shadow-md hover:bg-[#37755ce1] focus:outline-none "
             >
               Send
             </button>

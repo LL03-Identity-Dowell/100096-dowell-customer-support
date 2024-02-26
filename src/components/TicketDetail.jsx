@@ -3,7 +3,7 @@ import Chat from "./ChatSummary";
 function TicketDetail() {
   return (
     <>
-      <div className="flex flex-col m-6 ml-1 md:w-[400px] rounded-none border-none shadow-lg">
+      <div className="flex flex-1 flex-col w-[100%] m-6 ml-1 px-1 rounded-none border-none shadow-lg">
         <div className="w-[100%] flex flex-col text-center">
           <div className="w-full bg-[#436850] text-white border-2 rounded-md py-3">
             <h3 className="uppercase">Ticket number</h3>
@@ -62,7 +62,7 @@ function TicketDetail() {
   */}
         </div>
       </div>
-      <div className="flex-1 md:w-[450px]">
+      <div className="flex-1 w-full mt-6">
         <Chat isOpen={true} />
       </div>
     </>

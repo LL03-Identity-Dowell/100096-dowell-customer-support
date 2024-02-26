@@ -1,18 +1,18 @@
 import { NavLink, Outlet } from "react-router-dom";
 function Dashboard() {
   return (
-    <div className="flex justify-between md:flex-row  sm:flex-col ">
-      <div className="bg-white shadow-md my-6 ml-2 flex-2 rounded-lg  border-2 border-gray-200">
-        <table className="min-w-max w-full">
+    <div className="font-sans flex justify-between w-full md:flex-row lg:flex-nowrap  md:flex-wrap   lg:items-start sm:flex-col px-3 ">
+      <div className="bg-white sm:w-full shadow-md my-6 ml-2 flex-2 rounded-lg  border-2 border-gray-200">
+        <table className="w-full">
           <thead>
             <tr className="bg-[#22694de1] text-white uppercase text-sm leading-normal">
-              <th className="py-3 px-6 text-left w-4 border-r-2 border-r-[#1a543ee1]">
+              <th className=" py-3 px-6 text-left w-4 border-r-2 border-r-[#1a543ee1]">
                 SN
               </th>
-              <th className="py-3 px-6 text-left w-32 border-r-2 border-r-[#1a543ee1]">
+              <th className="py-3 px-6 text-left md:w-32 sm:w-16 border-r-2 border-r-[#1a543ee1]">
                 Line/Service Desk Name
               </th>
-              <th className="py-3 px-6 text-left w-32 border-r-2 border-r-[#1a543ee1]">
+              <th className="py-3 px-6 text-left w-32 sm:w-16 border-r-2 border-r-[#1a543ee1]">
                 Service Manager
               </th>
               <th className="py-3 px-6 text-left w-56">Tickets in waiting</th>
@@ -192,16 +192,16 @@ function Dashboard() {
         </div>
         <div className="flex justify-center gap-4 mb-7 w-full pr-3">
           <div className="mr-auto w-full flex justify-center gap-5">
-            <button className="bg-[#22694de1] hover:bg-green-700 text-white font-bold py-2 px-2 md:w-27 rounded-md">
+            <button className="bg-[#22694de1] font-sans text-sm hover:bg-green-700 text-white font-bold py-2 px-2 md:w-27 rounded-md">
               Close Line
             </button>
-            <button className="bg-[#22694de1] hover:bg-green-700 text-white font-bold py-2 px-2 md:w-27 rounded-md">
+            <button className="bg-[#22694de1] font-sans text-sm hover:bg-green-700 text-white font-bold py-2 px-2 md:w-27 rounded-md">
               Split line
             </button>
-            <button className="bg-[#22694de1] hover:bg-green-700 text-white font-bold py-2 px-2 md:w-27 rounded-md">
+            <button className="bg-[#22694de1] font-sans text-sm hover:bg-green-700 text-white font-bold py-2 px-2 md:w-27 rounded-md">
               Merge line
             </button>
-            <button className="bg-[#22694de1] hover:bg-green-700 text-white font-bold py-2 px-2 md:w-27 rounded-md">
+            <button className="bg-[#22694de1] font-sans text-sm hover:bg-green-700 text-white font-bold py-2 px-2 md:w-27 rounded-md">
               Serve line
             </button>
             {/* <button className="bg-[#22694de1] hover:bg-green-700 text-white font-bold py-0 px-2 rounded-lg">

@@ -1,5 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
-import serviceReducer from './counterSlice';
+import serviceReducer from './serviceSlice';
 
 export const store = configureStore({
   reducer: {
