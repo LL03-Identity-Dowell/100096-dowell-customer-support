@@ -1,6 +1,6 @@
 import { useState } from "react";
 //eslint-disable-next-line
-const Chat = ({ isOpen, onClose }) => {
+const Chat = () => {
   const [messages, setMessages] = useState([
     { id: 1, sender: "user", type: "text", content: "Hey there!" },
     {
@@ -35,16 +35,14 @@ const Chat = ({ isOpen, onClose }) => {
     }
   };
   return (
-    <div
-      className={`fixed inset-0  flex items-end justify-end bottom-12 px-4 py-6 pointer-events-none sm:p-6 ${
-        isOpen ? "" : "hidden"
-      }`}
-    >
-      <div className="max-w-lg w-full bg-white shadow-lg rounded-md  border-2 border-gray-200 pointer-events-auto">
+    <div className={`flex px-2 py-6 pointer-events-none sm:p-6`}>
+      <div className="max-w-md w-full bg-white shadow-lg rounded-md  border-2 border-gray-200 pointer-events-auto">
         <div className="flex justify-between bg-[#22694de1]  border-b border-gray-200 px-4 py-4">
-          <h2 className="text-lg font-medium text-white">Chat</h2>
+          <h2 className="text-lg font-medium text-white uppercase">
+            Summary of Last Chat
+          </h2>
           <button
-            onClick={onClose}
+            // onClick={onClose}
             className="text-gray-500 hover:text-gray-700 focus:outline-none focus:text-gray-700"
           >
             <svg
@@ -63,8 +61,62 @@ const Chat = ({ isOpen, onClose }) => {
             </svg>
           </button>
         </div>
-        <div className="px-4 py-6">
+        <div className="px-0 py-0 ">
+          <div className="flex justify-center gap-4 mb-7 w-full pt-2">
+            <div className="mr-auto w-full flex justify-center gap-5 ">
+              <button className="bg-gray-300 hover:bg-gray-400 text-black font-bold py-2 px-1.5 text-sm md:w-27 rounded-md align-middle">
+                <input
+                  type="checkbox"
+                  className="form-checkbox h-4 w-4 mr-1 text-indigo-600 transition duration-150 ease-in-out"
+                />
+                Verify ID
+              </button>
+              <button className="bg-gray-300 hover:bg-gray-400 text-black font-bold py-2 px-1 md:w-27 rounded-md">
+                Reopen Ticket
+              </button>
+              <button className="bg-gray-300 hover:bg-gray-400 text-black font-bold py-2 px-1 md:w-27 rounded-md">
+                Close Ticket
+              </button>
+
+              {/* <button className="bg-[#22694de1] hover:bg-green-700 text-white font-bold py-0 px-2 rounded-lg">
+              Chat Manager
+            </button> */}
+            </div>
+
+            {/* <button className="bg-red-400 ml-auto hover:bg-red-500 text-white font-bold py-1.5 px-2 rounded-lg ">
+            Logout
+          </button> */}
+          </div>
+          <div className="flex gap-2">
+            <p className="ml-2 text-lg">Level:</p>
+            <button className="bg-gray-300 hover:bg-gray-350 px-3 py-0.5 mb-2 text-[#287757e1] rounded-full">
+              1
+            </button>
+            <button className="bg-[#22694de1] hover:bg-[#287757e1] px-3 py-0.5 mb-2 text-white rounded-full">
+              2
+            </button>
+            <button className="bg-[#22694de1] hover:bg-[#287757e1] px-3 py-0.5 mb-2 text-white rounded-full">
+              3
+            </button>
+            <button className="bg-[#22694de1] hover:bg-[#287757e1] px-3 py-0.5 mb-2 text-white rounded-full">
+              4
+            </button>
+            <button className="bg-[#22694de1] hover:bg-[#287757e1] px-3 py-0.5 mb-2 text-white rounded-full">
+              5
+            </button>
+            <button className="bg-[#22694de1] hover:bg-[#287757e1] px-3 py-0.5 mb-2 text-white rounded-full">
+              6
+            </button>
+            <button className="bg-[#22694de1] hover:bg-[#287757e1] px-3 py-0.5 mb-2 text-white rounded-full">
+              7
+            </button>
+            <button className="bg-[#22694de1] hover:bg-[#287757e1] px-3 py-0.5 mb-2 text-white rounded-full mr-2">
+              8
+            </button>
+          </div>
+          <hr className="bg-slate-500 mt-3 w-full" />
           {/* Chat content goes here */}
+
           <div className="px-4 py-6">
             {/* Render chat messages */}
             <div className="space-y-4">
