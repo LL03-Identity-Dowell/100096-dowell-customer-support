@@ -1,8 +1,8 @@
 {
   "name": "dowell-customersupport",
+  "homepage": "https://LL03-Identity-Dowell.github.io/100096-customer-support/",
   "private": true,
   "version": "0.0.0",
-
   "type": "module",
   "scripts": {
     "dev": "vite",

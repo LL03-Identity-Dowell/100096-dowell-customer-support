@@ -1,17 +1,18 @@
 import { createBrowserRouter } from "react-router-dom";
 import TicketDetail from "./components/TicketDetail";
 import App from "./App";
+const basePath = "/100096-dowell-customer-support/linemanager";
 const router = createBrowserRouter([
   {
-    path: "/100096-customer-support/linemanager",
+    path: `${basePath}`,
     element: <App />,
     children: [
       {
-        path: "/100096-customer-support/linemanager",
+        path: `${basePath}`,
         element: <TicketDetail />,
       },
       {
-        path: "/100096-customer-support/linemanager/ticketDetail/:ticketID",
+        path: `${basePath}/ticketDetail/:ticketID`,
         element: <TicketDetail />,
       },
     ],
