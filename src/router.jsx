@@ -3,15 +3,15 @@ import TicketDetail from "./components/TicketDetail";
 import App from "./App";
 const router = createBrowserRouter([
   {
-    path: "/",
+    path: "/100096-customer-support/linemanager",
     element: <App />,
     children: [
       {
-        path: "/",
+        path: "/100096-customer-support/linemanager",
         element: <TicketDetail />,
       },
       {
-        path: "/ticketDetail/:ticketID",
+        path: "/100096-customer-support/linemanager/ticketDetail/:ticketID",
         element: <TicketDetail />,
       },
     ],
