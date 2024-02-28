@@ -35,8 +35,8 @@ const Chat = () => {
     }
   };
   return (
-    <div className={`flex pointer-events-none w-[100%] px-3 `}>
-      <div className=" bg-white shadow-lg rounded-md  border-2 w-[100%] border-gray-200 pointer-events-auto">
+    <div className={`flex pointer-events-none w-[100%]  px-3 `}>
+      <div className=" bg-white shadow-lg rounded-md  border-2 h-auto w-[100%] border-gray-200 pointer-events-auto">
         <div className="flex justify-between bg-[#22694de1]  border-b border-gray-200 px-4 py-4 w-[100%]">
           <h2 className="text-lg font-medium text-white uppercase">
             Summary of Last Chat
@@ -45,7 +45,7 @@ const Chat = () => {
             // onClick={onClose}
             className="text-gray-500 hover:text-gray-700 focus:outline-none focus:text-gray-700"
           >
-            <svg
+            {/* <svg
               className="h-5 w-5 text-white"
               fill="none"
               stroke="currentColor"
@@ -57,12 +57,12 @@ const Chat = () => {
                 strokeLinejoin="round"
                 strokeWidth="2"
                 d="M6 18L18 6M6 6l12 12"
-              ></path>
-            </svg>
+              ></path> */}
+            {/* </svg> */}
           </button>
         </div>
-        <div className="w-[100%]">
-          <div className="flex justify-center gap-4 mb-7  pt-2 font-sans text-sm w-[100%]">
+        <div className="w-[100%] flex flex-col justify-between h-full">
+          <div className="flex justify-center gap-4 mb-6  pt-2 font-sans text-sm w-[100%]">
             <div className="mr-auto flex justify-center gap-5 w-[100%]">
               <button className="bg-gray-300 hover:bg-gray-400 text-black font-bold py-2 px-1.5 text-sm  rounded-md">
                 <input
@@ -117,49 +117,48 @@ const Chat = () => {
           <hr className="bg-slate-500 mt-3 w-full" />
           {/* Chat content goes here */}
 
-          <div className="px-4 py-6">
-            {/* Render chat messages */}
-            <div className="space-y-4">
-              {messages.map((message) => (
-                <div
-                  key={message.id}
-                  className={`flex font-sans text-sm ${
-                    message.sender === "user" ? "justify-start" : "justify-end"
-                  }`}
-                >
-                  {message.type === "text" && (
-                    <div
-                      className={`max-w-xs rounded-lg px-4 py-2 ${
-                        message.sender === "user"
-                          ? "bg-gray-200"
-                          : "bg-[#083a26e1] text-white"
-                      }`}
+          {/* Render chat messages */}
+          <div className="space-y-4 px-4 py-6">
+            {messages.map((message) => (
+              <div
+                key={message.id}
+                className={`flex font-sans text-sm ${
+                  message.sender === "user" ? "justify-start" : "justify-end"
+                }`}
+              >
+                {message.type === "text" && (
+                  <div
+                    className={`max-w-xs rounded-lg px-4 py-2 ${
+                      message.sender === "user"
+                        ? "bg-gray-200"
+                        : "bg-[#083a26e1] text-white"
+                    }`}
+                  >
+                    {message.content}
+                  </div>
+                )}
+                {message.type === "file" && (
+                  <div
+                    className={`max-w-xs rounded-lg px-4 py-2 ${
+                      message.sender === "user"
+                        ? "bg-gray-200"
+                        : "bg-blue-500 text-white"
+                    }`}
+                  >
+                    <a
+                      href={message.content.dataURL}
+                      download={message.content.fileName}
+                      className="text-blue-500 hover:underline"
                     >
-                      {message.content}
-                    </div>
-                  )}
-                  {message.type === "file" && (
-                    <div
-                      className={`max-w-xs rounded-lg px-4 py-2 ${
-                        message.sender === "user"
-                          ? "bg-gray-200"
-                          : "bg-blue-500 text-white"
-                      }`}
-                    >
-                      <a
-                        href={message.content.dataURL}
-                        download={message.content.fileName}
-                        className="text-blue-500 hover:underline"
-                      >
-                        {message.content.fileName}
-                      </a>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
+                      {message.content.fileName}
+                    </a>
+                  </div>
+                )}
+              </div>
+            ))}
           </div>
-          <div className="px-4 py-2 border-t border-gray-200 flex items-center">
+
+          <div className="px-4 py-2 border-b bg-white border-gray-200 flex items-center">
             <label className="cursor-pointer ml-4">
               <input
                 type="file"

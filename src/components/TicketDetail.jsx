@@ -3,7 +3,7 @@ import Chat from "./ChatSummary";
 function TicketDetail() {
   return (
     <>
-      <div className="flex flex-1 flex-col w-[100%] m-6 ml-1 px-1 rounded-none border-none shadow-lg">
+      <div className="flex flex-2 flex-col w-[100%] m-6 ml-1 px-1 rounded-none border-none shadow-lg">
         <div className="w-[100%] flex flex-col text-center">
           <div className="w-full bg-[#436850] text-white border-2 rounded-md py-3">
             <h3 className="uppercase">Ticket number</h3>
@@ -29,7 +29,7 @@ function TicketDetail() {
             </tbody>
           </table>
           <h3 className="my-5 text-lg">Previous Chat</h3>
-          <table className="min-w-full table-fixed">
+          <table className="min-w-full">
             <tbody className="text-gray-600 text-sm font-light">
               <tr className="border-b border-gray-200 hover:bg-gray-100">
                 <td className="py-3 px-6 text-left">12 Feb 2023</td>
@@ -62,7 +62,7 @@ function TicketDetail() {
   */}
         </div>
       </div>
-      <div className="flex-1 w-full mt-6">
+      <div className="flex-2 w-full mt-6">
         <Chat isOpen={true} />
       </div>
     </>

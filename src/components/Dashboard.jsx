@@ -1,7 +1,8 @@
 import { NavLink, Outlet } from "react-router-dom";
 function Dashboard() {
+  const basePath = "/100096-dowell-customer-support/ticketDetail";
   return (
-    <div className="font-sans flex justify-between w-full md:flex-row lg:flex-nowrap  md:flex-wrap   lg:items-start sm:flex-col px-3 ">
+    <div className="font-sans flex justify-between w-full md:flex-row lg:flex-nowrap  md:flex-wrap   lg:items-stretch sm:flex-col border border-t-1">
       <div className="bg-white sm:w-full shadow-md my-6 ml-2 flex-2 rounded-lg  border-2 border-gray-200">
         <table className="w-full">
           <thead>
@@ -143,7 +144,7 @@ function Dashboard() {
                 isActive ? "bg-[#22694de1] text-white" : "bg-gray-200 "
               }`
             }
-            to={`/ticketDetail/1`}
+            to={`${basePath}/1`}
           >
             1
           </NavLink>
@@ -153,7 +154,7 @@ function Dashboard() {
                 isActive ? "bg-[#22694de1] text-white" : "bg-gray-200 "
               }`
             }
-            to={`/ticketDetail/2`}
+            to={`${basePath}/2`}
           >
             2
           </NavLink>
@@ -163,7 +164,7 @@ function Dashboard() {
                 isActive ? "bg-[#22694de1] text-white" : "bg-gray-200 "
               }`
             }
-            to={`/ticketDetail/3`}
+            to={`${basePath}/3`}
           >
             3
           </NavLink>
@@ -173,7 +174,7 @@ function Dashboard() {
                 isActive ? "bg-[#22694de1] text-white" : "bg-gray-200 "
               }`
             }
-            to={`/ticketDetail/4`}
+            to={`${basePath}/4`}
           >
             4
           </NavLink>
@@ -183,7 +184,7 @@ function Dashboard() {
                 isActive ? "bg-[#22694de1] text-white" : "bg-gray-200 "
               }`
             }
-            to={`/ticketDetail/5`}
+            to={`${basePath}/5`}
           >
             5
           </NavLink>
