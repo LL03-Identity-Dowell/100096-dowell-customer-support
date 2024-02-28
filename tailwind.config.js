@@ -11,8 +11,8 @@ export default {
       },
       screens: {
         'sm': '300px', // Customizing the small device breakpoint
-        'md': '700px',
-        'lg': '1000px'
+        'md': '1100px',
+        'lg': '1300px'
       },
     },
   },
