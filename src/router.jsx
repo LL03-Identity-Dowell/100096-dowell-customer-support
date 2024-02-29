@@ -1,11 +1,12 @@
 import { createBrowserRouter } from "react-router-dom";
-import TicketDetail from "./components/TicketDetail";
+import TicketDetail from "./linemanage/components/TicketDetail";
+import AppLine from "./linemanage/App";
 import App from "./App";
 const basePath = "/100096-dowell-customer-support/linemanager";
 const router = createBrowserRouter([
   {
     path: `${basePath}`,
-    element: <App />,
+    element: <AppLine />,
     children: [
       {
         path: `${basePath}`,
@@ -16,6 +17,10 @@ const router = createBrowserRouter([
         element: <TicketDetail />,
       },
     ],
+  },
+  {
+    path: `/100096-dowell-customer-support/`,
+    element: <App />,
   },
 ]);
 export default router;
