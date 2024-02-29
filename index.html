@@ -4,8 +4,60 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + React</title>
+    <title>Customer Support</title>
+    <script type="text/javascript">
+      (function (l) {
+        if (l.search[1] === "/") {
+          var decoded = l.search
+            .slice(1)
+            .split("&")
+            .map(function (s) {
+              return s.replace(/~and~/g, "&");
+            })
+            .join("?");
+          window.history.replaceState(null, null, l.pathname.slice(0, -1) + decoded + l.hash);
+        }
+      })(window.location);
+
+
+      
+      // Function to get current pathname
+      function getCurrentPathname() {
+        return window.location.pathname;
+      }
+      
+      // Function to conditionally set script source
+      function setScriptSource() {
+        const pathname = getCurrentPathname();
+        const pathCollection={
+          // "/100105-experience-product/DowellEmailExtractor/": "./src/email-extractor/100107-DowellEmailExtractor/src/main.jsx",
+          // "/100105-experience-product/DowellWebsiteCrawler/": "./src/website-crawler/dowellwebsitecrawler/src/main.jsx",
+          // "/100105-experience-product/DowellPermutation/": "./src/dowell-permutation/src/main.jsx",
+         // "/100096-dowell-customer-support/": "./src/main.jsx",
+          "/100096-dowell-customer-support/linemanager": "./src/LineManager/src/main.jsx"
+        }
+        console.log('pathname',pathname)
+        const mainJsxPath = Object.keys(pathCollection).includes(pathname) ? pathCollection[pathname] :"/src/main.jsx";
+       // const mainJsxPath = isActive ? "./src/email-extractor/100107-DowellEmailExtractor/src/main.jsx" : "/src/main.jsx";
+        
+        // Create a new script element
+        const newScript = document.createElement("script");
+        newScript.type = "module";
+        newScript.src = mainJsxPath;
+        
+        // Remove the existing script
+        const existingScript = document.querySelector('script[type="module"]');
+        existingScript.parentNode.replaceChild(newScript, existingScript);
+      }
+      
+      // Call setScriptSource on page load
+      window.onload = setScriptSource;
+    
+    </script>
   </head>
   <body>
     <div id="root"></div>
