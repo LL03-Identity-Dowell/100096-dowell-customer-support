@@ -9,7 +9,10 @@ export default function App() {
         <Routes>
           {/* Public Routes */}
           <Route index element={<CreateTicket />} />
-          <Route path="/sign-in" element={<SigninForm />} />
+          <Route
+            path="/100096-dowell-customer-support/sign-in"
+            element={<SigninForm />}
+          />
         </Routes>
       </div>
     </>

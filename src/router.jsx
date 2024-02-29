@@ -5,6 +5,10 @@ import App from "./App";
 const basePath = "/100096-dowell-customer-support/linemanage";
 const router = createBrowserRouter([
   {
+    path: `/100096-dowell-customer-support/`,
+    element: <App />,
+  },
+  {
     path: `${basePath}`,
     element: <AppLine />,
     children: [
@@ -17,10 +21,6 @@ const router = createBrowserRouter([
         element: <TicketDetail />,
       },
     ],
-  },
-  {
-    path: `/100096-dowell-customer-support/`,
-    element: <App />,
   },
 ]);
 export default router;
