@@ -3,28 +3,28 @@ import TicketDetail from "./linemanage/components/TicketDetail";
 import AppLine from "./linemanage/App";
 import SigninForm from "./components/shared/SigninForm";
 import CreateTicket from "./components/CreateTicket";
-const basePath = "/100096-dowell-customer-support/linemanage";
+const basePath = "/100096-dowell-customer-support";
 const router = createBrowserRouter([
   {
-    path: `/100096-dowell-customer-support/`,
+    path: basePath,
     element: <CreateTicket />,
     children: [
       {
-        path: "/100096-dowell-customer-support/sign-in",
+        path: `${basePath}/sign-in`,
         element: <SigninForm />,
       },
     ],
   },
   {
-    path: `${basePath}`,
+    path: `${basePath}/linemanage`,
     element: <AppLine />,
     children: [
       {
-        path: `${basePath}`,
+        path: `${basePath}/linemanage`,
         element: <TicketDetail />,
       },
       {
-        path: `${basePath}/ticketDetail/:ticketID`,
+        path: `${basePath}/linemanage/ticketDetail/:ticketID`,
         element: <TicketDetail />,
       },
     ],
