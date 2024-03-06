@@ -1,6 +1,5 @@
 import { NavLink, Outlet } from "react-router-dom";
 function Dashboard() {
-  const basePath = "/100096-dowell-customer-support/linemanage/ticketDetail";
   return (
     <div className="font-sans flex justify-between sm:flex-col sm:pr-2 sm:w-full md:w-[95vw] md:flex-row  flex-wrap lg:flex-nowrap   lg:items-stretch  border-b-2 border-t-2 m-5 ">
       <div className="bg-white w-full shadow-md my-6 ml-2 md:min-w-[500px] rounded-lg  border-2 border-gray-200">
@@ -110,7 +109,7 @@ function Dashboard() {
                 isActive ? "bg-[#22694de1] text-white" : "bg-gray-200 "
               }`
             }
-            to={`${basePath}/1`}
+            to={`/1`}
           >
             1
           </NavLink>
@@ -120,7 +119,7 @@ function Dashboard() {
                 isActive ? "bg-[#22694de1] text-white" : "bg-gray-200 "
               }`
             }
-            to={`${basePath}/2`}
+            to={`/2`}
           >
             2
           </NavLink>
@@ -130,7 +129,7 @@ function Dashboard() {
                 isActive ? "bg-[#22694de1] text-white" : "bg-gray-200 "
               }`
             }
-            to={`${basePath}/3`}
+            to={`/3`}
           >
             3
           </NavLink>
@@ -140,7 +139,7 @@ function Dashboard() {
                 isActive ? "bg-[#22694de1] text-white" : "bg-gray-200 "
               }`
             }
-            to={`${basePath}/4`}
+            to={`/4`}
           >
             4
           </NavLink>
@@ -150,7 +149,7 @@ function Dashboard() {
                 isActive ? "bg-[#22694de1] text-white" : "bg-gray-200 "
               }`
             }
-            to={`${basePath}/5`}
+            to={`/5`}
           >
             5
           </NavLink>

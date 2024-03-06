@@ -7,7 +7,7 @@ import CreateTicket from "./components/CreateTicket";
 
 const router = createBrowserRouter([
   {
-    path: basePath,
+    path: '/',
     element: <CreateTicket />,
     children: [
       {
