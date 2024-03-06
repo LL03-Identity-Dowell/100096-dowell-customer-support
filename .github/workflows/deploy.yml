@@ -29,5 +29,5 @@ jobs:
         sshpass -p $SSH_PASSWORD ssh -o StrictHostKeyChecking=no root@216.158.239.24 << 'EOF'
           cd /home/dowell/DowellCustomerSupport-frontend
           git pull
-          docker-compose up -d --build
+          cd docker/prod/docker-compose up -d --build
         EOF
