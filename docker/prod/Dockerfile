@@ -10,9 +10,9 @@ ENV VITE_SOCKET_URL=$VITE_SOCKET_URL
 
 WORKDIR /usr/src/app
 COPY package*.json ./
-RUN yarn install --production
+RUN npm install
 COPY . .
-RUN yarn build
+RUN npm run build
 
 # Step 2: Set up the Nginx server for serving the built application
 FROM nginx:stable-alpine
