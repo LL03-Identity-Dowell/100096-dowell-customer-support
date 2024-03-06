@@ -27,7 +27,7 @@ jobs:
         SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
       run: |
         sshpass -p $SSH_PASSWORD ssh -o StrictHostKeyChecking=no root@216.158.239.24 << 'EOF'
-          cd /home/dowell/DowellCustomerSupport-frontend
+          cd /home/dowell/DowellCustomerSupport-frontend/docker/prod
           git pull
-          cd docker/prod/docker-compose up -d --build
+          docker-compose up -d --build
         EOF
