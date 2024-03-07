@@ -36,7 +36,7 @@ const Chat = () => {
   };
   return (
     <div
-      className={` flex flex-col h-[95%] pb-4 border-b border-gray-300 shadow-md mr-2`}
+      className={` flex flex-col pb-4 border-b border-gray-300 shadow-md h-svh mr-2`}
     >
       <div className="flex justify-between bg-[#22694de1]  border-b border-gray-200 px-4 py-4 w-full">
         <h2 className="font-sans sm:text-sm md:text-[16px] font-medium text-white uppercase">

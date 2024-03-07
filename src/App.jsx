@@ -1,39 +1,17 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import TicketDetail from "./linemanage/components/TicketDetail";
-import AppLine from "./linemanage/App";
-import SigninForm from "./components/shared/SigninForm";
+import { Route, Routes } from "react-router-dom";
 import CreateTicket from "./components/CreateTicket";
+import SigninForm from "./components/shared/SigninForm";
 
-const basePath = "/100096-dowell-customer-support/linemanage";
-
-const AppRouter = () => {
+export default function App() {
   return (
-    <Router>
-      <Routes>
-        <Route
-          path={`${basePath}`}
-          element={
-            <>
-              <Route path="/" element={<AppLine />} />
-              <Route
-                path="/ticketDetail/:ticketID"
-                element={<TicketDetail />}
-              />
-            </>
-          }
-        />
-        <Route
-          path={`/100096-dowell-customer-support/`}
-          element={
-            <>
-              <Route path="/" element={<CreateTicket />} />
-              <Route path="/sign-in" element={<SigninForm />} />
-            </>
-          }
-        />
-      </Routes>
-    </Router>
+    <>
+      <div>
+        <Routes>
+          {/* Public Routes */}
+          <Route index element={<CreateTicket />} />
+          <Route path="/sign-in" element={<SigninForm />} />
+        </Routes>
+      </div>
+    </>
   );
-};
-
-export default AppRouter;
+}
