@@ -16,7 +16,7 @@ RUN yarn build
 
 # Step 2: Serve the app with Nginx
 FROM nginx:stable-alpine
-COPY --from=build /usr/src/app/dist /usr/share/nginx/html
+COPY --from=build /usr/src/app/dist /etc/nginx/html
 
 COPY nginx/dev/nginx.conf /etc/nginx/conf.d/default.conf
 
