@@ -5,6 +5,7 @@ import io from "socket.io-client";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { ClipLoader } from "react-spinners";
+import NavItem from "./NavItem";
 const socket = io.connect("https://www.dowellchat.uxlivinglab.online/");
 console.log("socket", socket);
 //eslint-disable-next-line
@@ -133,10 +134,11 @@ function CreateComponent({ closeSearchModal, option }) {
       <div
         className={`bg-white h-[90%] overflow-auto relative p-4 md:p-6 rounded-lg w-full max-w-md animate-fadeIn`}
       >
-        <div className="flex justify-end items-end w-full absolute top-2 right-3">
+        <div className="flex justify-between w-full relative mb-7 ">
+          <NavItem />
           <button
             onClick={closeSearchModal}
-            className=" top-5  w-10 h-10 font-bold text-2xl text-red-500  rounded-full p-2 hover:text-red-400"
+            className=" -top-5 w-10 h-10 font-bold text-2xl text-red-500  rounded-full p-2 hover:text-red-400 absolute right-0"
           >
             X
           </button>
@@ -157,7 +159,7 @@ function CreateComponent({ closeSearchModal, option }) {
           // eslint-disable-next-line
           option === "createTopic" && (
             <>
-              <div className="max-w-md mx-auto mt-16">
+              <div className="max-w-md mx-auto">
                 <h3 className="mb-5">Fill Topic Information</h3>
                 <form
                   onSubmit={handleSubmit}
