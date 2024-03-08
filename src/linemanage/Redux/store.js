@@ -1,8 +1,10 @@
 import { configureStore } from '@reduxjs/toolkit';
-import serviceReducer from './serviceSlice';
+import ticketReducer from './ticketDetailSlice';
+import lineManager from './lineManager';
 
 export const store = configureStore({
   reducer: {
-    service: serviceReducer,
+    tickets: ticketReducer,
+    lineManagers:lineManager
   },
 });

@@ -1,17 +1,52 @@
 //import { useEffect } from "react";
 import { NavLink, Outlet } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import io from "socket.io-client";
 import CreateComponent from "./CreateComponent";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchLineManagersData } from "../Redux/lineManager";
 import Dropdowns from "./Search";
-import { ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
+
 function Dashboard() {
   const socket = io.connect("https://www.dowellchat.uxlivinglab.online/");
   const basePath = "/100096-dowell-customer-support/linemanage/ticketDetail";
   console.log("socket", socket);
-
+  const dispatch = useDispatch();
+  const lineManagersData = useSelector(
+    (state) => state.lineManagers.lineManagersData
+  );
   //const [selectedOption, setSelectedOption] = useState(null);
+  useEffect(() => {
+    const getAllLineManager = async (workSpaceID, api_key) => {
+      workSpaceID = "646ba835ce27ae02d024a902";
+      api_key = "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f";
+      try {
+        await socket.emit("get_all_line_managers", {
+          workspace_id: workSpaceID,
+          api_key: api_key,
+        });
+        await socket.on("setting_response", (data) => {
+          // Handle response for the event
+          dispatch(fetchLineManagersData(data.data));
+          console.log("all line manager data", data);
+          if (data?.status === "failure") {
+            toast.warning("data not found");
+          }
+        });
+      } catch (error) {
+        console.log(error.data);
+        toast.warning(error.data);
+      }
+    };
+
+    try {
+      getAllLineManager(20, 50);
+    } catch (error) {
+      console.log(error);
+    }
+  }, [socket, dispatch]);
   const [isOpen, setIsOpen] = useState(false);
   const [option, setOption] = useState("");
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
@@ -29,14 +64,10 @@ function Dashboard() {
     { label: "Create Line Manager", value: "createLineManager" },
     { label: "Chat Line Manager", value: "chatLineManager" },
     { label: "Create Topic", value: "createTopic" },
-    {
-      label: "Get All Line Manager ",
-      value: "getAllLineManager",
-    },
   ];
 
   const handleSelect = (option) => {
-    // setSelectedOption(option);
+    // setSelectedOption(option);'
     setIsOpen(false);
     openSearchModal(option.value);
     //  createTopic("login error", "1353343");
@@ -66,33 +97,9 @@ function Dashboard() {
     });
   };
 */
-  /*
-  const geAllLineManagers = async (workspaceid, api_key) => {
-    await socket.emit("get_all_line_managers", {
-      workspace_id: workspaceid,
-      api_key: api_key,
-    });
-    await socket.on("setting_response", (data) => {
-      // Handle response for the event
-      console.log(data);
-    });
-  };
 
-
-  */
   return (
     <div className="font-sans flex justify-between sm:flex-col sm:pr-2 sm:w-full md:w-[95vw] md:flex-row  flex-wrap lg:flex-nowrap   lg:items-stretch  border-b-2 border-t-2 m-5 ">
-      <ToastContainer
-        position="top-right"
-        autoClose={5000} // Adjust according to your preference
-        hideProgressBar={false} // You can toggle this as per your design
-        newestOnTop={false} // Set to true if you want newer toasts to appear on top
-        closeOnClick
-        rtl={false} // Set to true if you are using right-to-left language support
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-      />
       {isSearchModalOpen && (
         <CreateComponent closeSearchModal={closeSearchModal} option={option} />
       )}
@@ -115,56 +122,44 @@ function Dashboard() {
             </tr>
           </thead>
           <tbody className="text-gray-600 text-sm font-light w-full flex flex-wrap">
-            <tr className="border-b border-gray-200 hover:bg-gray-100  flex w-full">
-              <td className="py-3 px-6 text-left sm:w-13 md:15 ">1</td>
-              <td className="py-3 px-6 text-left flex-1 sm:w-20 flex-wrap">
-                <input
-                  type="checkbox"
-                  className="form-checkbox md:h-4 md:w-4 md:mr-2 sm:h-3 sm:w-3 sm:mr-1 text-indigo-600 transition duration-150 ease-in-out"
-                />
-                Till-1 common
-              </td>
-              <td className="py-3 px-6 text-left flex-1 sm:w-15">Thomas</td>
-              <td className="py-3 px-6 text-left flex flex-wrap flex-1 h-auto sm:w-[95%] p-1">
-                <div className="flex justify-start flex-wrap gap-3 h-auto">
-                  <div className="bg-blue-200 rounded-sm p-2"></div>
-                  <div className="bg-green-200 rounded-sm p-2"></div>
-                  <div className="bg-green-200 rounded-sm p-2"></div>
-                  <div className="bg-green-200 rounded-sm p-2"></div>
-                </div>
-                <div className="flex flex-col align-middle mt-1 h-auto w-full">
-                  {/* <span className="text-md text-green-900">[</span> */}
-                  <span className="text-md">99 &gt; Waiting,</span>
-                  <span className="text-md">Service time &lt; 0.99</span>
-                  {/* <span className="text-md">]</span> */}
-                </div>
-              </td>
-            </tr>
-            <tr className="border-b border-gray-200 hover:bg-gray-100  flex w-full">
-              <td className="py-3 px-6 text-left sm:w-13 md:15 ">2</td>
-              <td className="py-3 px-6 text-left flex-1 sm:w-20 flex-wrap">
-                <input
-                  type="checkbox"
-                  className="form-checkbox md:h-4 md:w-4 md:mr-2 sm:h-3 sm:w-3 sm:mr-1 text-indigo-600 transition duration-150 ease-in-out"
-                />
-                Till-1 common
-              </td>
-              <td className="py-3 px-6 text-left flex-1 sm:w-15">Thomas</td>
-              <td className="py-3 px-6 text-left flex flex-wrap flex-1 h-auto sm:w-[95%] p-1">
-                <div className="flex justify-start flex-wrap gap-3 h-auto">
-                  <div className="bg-blue-200 rounded-sm p-2"></div>
-                  <div className="bg-green-200 rounded-sm p-2"></div>
-                  <div className="bg-green-200 rounded-sm p-2"></div>
-                  <div className="bg-green-200 rounded-sm p-2"></div>
-                </div>
-                <div className="flex flex-col align-middle mt-1 h-auto w-full">
-                  {/* <span className="text-md text-green-900">[</span> */}
-                  <span className="text-md">99 &gt; Waiting,</span>
-                  <span className="text-md">Service time &lt; 0.99</span>
-                  {/* <span className="text-md">]</span> */}
-                </div>
-              </td>
-            </tr>
+            {console.log("line managers data from dispatch", lineManagersData)}
+            {lineManagersData?.map((data, index) => (
+              <tr
+                key={data._id}
+                className="border-b border-gray-200 hover:bg-gray-100  flex w-full"
+              >
+                <td className="py-3 px-6 text-left sm:w-13 md:15 ">
+                  {index + 1}
+                </td>
+                <td className="py-3 px-6 text-left flex-1 sm:w-20 flex-wrap">
+                  <input
+                    type="checkbox"
+                    className="form-checkbox md:h-4 md:w-4 md:mr-2 sm:h-3 sm:w-3 sm:mr-1 text-indigo-600 transition duration-150 ease-in-out"
+                  />
+                  Till-1 common
+                </td>
+                <td className="py-3 px-6 text-left flex-1 sm:w-15">Thomas</td>
+                <td className="py-3 px-6 text-left flex flex-wrap flex-1 h-auto sm:w-[95%] p-1">
+                  <div className="flex justify-start flex-wrap gap-3 h-auto">
+                    <div className="bg-blue-200 rounded-sm p-2"></div>
+                    <div className="bg-green-200 rounded-sm p-2"></div>
+                    <div className="bg-green-200 rounded-sm p-2"></div>
+                    <div className="bg-green-200 rounded-sm p-2"></div>
+                  </div>
+                  <div className="flex flex-col align-middle mt-1 h-auto w-full">
+                    {/* <span className="text-md text-green-900">[</span> */}
+                    <span className="text-md">
+                      {data.ticket_count} &gt; Waiting,
+                    </span>
+                    <span className="text-md">
+                      Service time &lt; {data.average_serving_time}
+                    </span>
+                    {/* <span className="text-md">]</span> */}
+                  </div>
+                </td>
+              </tr>
+            ))}
+
             <tr className="border-b border-gray-200 hover:bg-gray-100  flex w-full">
               <td className="py-3 px-6 text-left sm:w-13 md:15 ">3</td>
               <td className="py-3 px-6 text-left flex-1 sm:w-20 flex-wrap">
@@ -302,11 +297,11 @@ function Dashboard() {
       <div className="w-full h-auto flex-1 flex flex-col">
         <div className="flex justify-between gap-2 px-2 pt-4">
           <div className="flex-1">
-            <Dropdowns search="Search Topic" />
+            <Dropdowns search="Search Topic" type={"topic"} />
           </div>
 
           <div className="flex-2">
-            <Dropdowns search={"Search Ticket Number"} />
+            <Dropdowns search={"Search Ticket Number"} type={"ticket"} />
           </div>
         </div>
         <div className="w-full h-auto flex md:flex md:flex-row">
