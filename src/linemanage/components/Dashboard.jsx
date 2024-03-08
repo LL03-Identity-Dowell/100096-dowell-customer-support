@@ -1,8 +1,93 @@
+//import { useEffect } from "react";
 import { NavLink, Outlet } from "react-router-dom";
+import { useState } from "react";
+import { BsThreeDotsVertical } from "react-icons/bs";
+import io from "socket.io-client";
+import CreateComponent from "./CreateComponent";
+import Dropdowns from "./Search";
+
+
 function Dashboard() {
+  const socket = io.connect("https://www.dowellchat.uxlivinglab.online/");
+  const basePath = "/linemanage/ticketDetail";
+  console.log("socket", socket);
+
+  //const [selectedOption, setSelectedOption] = useState(null);
+  const [isOpen, setIsOpen] = useState(false);
+  const [option, setOption] = useState("");
+  const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
+
+  //const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
+  const openSearchModal = (Option) => {
+    setOption(Option);
+    setIsSearchModalOpen(true);
+  };
+
+  const closeSearchModal = () => {
+    setIsSearchModalOpen(false);
+  };
+  const options = [
+    { label: "Create Line Manager", value: "createLineManager" },
+    { label: "Chat Line Manager", value: "chatLineManager" },
+    { label: "Create Topic", value: "createTopic" },
+    {
+      label: "Get All Line Manager ",
+      value: "getAllLineManager",
+    },
+  ];
+
+  const handleSelect = (option) => {
+    // setSelectedOption(option);
+    setIsOpen(false);
+    openSearchModal(option.value);
+    //  createTopic("login error", "1353343");
+  };
+  /*
+  const createLineManager = async (
+    user_id,
+    api_key,
+    positions_in_a_line,
+    average_serving_time,
+    ticket_count,
+    workspace_id,
+    created_at
+  ) => {
+    await socket.emit("create_line_manager", {
+      user_id: user_id,
+      positions_in_a_line: positions_in_a_line,
+      average_serving_time: average_serving_time,
+      ticket_count: ticket_count,
+      workspace_id: workspace_id,
+      api_key: api_key,
+      created_at: created_at,
+    });
+    await socket.on("setting_response", (data) => {
+      // Handle response for the event
+      console.log(data);
+    });
+  };
+*/
+  /*
+  const geAllLineManagers = async (workspaceid, api_key) => {
+    await socket.emit("get_all_line_managers", {
+      workspace_id: workspaceid,
+      api_key: api_key,
+    });
+    await socket.on("setting_response", (data) => {
+      // Handle response for the event
+      console.log(data);
+    });
+  };
+
+
+  */
+
   return (
     <div className="font-sans flex justify-between sm:flex-col sm:pr-2 sm:w-full md:w-[95vw] md:flex-row  flex-wrap lg:flex-nowrap   lg:items-stretch  border-b-2 border-t-2 m-5 ">
-      <div className="bg-white w-full shadow-md my-6 ml-2 md:min-w-[500px] rounded-lg  border-2 border-gray-200">
+      {isSearchModalOpen && (
+        <CreateComponent closeSearchModal={closeSearchModal} option={option} />
+      )}
+      <div className="bg-white w-full flex-2 shadow-md my-4 mt-12 ml-2 md:min-w-[500px] rounded-lg  border-2 border-gray-200">
         <table className="h-auto w-full ">
           <thead>
             <tr className="bg-[#22694de1] text-white uppercase text-sm leading-normal flex flex-wrap ">
@@ -170,9 +255,34 @@ function Dashboard() {
             <button className="bg-[#22694de1] font-sans text-sm hover:bg-green-700 text-white font-bold py-2 px-2 md:w-27 rounded-md">
               Serve line
             </button>
-            {/* <button className="bg-[#22694de1] hover:bg-green-700 text-white font-bold py-0 px-2 rounded-lg">
+
+            <div
+              className="cursor-pointer pt-2 text-lg relative "
+              onClick={() => setIsOpen(!isOpen)}
+            >
+              <BsThreeDotsVertical />
+
+              {isOpen && (
+                <div
+                  className="absolute z-10 mt-1 ml-4 w-56 bg-white rounded-md shadow-lg "
+                  style={{ transform: "translateY(-100%)" }}
+                >
+                  {options.map((option) => (
+                    <button
+                      key={option.value}
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
+                      onClick={() => handleSelect(option)}
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {/* <button className="bg-[#22694de1] hover:bg-green-700 text-white font-bold py-0 px-2 rounded-lg">
               Chat Manager
             </button> */}
+            </div>
           </div>
           {/* <button className="bg-red-400 ml-auto hover:bg-red-500 text-white font-bold py-1.5 px-2 rounded-lg ">
             Logout
@@ -180,7 +290,21 @@ function Dashboard() {
         </div>
       </div>
       {/* ticket detail */}
-      <Outlet />
+      <div className="w-full h-auto flex-1 flex flex-col">
+        <div className="flex justify-between gap-2 px-2 pt-4">
+          <div className="flex-1">
+            <Dropdowns search="Search Topic" />
+          </div>
+
+          <div className="flex-2">
+            <Dropdowns search={"Search Ticket Number"} />
+          </div>
+        </div>
+        <div className="w-full h-auto flex md:flex md:flex-row">
+          <Outlet />
+        </div>
+      </div>
+
       {/* <TicketDetail /> */}
     </div>
   );
