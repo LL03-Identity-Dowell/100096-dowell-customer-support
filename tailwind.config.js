@@ -1,13 +1,20 @@
 /** @type {import('tailwindcss').Config} */
-const defaultTheme = require("tailwindcss/defaultTheme");
 export default {
-  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
+  content: [
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}",
+  ],
   theme: {
     extend: {
       fontFamily: {
-        sans: ["Inter var", ...defaultTheme.fontFamily.sans],
+        'sans': ['Inter', 'sans-serif'],
+      },
+      screens: {
+        'sm': '300px', // Customizing the small device breakpoint
+        'md': '1100px',
+        'lg': '1300px'
       },
     },
   },
   plugins: [],
-};
+}

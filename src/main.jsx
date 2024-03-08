@@ -1,13 +1,15 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import App from "./App.jsx";
+import { RouterProvider } from "react-router-dom";
+import router from "./router.jsx";
+import { Provider } from "react-redux";
+import { store } from "./linemanage/Redux/store.js";
 import "./index.css";
-import { BrowserRouter } from "react-router-dom";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <BrowserRouter basename="/100096-dowell-customer-support/">
-    <React.StrictMode>
-      <App />
-    </React.StrictMode>
-  </BrowserRouter>
+  <React.StrictMode>
+    <Provider store={store}>
+      <RouterProvider router={router} />
+    </Provider>
+  </React.StrictMode>
 );
