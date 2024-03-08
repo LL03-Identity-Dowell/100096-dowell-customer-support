@@ -2,8 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import io from "socket.io-client";
+//import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import { ClipLoader } from "react-spinners";
 import NavItem from "./NavItem";
 const socket = io.connect("https://www.dowellchat.uxlivinglab.online/");
@@ -86,7 +86,8 @@ function CreateComponent({ closeSearchModal, option }) {
   };
   */
 
-  const createTopic = async (topic_name) => {
+  const createTopic = async (topic_name, workspace_id, api_key) => {
+    console.log("workspace id, api_key", workspace_id, api_key);
     try {
       await socket.emit("create_topic", {
         name: topic_name,
@@ -97,9 +98,14 @@ function CreateComponent({ closeSearchModal, option }) {
 
       await socket.on("setting_response", (data) => {
         // Handle response for the event
+        console.log(data);
         setLoading(false);
-        toast.warning(data.data.toString());
-        console.log("generated topic", data);
+        if (data.status === "failure") {
+          toast.warning(data?.data);
+        } else if (data.status === "success") {
+          toast.success(data?.data);
+        }
+        // console.log("generated topic", data);
         //console.log(data);
       });
     } catch (error) {

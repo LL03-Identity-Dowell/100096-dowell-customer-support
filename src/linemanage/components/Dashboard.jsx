@@ -5,6 +5,7 @@ import { BsThreeDotsVertical } from "react-icons/bs";
 import io from "socket.io-client";
 import CreateComponent from "./CreateComponent";
 import Dropdowns from "./Search";
+import { ToastContainer } from "react-toastify";
 function Dashboard() {
   const socket = io.connect("https://www.dowellchat.uxlivinglab.online/");
   const basePath = "/100096-dowell-customer-support/linemanage/ticketDetail";
@@ -81,6 +82,17 @@ function Dashboard() {
   */
   return (
     <div className="font-sans flex justify-between sm:flex-col sm:pr-2 sm:w-full md:w-[95vw] md:flex-row  flex-wrap lg:flex-nowrap   lg:items-stretch  border-b-2 border-t-2 m-5 ">
+      <ToastContainer
+        position="top-right"
+        autoClose={5000} // Adjust according to your preference
+        hideProgressBar={false} // You can toggle this as per your design
+        newestOnTop={false} // Set to true if you want newer toasts to appear on top
+        closeOnClick
+        rtl={false} // Set to true if you are using right-to-left language support
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
       {isSearchModalOpen && (
         <CreateComponent closeSearchModal={closeSearchModal} option={option} />
       )}
