@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 //import { useEffect } from "react";
 import { NavLink, Outlet } from "react-router-dom";
 import { useState } from "react";
@@ -7,7 +8,7 @@ import CreateComponent from "./CreateComponent";
 import Dropdowns from "./Search";
 
 
-function Dashboard() {
+function Dashboard({api_key, workspace_id}) {
   const socket = io.connect("https://www.dowellchat.uxlivinglab.online/");
   const basePath = "/linemanage/ticketDetail";
   console.log("socket", socket);
@@ -85,7 +86,11 @@ function Dashboard() {
   return (
     <div className="font-sans flex justify-between sm:flex-col sm:pr-2 sm:w-full md:w-[95vw] md:flex-row  flex-wrap lg:flex-nowrap   lg:items-stretch  border-b-2 border-t-2 m-5 ">
       {isSearchModalOpen && (
-        <CreateComponent closeSearchModal={closeSearchModal} option={option} />
+        <CreateComponent 
+          closeSearchModal={closeSearchModal} 
+          option={option} api_key={api_key}
+          workspace_id={workspace_id}
+        />
       )}
       <div className="bg-white w-full flex-2 shadow-md my-4 mt-12 ml-2 md:min-w-[500px] rounded-lg  border-2 border-gray-200">
         <table className="h-auto w-full ">

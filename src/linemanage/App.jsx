@@ -14,6 +14,11 @@ function App() {
   const [loadingFetchUserInfo, setLoadingFetchUserInfo] = useState(false)
   const [authenticationError, setAuthenticationError] = useState(false)
   
+  const [ apiKey, setApiKey ] = useState(() => {
+    const savedApiKey = localStorage.getItem('apiKey');
+    return savedApiKey ? JSON.parse(savedApiKey) : null;
+  })
+
   const [userInfo, setUserInfo] = useState(() => {
     const savedUserInfo = localStorage.getItem('userInfo');
     return savedUserInfo ? JSON.parse(savedUserInfo) : null;
@@ -42,6 +47,25 @@ function App() {
       });
   };
 
+  
+
+  const fetchApiKey = async () => {
+    const apiUrl = `https://100105.pythonanywhere.com/api/v3/user/?type=get_api_key&workspace_id=${userInfo?.client_admin_id}`;
+
+    try {
+      const response = await fetch(apiUrl);
+      const responseData = await response.json();
+      localStorage.setItem(
+        'apiKey',
+        JSON.stringify(responseData?.data?.api_key)
+      );
+      setApiKey(responseData?.data?.api_key);
+    } catch (error) {
+      console.error("Fetch Api Key Error", error.message);
+    }
+  };
+
+
 
   useEffect(() => {
     if (!userInfo) {
@@ -53,6 +77,10 @@ function App() {
       }
       getUserInfo()
     }
+
+    if (userInfo && !apiKey) {
+      fetchApiKey()
+    }
   }, [session_id, userInfo]);
 
   return (
@@ -60,7 +88,7 @@ function App() {
       <NavItem />
       { 
         loadingFetchUserInfo ? <Loader /> : 
-        userInfo ? <Dashboard /> :
+        userInfo ? <Dashboard api_key={apiKey} workspace_id={userInfo?.client_admin_id} /> :
         authenticationError ? "Authentication Failed" :
         ""
       }
