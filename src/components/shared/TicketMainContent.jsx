@@ -1,12 +1,36 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
+import { useLocation } from "react-router-dom";
+import io from "socket.io-client";
 
 const TicketMainContent = () => {
+  const [getLinkRes, setGetLinkRes] = useState("");
+  const [ticketNumber, setTicketNumber] = useState("Not assigned");
+  const [creatingTicket, setCreatingTicket] = useState(false);
+  const { search } = useLocation();
+  const apiKey = "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f";
+  const params = new URLSearchParams(search);
   const [formData, setFormData] = useState({
     topic: "",
     email: "",
     identity: "",
   });
+  const socket = io.connect("https://www.dowellchat.uxlivinglab.online");
+  useEffect(() => {
+    try {
+      socket.emit("get_share_link_details", {
+        workspace_id: params.get("workspace_id"),
+        link_id: params.get("link_id"),
+        api_key: apiKey,
+      });
+
+      socket.on("share_link_response", (data) => {
+        setGetLinkRes(data["data"]);
+      });
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -17,8 +41,32 @@ const TicketMainContent = () => {
   };
 
   const handleSubmit = (values, actions) => {
-    console.log("Form submitted:", values);
-    actions.setSubmitting(false);
+    try {
+      actions.setSubmitting(true);
+      setCreatingTicket(false);
+      const payload = {
+        email: values.email,
+        created_at: new Date().toISOString(),
+        link_id: params.get("link_id"),
+        workspace_id: params.get("workspace_id"),
+        api_key: apiKey,
+        product: values.topic,
+      };
+
+      socket.emit("create_ticket", payload);
+
+      socket.on("ticket_response", (data) => {
+        setTicketNumber(data["data"]["_id"]);
+      });
+
+      actions.setSubmitting(false);
+      setCreatingTicket(false);
+      return () => {
+        socket.disconnect();
+      };
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -30,17 +78,44 @@ const TicketMainContent = () => {
         {({ values, handleChange }) => (
           <Form className="text-center">
             {/* Select input for topics */}
-            <div className="mb-4">
+            <div className="mb-4 relative">
               <Field
                 as="select"
                 name="topic"
-                className="block px-5 w-full bg-white border  border-gray-300 rounded  py-2 focus:outline-none focus:border-gray-500"
+                className="block px-5 w-full bg-white border border-gray-300 rounded py-3 text-[20px] font-sans cursor-pointer focus:outline-none focus:border-gray-500"
                 onChange={handleChange}
               >
-                <option value="">Topics</option>
-                <option value="topic1">Topic 1</option>
-                <option value="topic2">Topic 2</option>
-                <option value="topic3">Topic 3</option>
+                <option
+                  value=""
+                  className="text-2xl bg-gray-300 mb-5 text-center"
+                >
+                  Topics
+                </option>
+                {getLinkRes ? (
+                  getLinkRes.map((linkRes) => {
+                    const objectToArray = Object.entries(
+                      linkRes["product_distribution"]
+                    );
+                    const filteredArray = objectToArray.filter(
+                      ([key, value]) => value !== 0
+                    );
+                    return filteredArray.map((dist) => {
+                      return (
+                        <option value={dist[0]} key={dist[0]}>
+                          {dist[0]}
+                        </option>
+                      );
+                    });
+                  })
+                ) : (
+                  <option
+                    value=""
+                    className="py-5 flex justify-center items-center text-center text-green-500 my-3"
+                    disabled
+                  >
+                    Loading...
+                  </option>
+                )}
               </Field>
             </div>
             <p className="  font-bold">Waiting time - 00 Minutes</p>
@@ -66,7 +141,7 @@ const TicketMainContent = () => {
               Ticket number
             </h2>
             <h2 className="max-md:text-[22px] text-[26px] font-bold  text-green-500">
-              00000000
+              {ticketNumber}
             </h2>
 
             {/* Radio inputs for identity */}
@@ -125,12 +200,24 @@ const TicketMainContent = () => {
             </div>
 
             {/* Submit button */}
-            <button
-              type="submit"
-              className="border-2 border-green-300 hover:bg-green-500 transition duration-1000 ease-in-out font-semibold py-2 w-[80%] rounded-3xl focus:outline-none focus:bg-blue-600"
-            >
-              Create ticket
-            </button>
+
+            {creatingTicket ? (
+              <button
+                type="submit"
+                className="border-2 border-green-300 hover:bg-green-500 transition duration-1000 ease-in-out font-semibold py-2 w-[80%] rounded-3xl focus:outline-none focus:bg-blue-600"
+              >
+                <div className="flex justify-center items-center">
+                  <div className="animate-spin h-8 w-8 border-t-2 border-b-2 border-blue-500 rounded-full"></div>
+                </div>
+              </button>
+            ) : (
+              <button
+                type="submit"
+                className="border-2 border-green-300 hover:bg-green-500 transition duration-1000 ease-in-out font-semibold py-2 w-[80%] rounded-3xl focus:outline-none focus:bg-blue-600"
+              >
+                Create ticket
+              </button>
+            )}
           </Form>
         )}
       </Formik>
