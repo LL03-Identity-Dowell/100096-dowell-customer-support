@@ -194,7 +194,7 @@ function Dashboard() {
                 isActive ? "bg-[#22694de1] text-white" : "bg-gray-200 "
               }`
             }
-            to={`/1`}
+            to={`${basePath}/1`}
           >
             1
           </NavLink>
@@ -204,7 +204,7 @@ function Dashboard() {
                 isActive ? "bg-[#22694de1] text-white" : "bg-gray-200 "
               }`
             }
-            to={`/2`}
+            to={`${basePath}/2`}
           >
             2
           </NavLink>
@@ -214,7 +214,7 @@ function Dashboard() {
                 isActive ? "bg-[#22694de1] text-white" : "bg-gray-200 "
               }`
             }
-            to={`/3`}
+            to={`${basePath}/3`}
           >
             3
           </NavLink>
@@ -224,7 +224,7 @@ function Dashboard() {
                 isActive ? "bg-[#22694de1] text-white" : "bg-gray-200 "
               }`
             }
-            to={`/4`}
+            to={`${basePath}/4`}
           >
             4
           </NavLink>
@@ -234,7 +234,7 @@ function Dashboard() {
                 isActive ? "bg-[#22694de1] text-white" : "bg-gray-200 "
               }`
             }
-            to={`/5`}
+            to={`${basePath}/5`}
           >
             5
           </NavLink>

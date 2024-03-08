@@ -6,8 +6,11 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { ClipLoader } from "react-spinners";
 import NavItem from "./NavItem";
+
+
 const socket = io.connect("https://www.dowellchat.uxlivinglab.online/");
 console.log("socket", socket);
+
 //eslint-disable-next-line
 function CreateComponent({ closeSearchModal, option }) {
   const [loading, setLoading] = useState(false);
