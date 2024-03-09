@@ -6,10 +6,13 @@ import io from "socket.io-client";
 import { toast } from "react-toastify";
 import { ClipLoader } from "react-spinners";
 import NavItem from "./NavItem";
+
+
 const socket = io.connect("https://www.dowellchat.uxlivinglab.online/");
 console.log("socket", socket);
+
 //eslint-disable-next-line
-function CreateComponent({ closeSearchModal, option }) {
+function CreateComponent({ closeSearchModal, option, api_key, workspace_id}) {
   const [loading, setLoading] = useState(false);
   // const [searchValue, setSearchValue] = useState("");
   const [modalHeight, setModalHeight] = useState(80);
@@ -93,8 +96,8 @@ function CreateComponent({ closeSearchModal, option }) {
     try {
       await socket.emit("create_topic", {
         name: topic_name,
-        workspace_id: "646ba835ce27ae02d024a902",
-        api_key: "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f",
+        workspace_id: workspace_id,
+        api_key: api_key,
         created_at: new Date().toISOString(),
       });
 
