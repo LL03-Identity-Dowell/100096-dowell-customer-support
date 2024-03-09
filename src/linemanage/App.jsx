@@ -2,10 +2,15 @@
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import Dashboard from "./components/Dashboard";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import NavItem from "./components/NavItem";
 import { Loader } from "../components/Loader";
 
 import "./index.css";
+import { Provider } from "react-redux";
+import { store } from "./Redux/store";
+
 import axios from 'axios';
 
 function App() {
@@ -85,14 +90,26 @@ function App() {
 
   return (
     <>
-      <NavItem />
-      { 
-        loadingFetchUserInfo ? <Loader /> : 
-        userInfo ? <Dashboard api_key={apiKey} workspace_id={userInfo?.client_admin_id} /> :
-        authenticationError ? "Authentication Failed" :
-        ""
-      }
-      
+      <Provider store={store}>
+        <ToastContainer
+          position="top-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+        />
+        <NavItem />
+         { 
+            loadingFetchUserInfo ? <Loader /> : 
+            userInfo ? <Dashboard api_key={apiKey} workspace_id={userInfo?.client_admin_id} /> :
+            authenticationError ? "Authentication Failed" :
+            ""
+          }
+      </Provider>
     </>
   );
 }

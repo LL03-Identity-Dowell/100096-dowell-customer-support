@@ -2,8 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import io from "socket.io-client";
+//import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import { ClipLoader } from "react-spinners";
 import NavItem from "./NavItem";
 
@@ -63,7 +63,6 @@ function CreateComponent({ closeSearchModal, option, api_key, workspace_id}) {
     }));
   };
 
-  /*
   const createLineManager = async (
     user_id,
     api_key,
@@ -73,23 +72,27 @@ function CreateComponent({ closeSearchModal, option, api_key, workspace_id}) {
     workspace_id,
     created_at
   ) => {
-    await socket.emit("create_line_manager", {
-      user_id: user_id,
-      positions_in_a_line: positions_in_a_line,
-      average_serving_time: average_serving_time,
-      ticket_count: ticket_count,
-      workspace_id: workspace_id,
-      api_key: api_key,
-      created_at: created_at,
-    });
-    await socket.on("setting_response", (data) => {
-      // Handle response for the event
-      console.log(data);
-    });
+    try {
+      await socket.emit("create_line_manager", {
+        user_id: user_id,
+        positions_in_a_line: positions_in_a_line,
+        average_serving_time: average_serving_time,
+        ticket_count: ticket_count,
+        workspace_id: workspace_id,
+        api_key: api_key,
+        created_at: created_at,
+      });
+      await socket.on("setting_response", (data) => {
+        // Handle response for the event
+        console.log(data);
+      });
+    } catch (error) {
+      console.log("error", error);
+    }
   };
-  */
 
-  const createTopic = async (topic_name) => {
+  const createTopic = async (topic_name, workspace_id, api_key) => {
+    console.log("workspace id, api_key", workspace_id, api_key);
     try {
       await socket.emit("create_topic", {
         name: topic_name,
@@ -100,9 +103,14 @@ function CreateComponent({ closeSearchModal, option, api_key, workspace_id}) {
 
       await socket.on("setting_response", (data) => {
         // Handle response for the event
+        console.log(data);
         setLoading(false);
-        toast.warning(data.data.toString());
-        console.log("generated topic", data);
+        if (data.status === "failure") {
+          toast.warning(data?.data);
+        } else if (data.status === "success") {
+          toast.success(data?.data);
+        }
+        // console.log("generated topic", data);
         //console.log(data);
       });
     } catch (error) {
@@ -117,6 +125,8 @@ function CreateComponent({ closeSearchModal, option, api_key, workspace_id}) {
       setLoading(true);
       if (option === "createTopic") {
         createTopic(inputs.TopicName, inputs.WorkspaceId);
+      } else if (option === "createLineManager") {
+        createLineManager();
       }
     } catch (error) {
       setLoading(false);
