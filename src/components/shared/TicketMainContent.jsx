@@ -102,6 +102,7 @@ const TicketMainContent = () => {
         socket.disconnect();
       };
     } catch (error) {
+      setCreatingTicket(false);
       console.log(error);
     }
   };
