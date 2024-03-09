@@ -1,6 +1,9 @@
+/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import { useLocation } from "react-router-dom";
+import { toast } from "react-toastify";
+
 import io from "socket.io-client";
 
 const TicketMainContent = () => {
@@ -46,13 +49,19 @@ const TicketMainContent = () => {
         });
 
         socket.on("share_link_response", (data) => {
-          setGetLinkRes(data?.data || []);
+          if (Array.isArray(data?.data)) {
+            setGetLinkRes(data?.data);
+          } else {
+            toast.error(data?.data)
+            console.error("Expected an array for getLinkRes, received:", data?.data);
+            setGetLinkRes([]); // Fallback to an empty array if the data is not as expected
+          }
         });
       }
     } catch (error) {
       console.error("Error:", error);
     }
-  }, [apiKey, params]);
+  }, [apiKey, params, socket]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -119,7 +128,7 @@ const TicketMainContent = () => {
                   Topics
                 </option>
                 {getLinkRes !== null ? (
-                  getLinkRes.map((linkRes, index) => {
+                  getLinkRes?.map((linkRes, index) => {
                     const objectToArray = Object.entries(
                       linkRes["product_distribution"]
                     );
