@@ -99,7 +99,7 @@ function Dashboard() {
 */
 
   return (
-    <div className="font-sans flex justify-between sm:flex-col sm:pr-2 sm:w-full md:w-[95vw] md:flex-row  flex-wrap lg:flex-nowrap   lg:items-stretch  border-b-2 border-t-2 m-5 ">
+    <div className="font-sans flex justify-between h-auto sm:flex-col sm:pr-2 sm:w-full md:w-[95vw] md:flex-row  flex-wrap lg:flex-nowrap   lg:items-stretch  border-b-2 border-t-2 m-5 ">
       {isSearchModalOpen && (
         <CreateComponent closeSearchModal={closeSearchModal} option={option} />
       )}
