@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
-import Dashboard from "./components/Dashboard";
+//import Dashboard from "./components/Dashboard";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import NavItem from "./components/NavItem";
@@ -11,48 +11,47 @@ import "./index.css";
 import { Provider } from "react-redux";
 import { store } from "./Redux/store";
 
-import axios from 'axios';
+import axios from "axios";
+import Dashboards from "./components/Dashboard";
 
 function App() {
   const [searchParams] = useSearchParams();
   const session_id = searchParams.get("session_id");
-  const [loadingFetchUserInfo, setLoadingFetchUserInfo] = useState(false)
-  const [authenticationError, setAuthenticationError] = useState(false)
-  
-  const [ apiKey, setApiKey ] = useState(() => {
-    const savedApiKey = localStorage.getItem('apiKey');
+  const [loadingFetchUserInfo, setLoadingFetchUserInfo] = useState(false);
+  const [authenticationError, setAuthenticationError] = useState(false);
+
+  const [apiKey, setApiKey] = useState(() => {
+    const savedApiKey = localStorage.getItem("apiKey");
     return savedApiKey ? JSON.parse(savedApiKey) : null;
-  })
+  });
 
   const [userInfo, setUserInfo] = useState(() => {
-    const savedUserInfo = localStorage.getItem('userInfo');
+    const savedUserInfo = localStorage.getItem("userInfo");
     return savedUserInfo ? JSON.parse(savedUserInfo) : null;
-  })
+  });
 
   const getUserInfo = async () => {
     setLoadingFetchUserInfo(true);
     const session_id = searchParams.get("session_id");
     axios
       .post("https://100014.pythonanywhere.com/api/userinfo/", {
-        session_id: session_id
+        session_id: session_id,
       })
 
       .then((response) => {
         setUserInfo(response?.data?.userinfo);
         localStorage.setItem(
-              'userInfo',
-              JSON.stringify(response?.data?.userinfo)
-            );
+          "userInfo",
+          JSON.stringify(response?.data?.userinfo)
+        );
         setLoadingFetchUserInfo(false);
       })
       .catch((error) => {
         setLoadingFetchUserInfo(false);
-        setAuthenticationError(true)
+        setAuthenticationError(true);
         console.error("Error:", error);
       });
   };
-
-  
 
   const fetchApiKey = async () => {
     const apiUrl = `https://100105.pythonanywhere.com/api/v3/user/?type=get_api_key&workspace_id=${userInfo?.client_admin_id}`;
@@ -61,7 +60,7 @@ function App() {
       const response = await fetch(apiUrl);
       const responseData = await response.json();
       localStorage.setItem(
-        'apiKey',
+        "apiKey",
         JSON.stringify(responseData?.data?.api_key)
       );
       setApiKey(responseData?.data?.api_key);
@@ -69,8 +68,6 @@ function App() {
       console.error("Fetch Api Key Error", error.message);
     }
   };
-
-
 
   useEffect(() => {
     if (!userInfo) {
@@ -80,11 +77,11 @@ function App() {
           `${window.location.href}`;
         return;
       }
-      getUserInfo()
+      getUserInfo();
     }
 
     if (userInfo && !apiKey) {
-      fetchApiKey()
+      fetchApiKey();
     }
   }, [session_id, userInfo]);
 
@@ -103,12 +100,18 @@ function App() {
           pauseOnHover
         />
         <NavItem />
-         { 
-            loadingFetchUserInfo ? <Loader /> : 
-            userInfo ? <Dashboard api_key={apiKey} workspace_id={userInfo?.client_admin_id} /> :
-            authenticationError ? "Authentication Failed" :
-            ""
-          }
+        {loadingFetchUserInfo ? (
+          <Loader />
+        ) : userInfo ? (
+          <Dashboards
+            api_key={apiKey}
+            workspace_id={userInfo?.client_admin_id}
+          />
+        ) : authenticationError ? (
+          "Authentication Failed"
+        ) : (
+          ""
+        )}
       </Provider>
     </>
   );

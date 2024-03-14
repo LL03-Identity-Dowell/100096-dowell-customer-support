@@ -31,12 +31,12 @@ function Dropdowns({
 
   const ticketInfo = useSelector((state) => state.tickets.ticketInfo);
 
-  console.log("topic data", topicData);
-  console.log("selected ticket data", selectedTicket);
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
+    console.log("topic data", topicData);
+    console.log("selected ticket data", selectedTicket);
     const findTicket = async (workSpaceID, product, api_key) => {
       const { name } = product;
       console.log(workSpaceID, product, api_key);
@@ -88,13 +88,15 @@ function Dropdowns({
     };
     //  let workSpaceID = "646ba835ce27ae02d024a902";
     //  let api_key = "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f";
-    if (type == "topic") {
+    if (type === "topic") {
       findTopic(23, 54);
     } else if (type === "ticket") {
       console.log("Ticket started", selectedTopic);
-      findTicket(23, selectedTopic, 22);
+      if (Object.keys(selectedTopic).length > 0) {
+        findTicket(23, selectedTopic, 22);
+      }
     }
-  }, [type, dispatch, selectedTopic]);
+  }, [type, selectedTopic]);
 
   const toggleDropdown = () => {
     setDropdownOpen(!isDropdownOpen);
