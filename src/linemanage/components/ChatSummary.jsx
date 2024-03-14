@@ -1,16 +1,6 @@
 import { useState } from "react";
 //eslint-disable-next-line
 const Chat = () => {
-  const [messages, setMessages] = useState([
-    { id: 1, sender: "user", type: "text", content: "Hey there!" },
-    {
-      id: 2,
-      sender: "receiver",
-      type: "text",
-      content: "Hi! How can I help you?",
-    },
-    // Add more messages as needed
-  ]);
   const [newMessage, setNewMessage] = useState("");
 
   const sendMessage = (message) => {

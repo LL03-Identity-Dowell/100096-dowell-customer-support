@@ -11,7 +11,6 @@ import {
   fetchTicketInfo,
 } from "../Redux/ticketDetailSlice";
 const socket = io.connect("https://www.dowellchat.uxlivinglab.online/");
-console.log("socket", socket);
 if (!socket.connected) {
   toast.warn("socket is not connected");
 } else {
