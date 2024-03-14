@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
 import { CiSearch } from "react-icons/ci";
-import io from "socket.io-client";
+
 import "../dropdown.css"; // Import CSS for styling (create a Dropdown.css file)
 import { toast } from "react-toastify";
+import io from "socket.io-client";
+const socket = io.connect("https://www.dowellchat.uxlivinglab.online/");
+//import { socket } from "../utils/Connection";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchTopicData,
@@ -10,7 +13,7 @@ import {
   fetchSelectedTicket,
   fetchTicketInfo,
 } from "../Redux/ticketDetailSlice";
-const socket = io.connect("https://www.dowellchat.uxlivinglab.online/");
+
 console.log("socket", socket);
 if (!socket.connected) {
   toast.warn("socket is not connected");
@@ -95,6 +98,8 @@ function Dropdowns({
       if (Object.keys(selectedTopic).length > 0) {
         findTicket(23, selectedTopic, 22);
       }
+    } else {
+      return;
     }
   }, [type, selectedTopic]);
 
@@ -134,7 +139,7 @@ function Dropdowns({
           {type === "topic" &&
             topicData &&
             //eslint-disable-next-line
-            topicData?.map((data) => {
+            topicData?.slice().map((data) => {
               return (
                 <div
                   key={data.id}
@@ -151,7 +156,7 @@ function Dropdowns({
           {type === "ticket" &&
             ticketInfo &&
             //eslint-disable-next-line
-            ticketInfo?.map((data, index) => {
+            ticketInfo?.slice().map((data, index) => {
               return (
                 <div
                   key={data.id}

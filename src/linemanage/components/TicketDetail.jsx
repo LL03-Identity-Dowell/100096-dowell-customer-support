@@ -1,18 +1,19 @@
 import { useEffect, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
-import { fetchTicketMessage } from "../Redux/ticketDetailSlice";
+//import { fetchTicketMessage } from "../Redux/ticketDetailSlice";
 import formatCreatedAt from "../utils/datefromat";
-import io from "socket.io-client";
+//import { socket } from "../utils/Connection";
 import { ClipLoader } from "react-spinners";
+import io from "socket.io-client";
+const socket = io.connect("https://www.dowellchat.uxlivinglab.online/");
 function TicketDetail() {
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
   const [loading, setLoading] = useState(true);
   const selectedTicket = useSelector((state) => state.tickets.selectedTicket);
-  const ticketMessages = useSelector((state) => state.tickets.ticketMessage);
-  const messageShow = ticketMessages.length > 0 ? ticketMessages.slice(-3) : [];
-  const socket = io.connect("https://www.dowellchat.uxlivinglab.online/");
-  console.log("socket", socket);
+  //const ticketMessages = useSelector((state) => state.tickets.ticketMessage);
+  //const messageShow = ticketMessages.length > 0 ? ticketMessages.slice(-3) : [];
+  const [messageShow, setMessageShow] = useState([]);
   useEffect(() => {
     console.log("selected ticket", selectedTicket);
     const getTicketMessages = async (workSpaceID, api_key) => {
@@ -25,14 +26,14 @@ function TicketDetail() {
           workspace_id: workSpaceID,
           api_key: api_key,
         });
-        socket.on("ticket_message_response", (data) => {
+        await socket.on("ticket_message_response", (data) => {
           // Handle response for the event
           //console.log("ticket message", data);
           setLoading(false);
           if (data.status === "success") {
-            dispatch(fetchTicketMessage(data?.data));
+            setMessageShow(data?.data);
           } else {
-            dispatch(fetchTicketMessage({}));
+            setMessageShow([]);
           }
         });
       } catch (error) {
@@ -42,7 +43,14 @@ function TicketDetail() {
 
     if (Object.keys(selectedTicket).length > 0) {
       getTicketMessages(22, 233);
+    } else {
+      return;
     }
+
+    return () => {
+      // Clean up: Remove the event listener when component unmounts
+      socket.off("ticket_message_response");
+    };
   }, [selectedTicket]);
   return (
     <div className="flex-1 w-full m-3 mx-3 ml-1 px-1 rounded-none border-none md:min-w-[300px] h-svh shadow-lg">
@@ -73,9 +81,9 @@ function TicketDetail() {
         <h3 className="my-5 text-lg">Previous Chat</h3>
         <table className="w-full">
           <tbody className="text-gray-600 text-sm font-light overflow-y-scroll">
-            {console.log("ticket message", ticketMessages)}
+            {/* {console.log("ticket message", ticketMessages)} */}
             {messageShow.length > 0 &&
-              messageShow.map((message) => {
+              messageShow?.slice(-3).map((message) => {
                 return (
                   <tr
                     className="border-b border-gray-200 hover:bg-gray-100"
