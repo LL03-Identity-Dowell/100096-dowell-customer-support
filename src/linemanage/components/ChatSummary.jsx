@@ -13,7 +13,7 @@ const Chat = () => {
   //const dispatch = useDispatch();
   //console.log("data from chat summary", selectedTicket);
   const selectedTicket = useSelector((state) => state.tickets.selectedTicket);
-  //const ticketMessages = useSelector((state) => state.tickets.ticketMessage);
+  const ticketMessages = useSelector((state) => state.tickets.ticketMessage);
   //const [loading, setLoading] = useState(true);
   let current_user = "1234";
   const [newMessage, setNewMessage] = useState("");
@@ -35,54 +35,13 @@ const Chat = () => {
     // Add more messages as needed
   ]);
   useEffect(() => {
-    const getTicketMessages = async (workSpaceID, api_key) => {
-      workSpaceID = "646ba835ce27ae02d024a902";
-      api_key = "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f";
-
-      await socket.emit("get_ticket_messages", {
-        ticket_id: selectedTicket._id,
-        product: selectedTicket.product,
-        workspace_id: workSpaceID,
-        api_key: api_key,
-      });
-      await socket.on("ticket_message_response", async (data) => {
-        // Handle response for the event
-        //console.log("ticket message", data);
-
-        if (data.status === "success") {
-          // setMessages(data?.data);
-
-          let messages = await Promise.all(
-            data?.data?.slice().map((message) => {
-              return {
-                id: message._id,
-                sender: message.author !== current_user ? "receiver" : "user",
-                type: "text",
-                content: message.message_data,
-                created_at: message.created_at,
-              };
-            })
-          );
-          //console.log("loading", loading);
-          if (messages.length > 0) {
-            //  console.log("inner loading", loading);
-            setMessages(messages);
-          } //else {
-          //   setMessages([]);
-          // }
-        } else {
-          setMessages([]);
-        }
-      });
-    };
-    /*
     async function chat() {
       if (ticketMessages.length > 0) {
         try {
           // console.log("ticket mesage from chat", ticketMessages);
           //setLoading(true);
           let messages = await Promise.all(
-            ticketMessages?.slice().map((message) => {
+            ticketMessages.map((message) => {
               return {
                 id: message._id,
                 sender: message.author !== current_user ? "receiver" : "user",
@@ -113,19 +72,16 @@ const Chat = () => {
       //   setLoading(false);
       // }
     }
-    */
     // console.log("selected ticket", selectedTicket);
     if (Object.keys(selectedTicket).length > 0) {
       //console.log("selected ticket in if statement", selectedTicket);
       //setLoading(true);
-      getTicketMessages();
+      chat();
+    } else {
+      setMessages([]);
+      // setLoading(false);
     }
-
-    return () => {
-      // Clean up: Remove the event listener when component unmounts
-      socket.off("ticket_message_response");
-    };
-  }, [selectedTicket]);
+  }, [selectedTicket, ticketMessages]);
 
   socket.on("ticket_message_response", (data) => {
     // Handle response for the event
@@ -144,7 +100,7 @@ const Chat = () => {
       };
 
       setMessages([...messages, message]);
-      setNewMessage("");
+
       //setLoading(false);
       //  }
     }
@@ -170,6 +126,7 @@ const Chat = () => {
   const sendMessage = async () => {
     //setMessages([...messages, message]);
     await sendChat(newMessage);
+    setNewMessage("");
   };
 
   const handleFileChange = (event) => {
@@ -194,7 +151,7 @@ const Chat = () => {
         content: newMessage.trim(),
         created_at: formatCreatedAt(new Date()),
       };*/
-      sendMessage();
+      sendMessage(newMessage);
     }
   };
 

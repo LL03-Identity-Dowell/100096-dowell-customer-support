@@ -13,6 +13,7 @@ import {
   fetchSelectedTicket,
   fetchTicketInfo,
 } from "../Redux/ticketDetailSlice";
+import { ClipLoader } from "react-spinners";
 
 console.log("socket", socket);
 if (!socket.connected) {
@@ -31,9 +32,9 @@ function Dropdowns({
   const topicData = useSelector((state) => state.tickets.topicData);
   const selectedTopic = useSelector((state) => state.tickets.selectedTopic);
   const selectedTicket = useSelector((state) => state.tickets.selectedTicket);
-
+  const [loading, setLoading] = useState(true);
   const ticketInfo = useSelector((state) => state.tickets.ticketInfo);
-
+  let ticketInfoToShow = [...ticketInfo];
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -53,6 +54,7 @@ function Dropdowns({
         });
         await socket.on("ticket_response", (data) => {
           // Handle response for the event
+          setLoading(false);
           console.log("ticket response", data.data);
           if (data?.status === "success") {
             dispatch(fetchTicketInfo(data?.data));
@@ -103,6 +105,15 @@ function Dropdowns({
     }
   }, [type, selectedTopic]);
 
+  socket.on("new_ticket", (data) => {
+    console.log("new ticket", data);
+    if (data?.status === "success") {
+      // dispatch(fetchTicketInfo(data?.data));
+      ticketInfoToShow = [...ticketInfo, data?.data];
+    } else {
+      return;
+    }
+  });
   const toggleDropdown = () => {
     setDropdownOpen(!isDropdownOpen);
   };
@@ -154,9 +165,10 @@ function Dropdowns({
             })}
           {console.log("ticket info", ticketInfo)}
           {type === "ticket" &&
-            ticketInfo &&
+            ticketInfoToShow &&
             //eslint-disable-next-line
-            ticketInfo?.slice().map((data, index) => {
+
+            ticketInfoToShow?.slice().map((data, index) => {
               return (
                 <div
                   key={data.id}
@@ -169,6 +181,27 @@ function Dropdowns({
                 </div>
               );
             })}
+          {type === "ticket" && ticketInfoToShow ? (
+            loading ? (
+              <div className="d-flex mt-3 justify-center align-items-center mx-auto">
+                <ClipLoader
+                  color={"#22694de1"}
+                  css={{
+                    display: "block",
+                    margin: "0 auto",
+                    width: "50px",
+                    height: "40px",
+                  }}
+                  size={20}
+                />{" "}
+                Loading
+              </div>
+            ) : (
+              ""
+            )
+          ) : (
+            ""
+          )}
 
           {/* Add more options as needed */}
         </div>

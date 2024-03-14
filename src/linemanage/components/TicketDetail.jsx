@@ -1,39 +1,42 @@
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { toast } from "react-toastify";
-//import { fetchTicketMessage } from "../Redux/ticketDetailSlice";
+import { fetchTicketMessage } from "../Redux/ticketDetailSlice";
 import formatCreatedAt from "../utils/datefromat";
 //import { socket } from "../utils/Connection";
 import { ClipLoader } from "react-spinners";
 import io from "socket.io-client";
-const socket = io.connect("https://www.dowellchat.uxlivinglab.online/");
+
 function TicketDetail() {
-  // const dispatch = useDispatch();
+  const dispatch = useDispatch();
   const [loading, setLoading] = useState(true);
   const selectedTicket = useSelector((state) => state.tickets.selectedTicket);
-  //const ticketMessages = useSelector((state) => state.tickets.ticketMessage);
-  //const messageShow = ticketMessages.length > 0 ? ticketMessages.slice(-3) : [];
-  const [messageShow, setMessageShow] = useState([]);
+  const ticketMessages = useSelector((state) => state.tickets.ticketMessage);
+  const messageShow = ticketMessages.length > 0 ? ticketMessages.slice(-3) : [];
+
   useEffect(() => {
-    console.log("selected ticket", selectedTicket);
-    const getTicketMessages = async (workSpaceID, api_key) => {
-      workSpaceID = "646ba835ce27ae02d024a902";
-      api_key = "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f";
+    // Define the function for fetching ticket messages
+    const getTicketMessages = async (socket, selectedTicket) => {
+      const workSpaceID = "646ba835ce27ae02d024a902";
+      const api_key = "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f";
+
       try {
-        await socket.emit("get_ticket_messages", {
+        socket.emit("get_ticket_messages", {
           ticket_id: selectedTicket._id,
           product: selectedTicket.product,
           workspace_id: workSpaceID,
           api_key: api_key,
         });
-        await socket.on("ticket_message_response", (data) => {
-          // Handle response for the event
-          //console.log("ticket message", data);
+
+        socket.on("ticket_message_response", (data) => {
+          if (typeof data?.data === "object" && !Array.isArray(data?.data)) {
+            return;
+          }
           setLoading(false);
           if (data.status === "success") {
-            setMessageShow(data?.data);
+            dispatch(fetchTicketMessage(data?.data));
           } else {
-            setMessageShow([]);
+            dispatch(fetchTicketMessage([]));
           }
         });
       } catch (error) {
@@ -41,15 +44,17 @@ function TicketDetail() {
       }
     };
 
+    // Create a new socket connection
+    const sockets = io.connect("https://www.dowellchat.uxlivinglab.online/");
+
+    // If selectedTicket changes, fetch ticket messages
     if (Object.keys(selectedTicket).length > 0) {
-      getTicketMessages(22, 233);
-    } else {
-      return;
+      getTicketMessages(sockets, selectedTicket);
     }
 
+    // Clean up the socket connection when the component unmounts or selectedTicket changes
     return () => {
-      // Clean up: Remove the event listener when component unmounts
-      socket.off("ticket_message_response");
+      sockets.disconnect();
     };
   }, [selectedTicket]);
   return (
@@ -81,9 +86,9 @@ function TicketDetail() {
         <h3 className="my-5 text-lg">Previous Chat</h3>
         <table className="w-full">
           <tbody className="text-gray-600 text-sm font-light overflow-y-scroll">
-            {/* {console.log("ticket message", ticketMessages)} */}
+            {console.log("ticket message", ticketMessages)}
             {messageShow.length > 0 &&
-              messageShow?.slice(-3).map((message) => {
+              messageShow.map((message) => {
                 return (
                   <tr
                     className="border-b border-gray-200 hover:bg-gray-100"
@@ -104,7 +109,7 @@ function TicketDetail() {
               </p>
             )}
             {Object.keys(selectedTicket).length > 0 && loading ? (
-              <div className="d-flex mt-3 justify-center align-items-center mx-auto">
+              <div className="d-flex mt-3  justify-center align-items-center mx-auto">
                 <ClipLoader
                   color={"#22694de1"}
                   css={{
