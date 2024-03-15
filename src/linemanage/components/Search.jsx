@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
 import { CiSearch } from "react-icons/ci";
-import io from "socket.io-client";
+
 import "../dropdown.css"; // Import CSS for styling (create a Dropdown.css file)
 import { toast } from "react-toastify";
+import io from "socket.io-client";
+const socket = io.connect("https://www.dowellchat.uxlivinglab.online/");
+//import { socket } from "../utils/Connection";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchTopicData,
@@ -10,7 +13,11 @@ import {
   fetchSelectedTicket,
   fetchTicketInfo,
 } from "../Redux/ticketDetailSlice";
-const socket = io.connect("https://www.dowellchat.uxlivinglab.online/");
+
+import { ClipLoader } from "react-spinners";
+
+console.log("socket", socket);
+
 if (!socket.connected) {
   toast.warn("socket is not connected");
 } else {
@@ -27,9 +34,9 @@ function Dropdowns({
   const topicData = useSelector((state) => state.tickets.topicData);
   const selectedTopic = useSelector((state) => state.tickets.selectedTopic);
   const selectedTicket = useSelector((state) => state.tickets.selectedTicket);
-
+  const [loading, setLoading] = useState(true);
   const ticketInfo = useSelector((state) => state.tickets.ticketInfo);
-
+  let ticketInfoToShow = [...ticketInfo];
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -49,6 +56,7 @@ function Dropdowns({
         });
         await socket.on("ticket_response", (data) => {
           // Handle response for the event
+          setLoading(false);
           console.log("ticket response", data.data);
           if (data?.status === "success") {
             dispatch(fetchTicketInfo(data?.data));
@@ -94,9 +102,20 @@ function Dropdowns({
       if (Object.keys(selectedTopic).length > 0) {
         findTicket(23, selectedTopic, 22);
       }
+    } else {
+      return;
     }
   }, [type, selectedTopic]);
 
+  socket.on("new_ticket", (data) => {
+    console.log("new ticket", data);
+    if (data?.status === "success") {
+      // dispatch(fetchTicketInfo(data?.data));
+      ticketInfoToShow = [...ticketInfo, data?.data];
+    } else {
+      return;
+    }
+  });
   const toggleDropdown = () => {
     setDropdownOpen(!isDropdownOpen);
   };
@@ -133,7 +152,7 @@ function Dropdowns({
           {type === "topic" &&
             topicData &&
             //eslint-disable-next-line
-            topicData?.map((data) => {
+            topicData?.slice().map((data) => {
               return (
                 <div
                   key={data.id}
@@ -148,9 +167,10 @@ function Dropdowns({
             })}
           {console.log("ticket info", ticketInfo)}
           {type === "ticket" &&
-            ticketInfo &&
+            ticketInfoToShow &&
             //eslint-disable-next-line
-            ticketInfo?.map((data, index) => {
+
+            ticketInfoToShow?.slice().map((data, index) => {
               return (
                 <div
                   key={data.id}
@@ -163,6 +183,27 @@ function Dropdowns({
                 </div>
               );
             })}
+          {type === "ticket" && ticketInfoToShow ? (
+            loading ? (
+              <div className="d-flex mt-3 justify-center align-items-center mx-auto">
+                <ClipLoader
+                  color={"#22694de1"}
+                  css={{
+                    display: "block",
+                    margin: "0 auto",
+                    width: "50px",
+                    height: "40px",
+                  }}
+                  size={20}
+                />{" "}
+                Loading
+              </div>
+            ) : (
+              ""
+            )
+          ) : (
+            ""
+          )}
 
           {/* Add more options as needed */}
         </div>
