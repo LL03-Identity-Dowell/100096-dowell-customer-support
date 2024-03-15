@@ -3,38 +3,42 @@ import { useSelector, useDispatch } from "react-redux";
 import { toast } from "react-toastify";
 import { fetchTicketMessage } from "../Redux/ticketDetailSlice";
 import formatCreatedAt from "../utils/datefromat";
-import io from "socket.io-client";
+//import { socket } from "../utils/Connection";
 import { ClipLoader } from "react-spinners";
+import io from "socket.io-client";
+
 function TicketDetail() {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(true);
   const selectedTicket = useSelector((state) => state.tickets.selectedTicket);
   const ticketMessages = useSelector((state) => state.tickets.ticketMessage);
   const messageShow = ticketMessages.length > 0 ? ticketMessages.slice(-3) : [];
-  const socket = io.connect("https://www.dowellchat.uxlivinglab.online/");
-  console.log("socket", socket);
+
   useEffect(() => {
-    console.log("selected ticket", selectedTicket);
-    const getTicketMessages = async (workSpaceID, api_key) => {
-      workSpaceID = "646ba835ce27ae02d024a902";
-      api_key = "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f";
+    // Define the function for fetching ticket messages
+    const getTicketMessages = async (socket, selectedTicket) => {
+      const workSpaceID = "646ba835ce27ae02d024a902";
+      const api_key = "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f";
+
       try {
-        await socket.emit("get_ticket_messages", {
+        socket.emit("get_ticket_messages", {
           ticket_id: selectedTicket._id,
           product: selectedTicket.product,
           workspace_id: workSpaceID,
           api_key: api_key,
         });
-        socket.on("ticket_message_response", (data) => {
-          // Handle response for the event
 
-          console.log("ticket message", data);
-          console.log(data);
+        socket.on("ticket_message_response", (data) => {
+
+          if (typeof data?.data === "object" && !Array.isArray(data?.data)) {
+            return;
+          }
+          setLoading(false);
 
           if (data.status === "success") {
             dispatch(fetchTicketMessage(data?.data));
           } else {
-            dispatch(fetchTicketMessage({}));
+            dispatch(fetchTicketMessage([]));
           }
         });
       } catch (error) {
@@ -42,9 +46,18 @@ function TicketDetail() {
       }
     };
 
+    // Create a new socket connection
+    const sockets = io.connect("https://www.dowellchat.uxlivinglab.online/");
+
+    // If selectedTicket changes, fetch ticket messages
     if (Object.keys(selectedTicket).length > 0) {
-      getTicketMessages(22, 233);
+      getTicketMessages(sockets, selectedTicket);
     }
+
+    // Clean up the socket connection when the component unmounts or selectedTicket changes
+    return () => {
+      sockets.disconnect();
+    };
   }, [selectedTicket]);
   return (
     <div className="flex-1 w-full m-3 mx-3 ml-1 px-1 rounded-none border-none md:min-w-[300px] h-svh shadow-lg">
@@ -98,7 +111,7 @@ function TicketDetail() {
               </p>
             )}
             {Object.keys(selectedTicket).length > 0 && loading ? (
-              <div className="d-flex mt-3 justify-center align-items-center mx-auto">
+              <div className="d-flex mt-3  justify-center align-items-center mx-auto">
                 <ClipLoader
                   color={"#22694de1"}
                   css={{

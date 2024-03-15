@@ -3,9 +3,10 @@ import { useSelector } from "react-redux";
 
 //import { toast } from "react-toastify";
 //import { fetchTicketMessage } from "../Redux/ticketDetailSlice";
-import io from "socket.io-client";
+//import { socket } from "../utils/Connection";
 import formatCreatedAt from "../utils/datefromat";
-let socket = io.connect("https://www.dowellchat.uxlivinglab.online/");
+import io from "socket.io-client";
+const socket = io.connect("https://www.dowellchat.uxlivinglab.online/");
 //eslint-disable-next-line
 
 const Chat = () => {
@@ -80,9 +81,8 @@ const Chat = () => {
       //setLoading(true);
       chat();
     } else {
-      // setMessages({});
+      setMessages([]);
       // setLoading(false);
-      return;
     }
   }, [selectedTicket, ticketMessages]);
 
@@ -103,7 +103,7 @@ const Chat = () => {
       };
 
       setMessages([...messages, message]);
-      setNewMessage("");
+
       //setLoading(false);
       //  }
     }
@@ -130,6 +130,7 @@ const Chat = () => {
   const sendMessage = async () => {
     //setMessages([...messages, message]);
     await sendChat(newMessage);
+    setNewMessage("");
   };
 
   const handleFileChange = (event) => {
@@ -154,7 +155,7 @@ const Chat = () => {
         content: newMessage.trim(),
         created_at: formatCreatedAt(new Date()),
       };*/
-      sendMessage();
+      sendMessage(newMessage);
     }
   };
 

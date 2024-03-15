@@ -1,13 +1,14 @@
 // SearchComponent.js
 
 import { useEffect, useRef, useState } from "react";
-import io from "socket.io-client";
+
 //import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import { ClipLoader } from "react-spinners";
 import NavItem from "./NavItem";
 import { useSelector } from "react-redux";
 
+import io from "socket.io-client";
 const socket = io.connect("https://www.dowellchat.uxlivinglab.online/");
 
 
@@ -269,7 +270,7 @@ function CreateComponent({ closeSearchModal, option, api_key, workspace_id }) {
                       URL
                     </label>
                     <input
-                      type="number"
+                      type="text"
                       id="uri"
                       name="linkurl"
                       value={url}
