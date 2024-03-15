@@ -10,6 +10,9 @@ const socket = io.connect("https://www.dowellchat.uxlivinglab.online/");
 //eslint-disable-next-line
 
 const Chat = () => {
+
+  const [newMessage, setNewMessage] = useState("");
+
   //const dispatch = useDispatch();
   //console.log("data from chat summary", selectedTicket);
   const selectedTicket = useSelector((state) => state.tickets.selectedTicket);
@@ -119,6 +122,7 @@ const Chat = () => {
       api_key: api_key,
       created_at: new Date().toISOString(),
     });
+
 
     //setLoading(false);
   };

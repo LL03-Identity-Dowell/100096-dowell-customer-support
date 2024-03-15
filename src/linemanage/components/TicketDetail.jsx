@@ -29,10 +29,12 @@ function TicketDetail() {
         });
 
         socket.on("ticket_message_response", (data) => {
+
           if (typeof data?.data === "object" && !Array.isArray(data?.data)) {
             return;
           }
           setLoading(false);
+
           if (data.status === "success") {
             dispatch(fetchTicketMessage(data?.data));
           } else {

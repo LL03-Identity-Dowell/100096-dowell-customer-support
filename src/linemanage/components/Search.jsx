@@ -13,9 +13,11 @@ import {
   fetchSelectedTicket,
   fetchTicketInfo,
 } from "../Redux/ticketDetailSlice";
+
 import { ClipLoader } from "react-spinners";
 
 console.log("socket", socket);
+
 if (!socket.connected) {
   toast.warn("socket is not connected");
 } else {
