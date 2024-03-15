@@ -1,13 +1,15 @@
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import { useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useCreateTicketContext } from "../../context/CreateTicketContext.jsx";
+import formatCreatedAt from "../../linemanage/utils/datefromat.js";
 
 import io from "socket.io-client";
 const socket = io.connect("https://www.dowellchat.uxlivinglab.online");
 
 const TicketMainContent = () => {
+  const [messages, setMessages] = useState([]);
   const { createTicket } = useCreateTicketContext();
   const [getLinkRes, setGetLinkRes] = useState([]);
   const [ticketNumber, setTicketNumber] = useState("Not assigned");
@@ -32,13 +34,12 @@ const TicketMainContent = () => {
     if (!socket) {
       return;
     }
+    const storedcData = JSON.parse(
+      localStorage.getItem("create_ticket_detail")
+    );
+    setTicketDetail(storedcData);
 
     try {
-      const storedcData = JSON.parse(
-        localStorage.getItem("create_ticket_detail")
-      );
-      setTicketDetail(storedcData);
-
       const fetchApiKey = async () => {
         const apiUrl = `https://100105.pythonanywhere.com/api/v3/user/?type=get_api_key&workspace_id=${params.get(
           "workspace_id"
@@ -67,28 +68,45 @@ const TicketMainContent = () => {
     }
   }, []);
 
-  useEffect(() => {
-    // socket.on("ticket_message_response", (data) => {
-    //   // Handle response for the event
-    //   console.log(data);
-    // });
-    socket.on("share_link_response", (data) => {
-      if (Array.isArray(data?.data)) {
-        setGetLinkRes(data?.data);
-      } else {
-        toast.error(data?.data);
-        console.error(
-          "Expected an array for getLinkRes, received:",
-          data?.data
-        );
-        setGetLinkRes([]);
-      }
-    });
-  }, []);
-  socket.on("ticket_message_response", (data) => {
-    // setGetTicketMessages(data["data"]);
-    console.log("data", data);
+  socket.on("share_link_response", (data) => {
+    if (Array.isArray(data?.data)) {
+      setGetLinkRes(data?.data);
+    } else {
+      toast.error(data?.data);
+      console.error("Expected an array for getLinkRes, received:", data?.data);
+      setGetLinkRes([]);
+    }
   });
+  socket.on("ticket_message_response", (data) => {
+    if (data.status === "success") {
+      const { author, is_read, created_at, message_data } = data.data;
+      let current_user = "12345";
+
+      const message = {
+        id: messages.length + 1,
+        sender: author !== current_user ? "receiver" : "user",
+        type: "text",
+        content: message_data,
+        created_at: created_at,
+      };
+
+      setMessages([...messages, message]);
+
+      //setLoading(false);
+      //  }
+    }
+    //console.log("ticket chat message response", data);
+  });
+
+  let messageToDispaly = messages.slice().sort((a, b) => {
+    // Convert the created_at string to Date objects for comparison
+    const dateA = new Date(a.created_at);
+    const dateB = new Date(b.created_at);
+
+    // Compare the dates
+    return dateA - dateB;
+  });
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -110,34 +128,32 @@ const TicketMainContent = () => {
         api_key: apiKey,
         product: values.topic,
       };
-      socket.emit("create_ticket", payload);
+      await socket.emit("create_ticket", payload);
 
       await new Promise((resolve) => {
-        if (socket) {
-          socket.on("ticket_response", (data) => {
-            if (data["status"] == "success") {
-              createTicket(data["data"]);
+        socket.on("ticket_response", (data) => {
+          if (data["status"] == "success") {
+            createTicket(data["data"]);
 
-              setTicketNumber(data["data"]["_id"]);
-              localStorage.setItem(
-                "create_ticket_detail",
-                JSON.stringify(data["data"])
-              );
-              const get_ticket_messages_payload = {
-                ticket_id: data["data"]["_id"],
-                product: data["data"]["product"],
-                workspace_id: params.get("workspace_id"),
-                api_key: "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f",
-              };
+            setTicketNumber(data["data"]["_id"]);
+            localStorage.setItem(
+              "create_ticket_detail",
+              JSON.stringify(data["data"])
+            );
+            const get_ticket_messages_payload = {
+              ticket_id: data["data"]["_id"],
+              product: data["data"]["product"],
+              workspace_id: params.get("workspace_id"),
+              api_key: "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f",
+            };
 
-              socket.emit("get_ticket_messages", get_ticket_messages_payload);
+            socket.emit("get_ticket_messages", get_ticket_messages_payload);
 
-              toggleChat();
-            } else {
-              setTicketNumber(data["data"]);
-            }
-          });
-        }
+            toggleChat();
+          } else {
+            setTicketNumber(data["data"]);
+          }
+        });
       });
 
       actions.setSubmitting(false);
@@ -160,19 +176,21 @@ const TicketMainContent = () => {
 
     const handleSend = () => {
       if (message.trim() !== "" && ticketDetail) {
-        localStorage.getItem("create_ticket_detail");
-        console.log(ticketDetail["_id"]);
-        console.log("Sending message:", message);
+        console.log(
+          JSON.parse(localStorage.getItem("create_ticket_detail"))._id
+        );
 
         const ticket_message_payload = {
-          ticket_id: ticketDetail["_id"],
-          product: ticketDetail["product"],
+          ticket_id: JSON.parse(localStorage.getItem("create_ticket_detail"))
+            ._id,
+          product: JSON.parse(localStorage.getItem("create_ticket_detail"))
+            .product,
           message_data: message,
-          user_id: params.get("link_id"),
+          user_id: "12345",
           reply_to: "None",
           workspace_id: params.get("workspace_id"),
           api_key: apiKey,
-          created_at: new Date().toDateString(),
+          created_at: new Date().toISOString(),
         };
 
         socket.emit("ticket_message_event", ticket_message_payload);
@@ -183,20 +201,64 @@ const TicketMainContent = () => {
     };
     return (
       <div className="fixed top-72 left-1/2 transform -translate-x-1/2 -translate-y-1/2 max-w-[600px] min-h-[70%] max-h-[85%] bg-gray-800 rounded-lg shadow-lg z-10">
-        <div className="p-4 pb-0">
+        <div className="p-2 pb-0">
           <h2 className="text-lg text-white font-semibold mb-2">
             {JSON.parse(localStorage.getItem("create_ticket_detail"))._id}
           </h2>
           <div className=" p-4 rounded-lg shadow-lg overflow-y-auto mt-10 pb-10 ">
-            <div className="flex items-center">
-              <div className="bg-blue-500 text-white rounded-lg p-2 max-w-xs">
-                Hello there!
-              </div>
-              <span className="ml-2 text-gray-500 text-sm">12:30 PM</span>
+            {/* Render chat messages */}
+            <div className="space-y-4 px-4 py-6 sm:h-[270px] md:h-[300px] overflow-y-scroll">
+              {Object.keys(messageToDispaly).length > 0 &&
+                messageToDispaly?.map((message) => (
+                  <div
+                    key={message.id}
+                    className={`flex font-sans text-sm ${
+                      message.sender === "user"
+                        ? "justify-start"
+                        : "justify-end"
+                    }`}
+                  >
+                    {message.type === "text" && (
+                      <div
+                        className={`max-w-xs rounded-lg px-4 py-2 ${
+                          message.sender === "user"
+                            ? "bg-gray-200"
+                            : "bg-[#083a26e1] text-white"
+                        }`}
+                      >
+                        <p> {message.content}</p>
+
+                        <p>
+                          <small className="text-sm text-gray-400">
+                            <i> {formatCreatedAt(message.created_at)}</i>
+                          </small>
+                        </p>
+                      </div>
+                    )}
+                    {message.type === "file" && (
+                      <div
+                        className={`max-w-xs rounded-lg px-4 py-2 ${
+                          message.sender === "user"
+                            ? "bg-gray-200"
+                            : "bg-blue-500 text-white"
+                        }`}
+                      >
+                        <a
+                          href={message.content.dataURL}
+                          download={message.content.fileName}
+                          className="text-blue-500 hover:underline"
+                        >
+                          {message.content.fileName}
+                        </a>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              {Object.keys(messageToDispaly).length <= 0 && ""}
             </div>
           </div>
           <form>
-            <div className="pt-[230px]">
+            <div className="pt-2">
               <div className="flex gap-x-2">
                 <input
                   id="message"
