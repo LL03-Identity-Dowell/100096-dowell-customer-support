@@ -129,21 +129,6 @@ function TicketDetail() {
             )}
           </tbody>
         </table>
-        {/*
-          <div className="App">
-            <button
-              onClick={toggleChat}
-              className="fixed bottom-4 right-5 py-2 px-4 rounded-md shadow-md"
-            >
-              <img
-                className="w-17 h-12 rounded-md"
-                src="chatimage.svg"
-                alt=""
-              />
-            </button>
-            <Chat isOpen={isChatOpen} onClose={toggleChat} />
-          </div>
-  */}
       </div>
     </div>
   );
