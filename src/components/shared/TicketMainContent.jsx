@@ -1,11 +1,11 @@
-/* eslint-disable no-unused-vars */
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import { useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useCreateTicketContext } from "../../context/CreateTicketContext.jsx";
 
 import io from "socket.io-client";
+const socket = io.connect("https://www.dowellchat.uxlivinglab.online");
 
 const TicketMainContent = () => {
   const { createTicket } = useCreateTicketContext();
@@ -18,35 +18,15 @@ const TicketMainContent = () => {
   const params = new URLSearchParams(search);
   const [formData, setFormData] = useState({
     topic: "",
-
     email: "",
     identity: "",
   });
-  const [messages, setMessages] = useState([
-    { id: 1, sender: "user", type: "text", content: "Hey there!" },
-    {
-      id: 2,
-      sender: "receiver",
-      type: "text",
-      content: "Hi! How can I help you?",
-    },
-  ]);
   const [getTicketMessages, setGetTicketMessages] = useState([]);
-  const [socket, setSocket] = useState(null);
   const [ticketDetail, setTicketDetail] = useState({});
 
   const toggleChat = () => {
     setIsChatOpen(!isChatOpen);
   };
-
-  useEffect(() => {
-    const newSocket = io.connect("https://www.dowellchat.uxlivinglab.online");
-    setSocket(newSocket);
-
-    return () => {
-      newSocket.disconnect();
-    };
-  }, []);
 
   useEffect(() => {
     if (!socket) {
@@ -81,23 +61,32 @@ const TicketMainContent = () => {
           link_id: params.get("link_id"),
           api_key: apiKey,
         });
-
-        socket.on("share_link_response", (data) => {
-          if (Array.isArray(data?.data)) {
-            setGetLinkRes(data?.data);
-          } else {
-            toast.error(data?.data);
-            console.error(
-              "Expected an array for getLinkRes, received:",
-              data?.data
-            );
-            setGetLinkRes([]);
-          }
-        });
       }
     } catch (error) {
       console.error("Error:", error);
     }
+  }, []);
+
+  useEffect(() => {
+    socket.on("ticket_message_response", (data) => {
+      // Handle response for the event
+      console.log(data);
+    });
+    socket.on("share_link_response", (data) => {
+      if (Array.isArray(data?.data)) {
+        setGetLinkRes(data?.data);
+      } else {
+        toast.error(data?.data);
+        console.error(
+          "Expected an array for getLinkRes, received:",
+          data?.data
+        );
+        setGetLinkRes([]);
+      }
+    });
+    socket.on("ticket_message_response", (data) => {
+      setGetTicketMessages(data["data"]);
+    });
   }, [socket]);
 
   const handleChange = (e) => {
@@ -142,9 +131,7 @@ const TicketMainContent = () => {
               };
 
               socket.emit("get_ticket_messages", get_ticket_messages_payload);
-              socket.on("ticket_message_response", (data) => {
-                setGetTicketMessages(data["data"]);
-              });
+
               toggleChat();
             } else {
               setTicketNumber(data["data"]);
@@ -189,11 +176,6 @@ const TicketMainContent = () => {
         };
 
         socket.emit("ticket_message_event", ticket_message_payload);
-
-        socket.on("ticket_message_response", (data) => {
-          // Handle response for the event
-          console.log(data);
-        });
 
         setMessage("");
       }

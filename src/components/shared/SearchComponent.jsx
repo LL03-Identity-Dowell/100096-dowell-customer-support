@@ -1,13 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import io from "socket.io-client";
+const socket = io.connect("https://www.dowellchat.uxlivinglab.online");
 
 function SearchComponent({ closeSearchModal }) {
   const { search } = useLocation();
   const params = new URLSearchParams(search);
   const ticketData = JSON.parse(localStorage.getItem("create_ticket_detail"));
   const [searchValue, setSearchValue] = useState("");
-  const [modalHeight, setModalHeight] = useState(80);
   const [chatData, setChatData] = useState([]);
   const searchInputRef = useRef(null);
 
@@ -17,7 +17,30 @@ function SearchComponent({ closeSearchModal }) {
     }
   };
 
-  const socket = io.connect("https://www.dowellchat.uxlivinglab.online");
+  useEffect(() => {
+    if (searchInputRef.current) {
+      searchInputRef.current.focus();
+    }
+    const handleResize = () => {
+      const windowHeight = window.innerHeight;
+    };
+
+    window.addEventListener("resize", handleResize);
+    handleResize();
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      // Close socket connection when component is unmounted
+      socket.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
+    socket.on("ticket_message_response", (data) => {
+      setChatData(data["data"]);
+      console.log(data["data"]);
+    });
+  }, [socket]);
 
   const handleSearchChange = (e) => {
     setSearchValue(e.target.value);
@@ -26,21 +49,6 @@ function SearchComponent({ closeSearchModal }) {
   const handleSearchSubmit = () => {
     console.log("Search submitted:", searchValue);
   };
-
-  useEffect(() => {
-    if (searchInputRef.current) {
-      searchInputRef.current.focus();
-    }
-    const handleResize = () => {
-      const windowHeight = window.innerHeight;
-      setModalHeight(windowHeight * 0.8);
-    };
-
-    window.addEventListener("resize", handleResize);
-    handleResize();
-
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
 
   const handleSearchHistory = () => {
     if (ticketData) {
@@ -51,10 +59,6 @@ function SearchComponent({ closeSearchModal }) {
         workspace_id: params.get("workspace_id"),
         api_key: "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f",
       });
-      socket.on("ticket_message_response", (data) => {
-        setChatData(data["data"]);
-      });
-      console.log(ticketData);
     } else {
       return;
     }
@@ -75,13 +79,12 @@ function SearchComponent({ closeSearchModal }) {
             id="ticket_id"
             className="w-[90%] px-5 outline-1 outline-slate-300 mx-auto bg-gray-100 p-2 rounded-3xl mb-4 flex-none"
             placeholder="Search with ticket number"
-            value={searchValue} // Ensure searchValue is always defined
+            value={searchValue}
             onChange={handleSearchChange}
           />
         </div>
         <h2 className="text-lg font-semibold flex-grow py-[45%] items-center justify-center mb-4 flex">
-          {chatData.length === 0 ? "Your Chat History" : "No Chat History"}{" "}
-          {/* Use length property to check if array is empty */}
+          {chatData.length === 0 ? "Your Chat History" : "No Chat History"}
         </h2>
 
         <button
