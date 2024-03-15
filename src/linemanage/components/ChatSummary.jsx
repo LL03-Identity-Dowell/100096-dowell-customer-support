@@ -11,8 +11,6 @@ const socket = io.connect("https://www.dowellchat.uxlivinglab.online/");
 
 const Chat = () => {
 
-  const [newMessage, setNewMessage] = useState("");
-
   //const dispatch = useDispatch();
   //console.log("data from chat summary", selectedTicket);
   const selectedTicket = useSelector((state) => state.tickets.selectedTicket);
@@ -84,7 +82,7 @@ const Chat = () => {
       setMessages([]);
       // setLoading(false);
     }
-  }, [selectedTicket, ticketMessages]);
+  }, [current_user, selectedTicket, ticketMessages]);
 
   socket.on("ticket_message_response", (data) => {
     // Handle response for the event
