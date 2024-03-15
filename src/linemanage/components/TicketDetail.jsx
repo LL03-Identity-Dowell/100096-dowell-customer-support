@@ -27,8 +27,10 @@ function TicketDetail() {
         });
         socket.on("ticket_message_response", (data) => {
           // Handle response for the event
-          //console.log("ticket message", data);
-          setLoading(false);
+
+          console.log("ticket message", data);
+          console.log(data);
+
           if (data.status === "success") {
             dispatch(fetchTicketMessage(data?.data));
           } else {

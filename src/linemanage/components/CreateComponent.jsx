@@ -9,7 +9,7 @@ import NavItem from "./NavItem";
 import { useSelector } from "react-redux";
 
 const socket = io.connect("https://www.dowellchat.uxlivinglab.online/");
-//console.log("socket", socket);
+
 
 //eslint-disable-next-line
 function CreateComponent({ closeSearchModal, option, api_key, workspace_id }) {

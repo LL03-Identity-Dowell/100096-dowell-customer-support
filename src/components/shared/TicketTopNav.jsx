@@ -1,8 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch, faUser, faTimes } from "@fortawesome/free-solid-svg-icons";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useState } from "react";
-import Button from "react-bootstrap/Button";
 import SearchComponent from "./SearchComponent";
 
 const TicketTopNav = ({ openSearchModal }) => {
