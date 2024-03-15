@@ -6,12 +6,13 @@ import io from "socket.io-client";
 import { toast } from "react-toastify";
 import { ClipLoader } from "react-spinners";
 import NavItem from "./NavItem";
-
+import { useSelector } from "react-redux";
 
 const socket = io.connect("https://www.dowellchat.uxlivinglab.online/");
 
+
 //eslint-disable-next-line
-function CreateComponent({ closeSearchModal, option, api_key, workspace_id}) {
+function CreateComponent({ closeSearchModal, option, api_key, workspace_id }) {
   const [loading, setLoading] = useState(false);
   // const [searchValue, setSearchValue] = useState("");
   const [modalHeight, setModalHeight] = useState(80);
@@ -27,11 +28,12 @@ function CreateComponent({ closeSearchModal, option, api_key, workspace_id}) {
   //   setSearchValue(e.target.value);
   // };
 
-  const [inputs, setInputs] = useState({
-    WorkspaceId: "",
-    TopicName: "",
-    input3: "",
-  });
+  const [topicName, setTopicName] = useState("");
+  const [managerName, setManagerName] = useState("");
+  const topicData = useSelector((state) => state.tickets.topicData);
+  const [linkTopic, setLinkTopic] = useState({});
+  const [linkNumber, setLinkNumber] = useState(0);
+  const [url, setUrl] = useState("");
   useEffect(() => {
     if (searchInputRef.current) {
       searchInputRef.current.focus();
@@ -54,44 +56,40 @@ function CreateComponent({ closeSearchModal, option, api_key, workspace_id}) {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setInputs((prevInputs) => ({
-      ...prevInputs,
-      [name]: value,
-    }));
-  };
+  const createLineManager = async (user_id, api_key, workspace_id) => {
+    workspace_id = "646ba835ce27ae02d024a902";
+    api_key = "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f";
 
-  const createLineManager = async (
-    user_id,
-    api_key,
-    positions_in_a_line,
-    average_serving_time,
-    ticket_count,
-    workspace_id,
-    created_at
-  ) => {
     try {
       await socket.emit("create_line_manager", {
         user_id: user_id,
-        positions_in_a_line: positions_in_a_line,
-        average_serving_time: average_serving_time,
-        ticket_count: ticket_count,
+        positions_in_a_line: 1,
+        average_serving_time: 4,
+        ticket_count: 0,
         workspace_id: workspace_id,
         api_key: api_key,
-        created_at: created_at,
+        created_at: new Date().toISOString(),
       });
       await socket.on("setting_response", (data) => {
         // Handle response for the event
-        console.log(data);
+        console.log("created manager data response", data);
+        setLoading(false);
+        if (data.status === "failure") {
+          toast.warning("Failure to create manager");
+        } else if (data.status === "success") {
+          toast.success("successfully created");
+        }
       });
     } catch (error) {
-      console.log("error", error);
+      setLoading(false);
+      toast.warning(error.data);
     }
   };
 
-  const createTopic = async (topic_name, workspace_id, api_key) => {
-    console.log("workspace id, api_key", workspace_id, api_key);
+  const createTopic = async (topic_name) => {
+    // console.log("workspace id, api_key", workspace_id, api_key);
+    workspace_id = "646ba835ce27ae02d024a902";
+    api_key = "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f";
     try {
       await socket.emit("create_topic", {
         name: topic_name,
@@ -117,15 +115,27 @@ function CreateComponent({ closeSearchModal, option, api_key, workspace_id}) {
       toast.warning(error.data);
     }
   };
+  const handleTopic = function (event) {
+    const { name, value } = event.target;
+    setLinkTopic({ ...linkTopic, [name]: value });
+  };
+  const handleLinkSubmit = (event) => {
+    event.preventDefault();
+    // if (!(event.target.name == "linkNumber" || event.target.name == "Url")) {
 
+    // }
+    console.log(linkTopic);
+  };
   const handleSubmit = (event) => {
     event.preventDefault();
     try {
       setLoading(true);
       if (option === "createTopic") {
-        createTopic(inputs.TopicName, inputs.WorkspaceId);
+        topicName && createTopic(topicName);
       } else if (option === "createLineManager") {
-        createLineManager();
+        if (managerName) {
+          createLineManager(managerName);
+        }
       }
     } catch (error) {
       setLoading(false);
@@ -156,17 +166,6 @@ function CreateComponent({ closeSearchModal, option, api_key, workspace_id}) {
           </button>
         </div>
 
-        {/* <div className="flex justify-center items-center mt-25">
-          <input
-            ref={searchInputRef}
-            type="text"
-            className="w-[90%] px-5 outline-1 outline-slate-300 mx-auto bg-gray-100 p-2 rounded-3xl mb-4 flex-none"
-            placeholder="Search with ticket number"
-            value={searchValue}
-            onChange={handleSearchChange}
-          />
-        </div> */}
-
         {
           // eslint-disable-next-line
           option === "createTopic" && (
@@ -188,45 +187,11 @@ function CreateComponent({ closeSearchModal, option, api_key, workspace_id}) {
                       type="text"
                       id="TopicName"
                       name="TopicName"
-                      value={inputs.TopicName}
-                      onChange={handleChange}
+                      value={topicName}
+                      onChange={(e) => setTopicName(e.target.value)}
                       className="shadow appearance-none border rounded w-full py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     />
                   </div>
-
-                  <div className="mb-4 flex sm:flex-col md:flex-row ">
-                    <label
-                      htmlFor="input2"
-                      className="block text-gray-700 text-sm font-bold mb-2 w-1/2"
-                    >
-                      Work space id
-                    </label>
-                    <input
-                      type="text"
-                      id="WorkspaceId"
-                      name="WorkspaceId"
-                      value={inputs.WorkspaceId}
-                      onChange={handleChange}
-                      className="shadow appearance-none border rounded w-full py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    />
-                  </div>
-
-                  {/* <div className="mb-6 flex sm:flex-col md:flex-row items-center justify-center">
-              <label
-                htmlFor="input3"
-                className="block text-gray-700 text-sm font-bold w-1/2 mb-2"
-              >
-                Label 3:
-              </label>
-              <input
-                type="text"
-                id="input3"
-                name="input3"
-                value={inputs.input3}
-                onChange={handleChange}
-                className="shadow appearance-none border rounded w-full py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              />
-            </div> */}
 
                   <div className="flex items-center w-full justify-center">
                     <button
@@ -241,6 +206,92 @@ function CreateComponent({ closeSearchModal, option, api_key, workspace_id}) {
             </>
           )
         }
+
+        {/* generating a link */}
+
+        {
+          // eslint-disable-next-line
+          option === "generateLink" && (
+            <>
+              <div className="max-w-md mx-auto">
+                <h3 className="mb-5">Fill Link Information</h3>
+                <form
+                  onSubmit={handleLinkSubmit}
+                  className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
+                >
+                  <div className="mb-4 flex sm:flex-col md:flex-row">
+                    <label
+                      htmlFor="input1"
+                      className="block text-gray-700 text-sm font-bold w-1/2 mb-2"
+                    >
+                      Link Number
+                    </label>
+                    <input
+                      type="number"
+                      id="link-number"
+                      name="linkNumber"
+                      value={linkNumber}
+                      onChange={(e) => setLinkNumber(e.target.value)}
+                      className="shadow appearance-none border rounded w-full py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    />
+                  </div>
+
+                  {topicData &&
+                    //eslint-disable-next-line
+                    topicData?.map((data) => {
+                      return (
+                        <div
+                          className="mb-4 flex sm:flex-col md:flex-row"
+                          key={data._id}
+                        >
+                          <label
+                            htmlFor="input1"
+                            className="block text-gray-700 text-sm font-bold w-1/2 mb-2"
+                          >
+                            {data.name}
+                          </label>
+                          <input
+                            type="number"
+                            id="topics"
+                            name={data.name}
+                            value={linkTopic}
+                            onChange={handleTopic}
+                            className="shadow appearance-none border rounded w-full py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                          />
+                        </div>
+                      );
+                    })}
+                  <div className="mb-4 flex sm:flex-col md:flex-row">
+                    <label
+                      htmlFor="input1"
+                      className="block text-gray-700 text-sm font-bold w-1/2 mb-2"
+                    >
+                      URL
+                    </label>
+                    <input
+                      type="number"
+                      id="uri"
+                      name="linkurl"
+                      value={url}
+                      onChange={(e) => setUrl(e.target.value)}
+                      className="shadow appearance-none border rounded w-full py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    />
+                  </div>
+
+                  <div className="flex items-center w-full justify-center">
+                    <button
+                      type="submit"
+                      className="bg-[#22694de1] font-sans text-sm hover:bg-green-700 text-white font-bold py-2 px-2 md:w-27 rounded-md"
+                    >
+                      Generate Link
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </>
+          )
+        }
+
         {
           // eslint-disable-next-line
           option === "createLineManager" && (
@@ -262,59 +313,8 @@ function CreateComponent({ closeSearchModal, option, api_key, workspace_id}) {
                       type="text"
                       id="input1"
                       name="input1"
-                      value={inputs.input1}
-                      onChange={handleChange}
-                      className="shadow appearance-none border rounded w-full py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    />
-                  </div>
-
-                  <div className="mb-4 flex sm:flex-col md:flex-row">
-                    <label
-                      htmlFor="input1"
-                      className="block text-gray-700 text-sm font-bold w-1/2 mb-2"
-                    >
-                      Position in line
-                    </label>
-                    <input
-                      type="text"
-                      id="input1"
-                      name="input1"
-                      value={inputs.input1}
-                      onChange={handleChange}
-                      className="shadow appearance-none border rounded w-full py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    />
-                  </div>
-
-                  <div className="mb-4 flex sm:flex-col md:flex-row">
-                    <label
-                      htmlFor="input1"
-                      className="block text-gray-700 text-sm font-bold w-1/2 mb-2"
-                    >
-                      Ticket Count
-                    </label>
-                    <input
-                      type="text"
-                      id="input1"
-                      name="input1"
-                      value={inputs.input1}
-                      onChange={handleChange}
-                      className="shadow appearance-none border rounded w-full py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    />
-                  </div>
-
-                  <div className="mb-4 flex sm:flex-col md:flex-row ">
-                    <label
-                      htmlFor="input2"
-                      className="block text-gray-700 text-sm font-bold mb-2 w-1/2"
-                    >
-                      Work space id
-                    </label>
-                    <input
-                      type="text"
-                      id="input2"
-                      name="input2"
-                      value={inputs.input2}
-                      onChange={handleChange}
+                      value={managerName}
+                      onChange={(e) => setManagerName(e.target.value)}
                       className="shadow appearance-none border rounded w-full py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     />
                   </div>

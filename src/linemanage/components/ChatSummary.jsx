@@ -1,29 +1,163 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+
+//import { toast } from "react-toastify";
+//import { fetchTicketMessage } from "../Redux/ticketDetailSlice";
+import io from "socket.io-client";
+import formatCreatedAt from "../utils/datefromat";
+let socket = io.connect("https://www.dowellchat.uxlivinglab.online/");
 //eslint-disable-next-line
+
 const Chat = () => {
+
   const [newMessage, setNewMessage] = useState("");
 
-  const sendMessage = (message) => {
-    setMessages([...messages, message]);
-    setNewMessage("");
+  //const dispatch = useDispatch();
+  //console.log("data from chat summary", selectedTicket);
+  const selectedTicket = useSelector((state) => state.tickets.selectedTicket);
+  const ticketMessages = useSelector((state) => state.tickets.ticketMessage);
+  //const [loading, setLoading] = useState(true);
+  let current_user = "1234";
+  const [newMessage, setNewMessage] = useState("");
+  const [messages, setMessages] = useState([
+    // {
+    //   id: 1,
+    //   sender: "user",
+    //   type: "text",
+    //   content: "Hey there!",
+    //   created_at: formatCreatedAt(new Date()),
+    // },
+    // {
+    //   id: 2,
+    //   sender: "receiver",
+    //   type: "text",
+    //   content: "Hi! How can I help you?",
+    //   created_at: formatCreatedAt(new Date()),
+    // },
+    // Add more messages as needed
+  ]);
+  useEffect(() => {
+    async function chat() {
+      if (ticketMessages.length > 0) {
+        try {
+          // console.log("ticket mesage from chat", ticketMessages);
+          //setLoading(true);
+          let messages = await Promise.all(
+            ticketMessages.map((message) => {
+              return {
+                id: message._id,
+                sender: message.author !== current_user ? "receiver" : "user",
+                type: "text",
+                content: message.message_data,
+                created_at: message.created_at,
+              };
+            })
+          );
+          //console.log("loading", loading);
+          if (messages.length > 0) {
+            //  console.log("inner loading", loading);
+            setMessages(messages);
+          } //else {
+          //   setMessages([]);
+          // }
+          // console.log("outer loading", loading);
+        } catch (error) {
+          console.log(error);
+          //setLoading(false);
+        }
+        // setLoading(false);
+      } else {
+        setMessages([]);
+      }
+
+      // } else {
+      //   setLoading(false);
+      // }
+    }
+    // console.log("selected ticket", selectedTicket);
+    if (Object.keys(selectedTicket).length > 0) {
+      //console.log("selected ticket in if statement", selectedTicket);
+      //setLoading(true);
+      chat();
+    } else {
+      // setMessages({});
+      // setLoading(false);
+      return;
+    }
+  }, [selectedTicket, ticketMessages]);
+
+  socket.on("ticket_message_response", (data) => {
+    // Handle response for the event
+    if (data.status === "success") {
+      const { author, is_read, created_at, message_data } = data.data;
+      let current_user = "1234";
+      console.log(current_user, author);
+      console.log("chat datas", author, is_read, created_at, message_data);
+      // if (author !== current_user) {
+      const message = {
+        id: messages.length + 1,
+        sender: author !== current_user ? "receiver" : "user",
+        type: "text",
+        content: message_data,
+        created_at: created_at,
+      };
+
+      setMessages([...messages, message]);
+      setNewMessage("");
+      //setLoading(false);
+      //  }
+    }
+    //console.log("ticket chat message response", data);
+  });
+  const sendChat = async (newMessage) => {
+    let workSpaceID = "646ba835ce27ae02d024a902";
+    let api_key = "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f";
+    await socket.emit("ticket_message_event", {
+      ticket_id: selectedTicket._id,
+      product: selectedTicket.product,
+      message_data: newMessage.trim(),
+      user_id: "1234",
+      reply_to: "None",
+      workspace_id: workSpaceID,
+      api_key: api_key,
+      created_at: new Date().toISOString(),
+    });
+
+
+    //setLoading(false);
+  };
+
+  const sendMessage = async () => {
+    //setMessages([...messages, message]);
+    await sendChat(newMessage);
   };
 
   const handleFileChange = (event) => {
     // Handle file upload
     console.log(event);
   };
+  let messageToDispaly = messages.slice().sort((a, b) => {
+    // Convert the created_at string to Date objects for comparison
+    const dateA = new Date(a.created_at);
+    const dateB = new Date(b.created_at);
 
+    // Compare the dates
+    return dateA - dateB;
+  });
+  // console.log("message to display", messageToDispaly);
   const handleSendButtonClick = () => {
     if (newMessage.trim() !== "") {
-      const message = {
+      /*const message = {
         id: messages.length + 1,
         sender: "user",
         type: "text",
         content: newMessage.trim(),
-      };
-      sendMessage(message);
+        created_at: formatCreatedAt(new Date()),
+      };*/
+      sendMessage();
     }
   };
+
   return (
     <div
       className={` flex flex-col pb-4 border-b border-gray-300 shadow-md h-svh mr-2`}
@@ -107,44 +241,52 @@ const Chat = () => {
         {/* Chat content goes here */}
 
         {/* Render chat messages */}
-        <div className="space-y-4 px-4 py-6 h-full">
-          {messages.map((message) => (
-            <div
-              key={message.id}
-              className={`flex font-sans text-sm ${
-                message.sender === "user" ? "justify-start" : "justify-end"
-              }`}
-            >
-              {message.type === "text" && (
-                <div
-                  className={`max-w-xs rounded-lg px-4 py-2 ${
-                    message.sender === "user"
-                      ? "bg-gray-200"
-                      : "bg-[#083a26e1] text-white"
-                  }`}
-                >
-                  {message.content}
-                </div>
-              )}
-              {message.type === "file" && (
-                <div
-                  className={`max-w-xs rounded-lg px-4 py-2 ${
-                    message.sender === "user"
-                      ? "bg-gray-200"
-                      : "bg-blue-500 text-white"
-                  }`}
-                >
-                  <a
-                    href={message.content.dataURL}
-                    download={message.content.fileName}
-                    className="text-blue-500 hover:underline"
+        <div className="space-y-4 px-4 py-6 sm:h-[100px] md:h-[300px] overflow-y-scroll">
+          {Object.keys(messageToDispaly).length > 0 &&
+            messageToDispaly?.map((message) => (
+              <div
+                key={message.id}
+                className={`flex font-sans text-sm ${
+                  message.sender === "user" ? "justify-start" : "justify-end"
+                }`}
+              >
+                {message.type === "text" && (
+                  <div
+                    className={`max-w-xs rounded-lg px-4 py-2 ${
+                      message.sender === "user"
+                        ? "bg-gray-200"
+                        : "bg-[#083a26e1] text-white"
+                    }`}
                   >
-                    {message.content.fileName}
-                  </a>
-                </div>
-              )}
-            </div>
-          ))}
+                    <p> {message.content}</p>
+
+                    <p>
+                      <small className="text-sm text-gray-400">
+                        <i> {formatCreatedAt(message.created_at)}</i>
+                      </small>
+                    </p>
+                  </div>
+                )}
+                {message.type === "file" && (
+                  <div
+                    className={`max-w-xs rounded-lg px-4 py-2 ${
+                      message.sender === "user"
+                        ? "bg-gray-200"
+                        : "bg-blue-500 text-white"
+                    }`}
+                  >
+                    <a
+                      href={message.content.dataURL}
+                      download={message.content.fileName}
+                      className="text-blue-500 hover:underline"
+                    >
+                      {message.content.fileName}
+                    </a>
+                  </div>
+                )}
+              </div>
+            ))}
+          {Object.keys(messageToDispaly).length <= 0 && ""}
         </div>
 
         <div className="px-4 py-2  flex items-center">
@@ -173,6 +315,7 @@ const Chat = () => {
           <button
             onClick={handleSendButtonClick}
             className="ml-2 font-sans text-sm bg-[#22694de1] text-white py-2 px-4 rounded-lg shadow-md hover:bg-[#37755ce1] focus:outline-none "
+            disabled={selectedTicket ? false : true}
           >
             Send
           </button>
