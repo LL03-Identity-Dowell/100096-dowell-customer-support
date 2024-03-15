@@ -10,7 +10,6 @@ import { useSelector } from "react-redux";
 
 import io from "socket.io-client";
 const socket = io.connect("https://www.dowellchat.uxlivinglab.online/");
-//console.log("socket", socket);
 
 //eslint-disable-next-line
 function CreateComponent({ closeSearchModal, option, api_key, workspace_id }) {

@@ -13,9 +13,11 @@ import {
   fetchSelectedTicket,
   fetchTicketInfo,
 } from "../Redux/ticketDetailSlice";
+
 import { ClipLoader } from "react-spinners";
 
 console.log("socket", socket);
+
 if (!socket.connected) {
   toast.warn("socket is not connected");
 } else {
@@ -107,6 +109,7 @@ function Dropdowns({
 
   socket.on("new_ticket", (data) => {
     console.log("new ticket", data);
+    //console.log()
     if (data?.status === "success") {
       // dispatch(fetchTicketInfo(data?.data));
       ticketInfoToShow = [...ticketInfo, data?.data];
