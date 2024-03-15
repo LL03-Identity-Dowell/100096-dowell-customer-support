@@ -3,7 +3,7 @@
 import { NavLink } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
-import io from "socket.io-client";
+
 import CreateComponent from "./CreateComponent";
 
 import { useDispatch, useSelector } from "react-redux";
@@ -11,9 +11,10 @@ import { fetchLineManagersData } from "../Redux/lineManager";
 
 import { toast } from "react-toastify";
 import { ClipLoader } from "react-spinners";
-
+//import { socket } from "../utils/Connection";
+import io from "socket.io-client";
+const socket = io.connect("https://www.dowellchat.uxlivinglab.online/");
 function LineManager({ api_key, workspace_id }) {
-  const socket = io.connect("https://www.dowellchat.uxlivinglab.online/");
   const basePath = "/linemanage/ticketDetail";
   console.log("socket", socket);
   const dispatch = useDispatch();

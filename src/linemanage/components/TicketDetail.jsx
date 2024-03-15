@@ -29,6 +29,7 @@ function TicketDetail() {
         });
 
         socket.on("ticket_message_response", (data) => {
+
           if (typeof data?.data === "object" && !Array.isArray(data?.data)) {
             return;
           }
