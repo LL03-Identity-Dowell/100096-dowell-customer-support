@@ -1,45 +1,22 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
-//import { toast } from "react-toastify";
-//import { fetchTicketMessage } from "../Redux/ticketDetailSlice";
-//import { socket } from "../utils/Connection";
 import formatCreatedAt from "../utils/datefromat";
 import io from "socket.io-client";
 const socket = io.connect("https://www.dowellchat.uxlivinglab.online/");
 //eslint-disable-next-line
 
 const Chat = () => {
-  //const dispatch = useDispatch();
-  //console.log("data from chat summary", selectedTicket);
   const selectedTicket = useSelector((state) => state.tickets.selectedTicket);
   const ticketMessages = useSelector((state) => state.tickets.ticketMessage);
   //const [loading, setLoading] = useState(true);
   let current_user = "1234";
   const [newMessage, setNewMessage] = useState("");
-  const [messages, setMessages] = useState([
-    // {
-    //   id: 1,
-    //   sender: "user",
-    //   type: "text",
-    //   content: "Hey there!",
-    //   created_at: formatCreatedAt(new Date()),
-    // },
-    // {
-    //   id: 2,
-    //   sender: "receiver",
-    //   type: "text",
-    //   content: "Hi! How can I help you?",
-    //   created_at: formatCreatedAt(new Date()),
-    // },
-    // Add more messages as needed
-  ]);
+  const [messages, setMessages] = useState([]);
   useEffect(() => {
     async function chat() {
       if (ticketMessages.length > 0) {
         try {
-          // console.log("ticket mesage from chat", ticketMessages);
-          //setLoading(true);
           let messages = await Promise.all(
             ticketMessages.map((message) => {
               return {
@@ -55,10 +32,7 @@ const Chat = () => {
           if (messages.length > 0) {
             //  console.log("inner loading", loading);
             setMessages(messages);
-          } //else {
-          //   setMessages([]);
-          // }
-          // console.log("outer loading", loading);
+          }
         } catch (error) {
           console.log(error);
           //setLoading(false);
@@ -67,15 +41,9 @@ const Chat = () => {
       } else {
         setMessages([]);
       }
-
-      // } else {
-      //   setLoading(false);
-      // }
     }
     // console.log("selected ticket", selectedTicket);
     if (Object.keys(selectedTicket).length > 0) {
-      //console.log("selected ticket in if statement", selectedTicket);
-      //setLoading(true);
       chat();
     } else {
       setMessages([]);
@@ -144,13 +112,6 @@ const Chat = () => {
   // console.log("message to display", messageToDispaly);
   const handleSendButtonClick = () => {
     if (newMessage.trim() !== "") {
-      /*const message = {
-        id: messages.length + 1,
-        sender: "user",
-        type: "text",
-        content: newMessage.trim(),
-        created_at: formatCreatedAt(new Date()),
-      };*/
       sendMessage(newMessage);
     }
   };
