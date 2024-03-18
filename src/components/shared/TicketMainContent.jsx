@@ -28,6 +28,7 @@ const TicketMainContent = () => {
     email: "",
     identity: "",
   });
+
   const [ticketDetail, setTicketDetail] = useState({});
   const [darkMode, setDarkMode] = useState(true);
 
