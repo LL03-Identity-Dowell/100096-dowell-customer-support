@@ -84,9 +84,6 @@ const Chat = () => {
     if (data.status === "success") {
       const { author, is_read, created_at, message_data } = data.data;
       let current_user = "1234";
-      console.log(current_user, author);
-      console.log("chat datas", author, is_read, created_at, message_data);
-      // if (author !== current_user) {
       const message = {
         id: messages.length + 1,
         sender: author !== current_user ? "receiver" : "user",
@@ -96,11 +93,7 @@ const Chat = () => {
       };
 
       setMessages([...messages, message]);
-
-      //setLoading(false);
-      //  }
     }
-    //console.log("ticket chat message response", data);
   });
   const sendChat = async (newMessage) => {
     let workSpaceID = "646ba835ce27ae02d024a902";

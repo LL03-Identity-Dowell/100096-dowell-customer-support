@@ -17,8 +17,6 @@ import {
 import { ClipLoader } from "react-spinners";
 //import { toast } from "react-toastify";
 
-console.log("socket", socket);
-
 if (!socket.connected) {
   toast.warn("socket is not connected");
 } else {
@@ -58,7 +56,7 @@ function Dropdowns({
         await socket.on("ticket_response", (data) => {
           // Handle response for the event
           setLoading(false);
-          console.log("ticket response", data.data);
+          console.log("ticket response", data["data"]);
           if (data?.status === "success") {
             dispatch(fetchTicketInfo(data?.data));
           } else {
@@ -106,7 +104,7 @@ function Dropdowns({
     } else {
       return;
     }
-  }, [type, selectedTopic]);
+  }, [type, selectedTopic, socket]);
 
   socket.on("new_ticket", (data) => {
     console.log("new ticket", data);
