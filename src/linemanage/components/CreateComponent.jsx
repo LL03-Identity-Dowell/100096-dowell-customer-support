@@ -7,7 +7,7 @@ import { toast } from "react-toastify";
 import { ClipLoader } from "react-spinners";
 import NavItem from "./NavItem";
 import { useSelector } from "react-redux";
-
+import axios from "axios";
 import io from "socket.io-client";
 const socket = io.connect("https://www.dowellchat.uxlivinglab.online/");
 
@@ -16,13 +16,8 @@ function CreateComponent({ closeSearchModal, option, api_key, workspace_id }) {
   const [loading, setLoading] = useState(false);
   // const [searchValue, setSearchValue] = useState("");
   const [modalHeight, setModalHeight] = useState(80);
+  // const [loading, setLoading] = useState(true);
   const searchInputRef = useRef(null); // Ref for the search input
-
-  const closeModal = (e) => {
-    if (e.target.classList.contains("modal-overlay")) {
-      closeSearchModal();
-    }
-  };
 
   // const handleSearchChange = (e) => {
   //   setSearchValue(e.target.value);
@@ -32,19 +27,35 @@ function CreateComponent({ closeSearchModal, option, api_key, workspace_id }) {
   const [managerName, setManagerName] = useState("");
   const topicData = useSelector((state) => state.tickets.topicData);
   const [linkTopic, setLinkTopic] = useState({});
-  const [linkNumber, setLinkNumber] = useState(0);
+  const [linkNumber, setLinkNumber] = useState("");
+  const [members, setMembers] = useState([]);
+  const [masterLink, setMasterLink] = useState("");
   const [url, setUrl] = useState("");
+  const [linkCopy, setLinkCopy] = useState(false);
+  const inputRef = useRef(null);
+  //setting up loading to get list of managers
+  useEffect(() => {
+    option === "createLineManager"
+      ? members.length === 0
+        ? setLoading(true)
+        : setLoading(false)
+      : "";
+  }, [members, option]);
   useEffect(() => {
     if (searchInputRef.current) {
       searchInputRef.current.focus();
     }
+
+    const getManagerMembers = async () => {
+      await getManagersList();
+    };
+    getManagerMembers();
     const handleResize = () => {
       const windowHeight = window.innerHeight;
       // Set the modal height to 80% of the window height
       setModalHeight(windowHeight * 0.8);
     };
 
-    // Add event listener for window resize
     window.addEventListener("resize", handleResize);
 
     console.log(modalHeight);
@@ -56,13 +67,41 @@ function CreateComponent({ closeSearchModal, option, api_key, workspace_id }) {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  const closeModal = (e) => {
+    if (e.target.classList.contains("modal-overlay")) {
+      closeSearchModal();
+    }
+  };
+  const getManagersList = async () => {
+    // console.log("line manager");
+    try {
+      let response = await axios.post(
+        "https://100014.pythonanywhere.com/api/userinfo/",
+        {
+          session_id: "grajrumzvk80d98r559cs99ey7da0wt2",
+        }
+      );
+      let responseData = await response.data;
+      setMembers(responseData.members.team_member);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+  //console.log("member", members);
+  // get members to be added as line manager
+
+  const handleAddManager = (e) => {
+    e.target.value && setManagerName(e.target.value);
+  };
+  //set loading until getting manager list
+
   const createLineManager = async (user_id, api_key, workspace_id) => {
     workspace_id = "646ba835ce27ae02d024a902";
     api_key = "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f";
 
     try {
       await socket.emit("create_line_manager", {
-        user_id: user_id,
+        user_id: managerName,
         positions_in_a_line: 1,
         average_serving_time: 4,
         ticket_count: 0,
@@ -115,24 +154,86 @@ function CreateComponent({ closeSearchModal, option, api_key, workspace_id }) {
       toast.warning(error.data);
     }
   };
-  const handleTopic = function (event) {
+  const handleTopic = async function (event) {
     const { name, value } = event.target;
     setLinkTopic({ ...linkTopic, [name]: value });
   };
-  const handleLinkSubmit = (event) => {
-    event.preventDefault();
-    // if (!(event.target.name == "linkNumber" || event.target.name == "Url")) {
-
-    // }
-    console.log(linkTopic);
+  const handleLinkCopy = () => {
+    inputRef.current.select();
+    //if (!linkCopy) {
+    //document.getElementsByClassName("masterlink").select();
+    //document.execCommand("copy");
+    //}
+    setLinkCopy(!linkCopy);
   };
-  const handleSubmit = (event) => {
+  const handleLinkSubmit = async (event) => {
+    event.preventDefault();
+    setLoading(true);
+    let sum = 0;
+    if (!linkNumber || !url) {
+      toast.warning("Please fill in all fields");
+      setLoading(false);
+      return;
+    }
+    for (let name in linkTopic) {
+      if (linkTopic[name] === "") {
+        toast.warning("Please fill in all fields");
+        setLoading(false);
+        return;
+      }
+      sum = sum + parseInt(linkTopic[name]);
+    }
+    if (sum !== parseInt(linkNumber)) {
+      toast.warning("Link number must be equal to sum of each product");
+      setLoading(false);
+      return;
+    }
+
+    const linkData = {
+      number_of_links: linkNumber,
+      product_distribution: {
+        ...linkTopic,
+      },
+      usernames: [
+        "pOiUtReWsD",
+        "dFgHjKlMnO",
+        "LkOyHbNzIq",
+        "QrTzsMwXjv",
+        "UfhgJGnptE",
+      ],
+      url: url,
+      workspace_id: "646ba835ce27ae02d024a902",
+      api_key: "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f",
+
+      created_at: new Date().toISOString(),
+    };
+
+    await socket.emit("generate_share_link", linkData);
+
+    await socket.on("share_link_response", (data) => {
+      setLoading(false);
+      if (data.status === "success") {
+        setMasterLink(data.data);
+        toast.success("generated successfully");
+      } else {
+        toast.warn("some error happened");
+      }
+      //sconsole.log("Master Link response:", data);
+    });
+  };
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
     try {
       setLoading(true);
       if (option === "createTopic") {
+        if (!topicName) {
+          toast.warning("Please fill the topic name");
+          return;
+        }
         topicName && createTopic(topicName);
       } else if (option === "createLineManager") {
+        // await getLineManagerMember();
         if (managerName) {
           createLineManager(managerName);
         }
@@ -213,16 +314,29 @@ function CreateComponent({ closeSearchModal, option, api_key, workspace_id }) {
           // eslint-disable-next-line
           option === "generateLink" && (
             <>
-              <div className="max-w-md mx-auto">
+              <div className="max-w-[400px] mx-auto overflow-x-hidden">
                 <h3 className="mb-5">Fill Link Information</h3>
+                {masterLink && (
+                  <div className="flex w-auto justify-center align-middle mx-auto  h-15 p-2  border border-r-8 gap-1">
+                    <input
+                      type="text"
+                      className=" border-none outline-none flex-5 w-full p-2 overflow-x-visible overflow-y-scroll h-20 bg-slate-200 text-[#22694de1] masterlink"
+                      value={masterLink}
+                      ref={inputRef}
+                    ></input>
+                    <button className="flex-1" onClick={handleLinkCopy}>
+                      {linkCopy && masterLink ? "copied" : "copy"}
+                    </button>
+                  </div>
+                )}
                 <form
                   onSubmit={handleLinkSubmit}
-                  className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
+                  className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 sm:w-[350px] md:w-[400px]"
                 >
-                  <div className="mb-4 flex sm:flex-col md:flex-row">
+                  <div className="mb-4 flex sm:flex-col md:flex-row sm:gap-5 md:gap-10 sm:md:w-max-[380px] md:w-[400px]">
                     <label
                       htmlFor="input1"
-                      className="block text-gray-700 text-sm font-bold w-1/2 mb-2"
+                      className="block text-gray-700 text-sm font-bold sm:w-max-[70px] md:w-[100px] mb-2"
                     >
                       Link Number
                     </label>
@@ -232,7 +346,7 @@ function CreateComponent({ closeSearchModal, option, api_key, workspace_id }) {
                       name="linkNumber"
                       value={linkNumber}
                       onChange={(e) => setLinkNumber(e.target.value)}
-                      className="shadow appearance-none border rounded w-full py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                      className="shadow appearance-none border rounded sm:w-max-[150px] md:w-[200px] py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     />
                   </div>
 
@@ -241,12 +355,12 @@ function CreateComponent({ closeSearchModal, option, api_key, workspace_id }) {
                     topicData?.map((data) => {
                       return (
                         <div
-                          className="mb-4 flex sm:flex-col md:flex-row"
+                          className="mb-4 flex sm:flex-col md:flex-row sm:gap-5 md:gap-10 sm:md:w-max-[300px] md:w-[400px]"
                           key={data._id}
                         >
                           <label
                             htmlFor="input1"
-                            className="block text-gray-700 text-sm font-bold w-1/2 mb-2"
+                            className="block text-gray-700 text-sm font-bold sm:w-max-[70px] md:w-[100px] mb-2"
                           >
                             {data.name}
                           </label>
@@ -254,17 +368,17 @@ function CreateComponent({ closeSearchModal, option, api_key, workspace_id }) {
                             type="number"
                             id="topics"
                             name={data.name}
-                            value={linkTopic}
+                            value={linkTopic[`${data.name}`]}
                             onChange={handleTopic}
-                            className="shadow appearance-none border rounded w-full py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            className="shadow appearance-none border rounded sm:w-max-[150px] md:w-[200px] py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                           />
                         </div>
                       );
                     })}
-                  <div className="mb-4 flex sm:flex-col md:flex-row">
+                  <div className="mb-4 flex sm:flex-col md:flex-row sm:gap-5 md:gap-10 sm:w-max-[300px] md:w-[400px]">
                     <label
                       htmlFor="input1"
-                      className="block text-gray-700 text-sm font-bold w-1/2 mb-2"
+                      className="block text-gray-700 text-sm font-bold sm:w-max-[70px] md:w-[100px] mb-2"
                     >
                       URL
                     </label>
@@ -274,14 +388,14 @@ function CreateComponent({ closeSearchModal, option, api_key, workspace_id }) {
                       name="linkurl"
                       value={url}
                       onChange={(e) => setUrl(e.target.value)}
-                      className="shadow appearance-none border rounded w-full py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                      className="shadow appearance-none border rounded sm:w-max-[150px] md:w-[200px] py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     />
                   </div>
 
-                  <div className="flex items-center w-full justify-center">
+                  <div className="flex items-center w-full sm:justify-start md:justify-end">
                     <button
                       type="submit"
-                      className="bg-[#22694de1] font-sans text-sm hover:bg-green-700 text-white font-bold py-2 px-2 md:w-27 rounded-md"
+                      className="bg-[#22694de1] font-sans text-sm hover:bg-green-700 text-white font-bold py-2 px-2 sm:w-[150px] md:w-[200px] rounded-md"
                     >
                       Generate Link
                     </button>
@@ -309,32 +423,42 @@ function CreateComponent({ closeSearchModal, option, api_key, workspace_id }) {
                     >
                       Manager Name
                     </label>
-                    <input
-                      type="text"
-                      id="input1"
-                      name="input1"
+                    <select
+                      id="dropdown"
                       value={managerName}
-                      onChange={(e) => setManagerName(e.target.value)}
-                      className="shadow appearance-none border rounded w-full py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    />
-                  </div>
+                      onChange={handleAddManager}
+                      className="shadow appearance-none border rounded w-full
+                      py-1 px-2 text-gray-700 leading-tight focus:outline-none
+                      focus:shadow-outline overflow-y-scroll max-h-[100px]"
+                    >
+                      <option value="">Choose members</option>
+                      {members?.map((member) => {
+                        return (
+                          <option key={member._id} value={member.name}>
+                            {member.name}
+                          </option>
+                        );
+                      })}
 
-                  {/* <div className="mb-6 flex sm:flex-col md:flex-row items-center justify-center">
-              <label
-                htmlFor="input3"
-                className="block text-gray-700 text-sm font-bold w-1/2 mb-2"
-              >
-                Label 3:
-              </label>
-              <input
-                type="text"
-                id="input3"
-                name="input3"
-                value={inputs.input3}
-                onChange={handleChange}
-                className="shadow appearance-none border rounded w-full py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              />
-            </div> */}
+                      {loading ? (
+                        <div className="d-flex mt-3 justify-center align-items-center mx-auto">
+                          <ClipLoader
+                            color={"#22694de1"}
+                            css={{
+                              display: "block",
+                              margin: "0 auto",
+                              width: "50px",
+                              height: "40px",
+                            }}
+                            size={20}
+                          />{" "}
+                          Loading
+                        </div>
+                      ) : (
+                        ""
+                      )}
+                    </select>
+                  </div>
 
                   <div className="flex items-center w-full justify-center">
                     <button
@@ -361,7 +485,7 @@ function CreateComponent({ closeSearchModal, option, api_key, workspace_id }) {
               }}
               size={30}
             />{" "}
-            Loading
+            {members.length <= 0 ? "fetching members list..." : "Loading"}
           </div>
         ) : (
           ""

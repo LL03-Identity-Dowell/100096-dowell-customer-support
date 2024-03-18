@@ -51,7 +51,14 @@ function LineManager({ api_key, workspace_id }) {
     } catch (error) {
       console.log(error);
     }
+
+    // Add event listener for window resize
   }, []);
+  useEffect(() => {
+    // async () => {
+    //   await getLineManagerMember();
+    // };
+  });
   const [isOpen, setIsOpen] = useState(false);
   const [option, setOption] = useState("");
   const [loading, setLoading] = useState(true);
@@ -126,7 +133,9 @@ function LineManager({ api_key, workspace_id }) {
                   />
                   Till-1 common
                 </td>
-                <td className="py-3 px-6 text-left flex-1 sm:w-15">Thomas</td>
+                <td className="py-3 px-6 text-left flex-1 sm:w-15">
+                  {data.user_id}
+                </td>
                 <td className="py-3 px-6 text-left flex flex-wrap flex-1 h-auto sm:w-[95%] p-1">
                   <div className="flex justify-start flex-wrap gap-3 h-auto">
                     <div className="bg-blue-200 rounded-sm p-2"></div>

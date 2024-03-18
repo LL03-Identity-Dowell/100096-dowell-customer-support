@@ -114,7 +114,7 @@ function Dropdowns({
     if (data?.status === "success") {
       dispatch(fetchTicketInfo([...ticketInfo, data?.data]));
       //ticketInfoToShow = [...ticketInfo, data?.data];
-      toast.success("new ticket added");
+      toast.success("new ticket added", { toastId: "success1" });
     } else {
       return;
     }

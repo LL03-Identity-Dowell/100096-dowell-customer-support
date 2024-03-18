@@ -23,7 +23,7 @@ const TicketMainContent = () => {
     email: "",
     identity: "",
   });
-  const [getTicketMessages, setGetTicketMessages] = useState([]);
+  //const [getTicketMessages, setGetTicketMessages] = useState([]);
   const [ticketDetail, setTicketDetail] = useState({});
 
   const toggleChat = () => {
@@ -41,13 +41,13 @@ const TicketMainContent = () => {
 
     try {
       const fetchApiKey = async () => {
-        const apiUrl = `https://100105.pythonanywhere.com/api/v3/user/?type=get_api_key&workspace_id=${params.get(
-          "workspace_id"
-        )}`;
+        //   const apiUrl = `https://100105.pythonanywhere.com/api/v3/user/?type=get_api_key&workspace_id=${params.get(
+        // //    "workspace_id"
+        //   )}`;
 
         try {
-          const response = await fetch(apiUrl);
-          const responseData = await response.json();
+          //const response = await fetch(apiUrl);
+          //  const responseData = await response.json();
           // setApiKey(responseData["data"]["api_key"]);
           setApiKey("1b834e07-c68b-4bf6-96dd-ab7cdc62f07f");
         } catch (error) {
@@ -79,7 +79,7 @@ const TicketMainContent = () => {
   });
   socket.on("ticket_message_response", (data) => {
     if (data.status === "success") {
-      const { author, is_read, created_at, message_data } = data.data;
+      const { author, created_at, message_data } = data.data;
       let current_user = "12345";
 
       const message = {
@@ -107,13 +107,13 @@ const TicketMainContent = () => {
     return dateA - dateB;
   });
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-  };
+  // const handleChange = (e) => {
+  //   const { name, value } = e.target;
+  //   setFormData({
+  //     ...formData,
+  //     [name]: value,
+  //   });
+  // };
 
   const handleSubmit = async (values, actions) => {
     try {
