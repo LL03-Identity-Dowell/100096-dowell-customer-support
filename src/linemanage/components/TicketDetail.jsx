@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { toast } from "react-toastify";
-import { fetchTicketMessage } from "../Redux/ticketDetailSlice";
+import {
+  fetchSingleMessage,
+  fetchTicketMessage,
+} from "../Redux/ticketDetailSlice";
 import formatCreatedAt from "../utils/datefromat";
 //import { socket } from "../utils/Connection";
 import { ClipLoader } from "react-spinners";
@@ -12,7 +15,10 @@ function TicketDetail() {
   const [loading, setLoading] = useState(true);
   const selectedTicket = useSelector((state) => state.tickets.selectedTicket);
   const ticketMessages = useSelector((state) => state.tickets.ticketMessage);
+
   const messageShow = ticketMessages.length > 0 ? ticketMessages.slice(-3) : [];
+  // Create a new socket connection
+  const sockets = io.connect("https://www.dowellchat.uxlivinglab.online/");
 
   useEffect(() => {
     // Define the function for fetching ticket messages
@@ -21,16 +27,17 @@ function TicketDetail() {
       const api_key = "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f";
 
       try {
-        socket.emit("get_ticket_messages", {
+        await socket.emit("get_ticket_messages", {
           ticket_id: selectedTicket._id,
           product: selectedTicket.product,
           workspace_id: workSpaceID,
           api_key: api_key,
         });
 
-        socket.on("ticket_message_response", (data) => {
-
+        await socket.on("ticket_message_response", (data) => {
           if (typeof data?.data === "object" && !Array.isArray(data?.data)) {
+            console.log("data from tickets ", data?.data);
+            dispatch(fetchSingleMessage(data?.data));
             return;
           }
           setLoading(false);
@@ -46,18 +53,12 @@ function TicketDetail() {
       }
     };
 
-    // Create a new socket connection
-    const sockets = io.connect("https://www.dowellchat.uxlivinglab.online/");
-
     // If selectedTicket changes, fetch ticket messages
     if (Object.keys(selectedTicket).length > 0) {
       getTicketMessages(sockets, selectedTicket);
     }
 
     // Clean up the socket connection when the component unmounts or selectedTicket changes
-    return () => {
-      sockets.disconnect();
-    };
   }, [selectedTicket]);
   return (
     <div className="flex-1 w-full m-3 mx-3 ml-1 px-1 rounded-none border-none md:min-w-[300px] h-svh shadow-lg">
