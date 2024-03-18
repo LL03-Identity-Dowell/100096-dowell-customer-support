@@ -5,6 +5,7 @@ import router from "./router.jsx";
 import { Provider } from "react-redux";
 import { store } from "./linemanage/Redux/store.js";
 import "./index.css";
+import "./App.css";
 import { CreateTicketProvider } from "./context/CreateTicketContext.jsx";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
