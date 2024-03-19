@@ -11,6 +11,8 @@ const Chat = () => {
   //console.log("data from chat summary", selectedTicket);
   const selectedTicket = useSelector((state) => state.tickets.selectedTicket);
   const ticketMessages = useSelector((state) => state.tickets.ticketMessage);
+  const singleMessage = useSelector((state) => state.tickets.singleMessage);
+
   //const [loading, setLoading] = useState(true);
   let current_user = "1234";
   const [newMessage, setNewMessage] = useState("");
@@ -53,6 +55,30 @@ const Chat = () => {
     }
   }, [current_user, selectedTicket, ticketMessages]);
 
+  //getting a new message when client make first request or message
+  useEffect(() => {
+    if (Object.keys(singleMessage).length > 0) {
+      const { author, is_read, created_at, message_data } = singleMessage;
+      let current_user = "1234";
+      console.log(current_user, author);
+      console.log("chat datas", author, is_read, created_at, message_data);
+      // if (author !== current_user) {
+      const message = {
+        id: messages.length + 1,
+        sender: author !== current_user ? "receiver" : "user",
+        type: "text",
+        content: message_data,
+        created_at: created_at,
+      };
+
+      setMessages([...messages, message]);
+
+      //setLoading(false);
+      //  }
+    }
+  }, [singleMessage]);
+
+  //establishing a communication when a user start chatting
   socket.on("ticket_message_response", (data) => {
     // Handle response for the event
     if (data.status === "success") {

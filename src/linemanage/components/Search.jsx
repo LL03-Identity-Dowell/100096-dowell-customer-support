@@ -15,6 +15,7 @@ import {
 } from "../Redux/ticketDetailSlice";
 
 import { ClipLoader } from "react-spinners";
+//import { toast } from "react-toastify";
 
 if (!socket.connected) {
   toast.warn("socket is not connected");
@@ -34,7 +35,7 @@ function Dropdowns({
   const selectedTicket = useSelector((state) => state.tickets.selectedTicket);
   const [loading, setLoading] = useState(true);
   const ticketInfo = useSelector((state) => state.tickets.ticketInfo);
-  let ticketInfoToShow = [...ticketInfo];
+  // let ticketInfoToShow = [...ticketInfo];
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -107,13 +108,16 @@ function Dropdowns({
 
   socket.on("new_ticket", (data) => {
     console.log("new ticket", data);
+    //console.log()
     if (data?.status === "success") {
-      // dispatch(fetchTicketInfo(data?.data));
-      ticketInfoToShow = [...ticketInfo, data?.data];
+      dispatch(fetchTicketInfo([...ticketInfo, data?.data]));
+      //ticketInfoToShow = [...ticketInfo, data?.data];
+      toast.success("new ticket added", { toastId: "success1" });
     } else {
       return;
     }
   });
+
   const toggleDropdown = () => {
     setDropdownOpen(!isDropdownOpen);
   };
@@ -165,10 +169,10 @@ function Dropdowns({
             })}
           {console.log("ticket info", ticketInfo)}
           {type === "ticket" &&
-            ticketInfoToShow &&
+            ticketInfo &&
             //eslint-disable-next-line
 
-            ticketInfoToShow?.slice().map((data, index) => {
+            ticketInfo?.slice().map((data, index) => {
               return (
                 <div
                   key={data.id}
@@ -181,7 +185,7 @@ function Dropdowns({
                 </div>
               );
             })}
-          {type === "ticket" && ticketInfoToShow ? (
+          {type === "ticket" && ticketInfo ? (
             loading ? (
               <div className="d-flex mt-3 justify-center align-items-center mx-auto">
                 <ClipLoader
