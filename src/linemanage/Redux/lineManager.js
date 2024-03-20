@@ -4,6 +4,7 @@ const lineManagerSlice = createSlice({
   name: 'lineManager',
   initialState: {
     lineManagersData:[],
+    lineManagerCredentials:{},
     loading: false,
     error: null,
   },
@@ -16,8 +17,12 @@ const lineManagerSlice = createSlice({
         state.loading = false;
         state.lineManagersData = action.payload;
       },
+      fetchLineManagersCredentails(state, action) {
+        state.loading = false;
+        state.lineManagerCredentials = action.payload;
+      },
 
 
   }});
-  export const { fetchLineManagersStart, fetchLineManagersData } = lineManagerSlice.actions;
+  export const { fetchLineManagersStart,fetchLineManagersCredentails, fetchLineManagersData } = lineManagerSlice.actions;
   export default lineManagerSlice.reducer;

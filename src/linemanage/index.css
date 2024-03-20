@@ -4,6 +4,27 @@
 .green-spinner {
   color: #005734;
 }
+input[type="checkbox"] {
+  cursor: pointer;
+}
+
+input[type="checkbox"]:after {
+  content: " ";
+  background-color: #7cab98;
+  display: inline-block;
+  visibility: visible;
+}
+
+input[type="checkbox"]:checked:after {
+  content: "\2714";
+  width: 20px;
+  height: 20px;
+  text-align: center;
+  padding-bottom: 2px;
+  font-size: medium;
+  color: white;
+  border-radius: 10%;
+}
 ::-webkit-scrollbar {
   width: 5px; /* Adjust the width as needed */
 }
