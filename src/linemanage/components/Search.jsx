@@ -40,20 +40,22 @@ function Dropdowns({
   // let ticketInfoToShow = [...ticketInfo];
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-
+  const lineManagerCredentials = useSelector(
+    (state) => state.lineManagers.lineManagerCredentials
+  );
   useEffect(() => {
     console.log("topic data", topicData);
     console.log("selected ticket data", selectedTicket);
-    const findTicket = async (workSpaceID, product, api_key) => {
+    const findTicket = async (product) => {
       const { name } = product;
-      console.log(workSpaceID, product, api_key);
-      workSpaceID = "646ba835ce27ae02d024a902";
-      api_key = "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f";
+      //console.log(workSpaceID, product, api_key);
+      //workSpaceID = "646ba835ce27ae02d024a902";
+      //api_key = "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f";
       try {
         await socket.emit("get_tickets", {
           product: name,
-          workspace_id: workSpaceID,
-          api_key: api_key,
+          workspace_id: lineManagerCredentials.workspace_id,
+          api_key: lineManagerCredentials.api_key,
         });
         await socket.on("ticket_response", (data) => {
           // Handle response for the event
@@ -71,14 +73,14 @@ function Dropdowns({
       }
     };
 
-    const findTopic = async (workSpaceID, api_key) => {
-      workSpaceID = "646ba835ce27ae02d024a902";
-      api_key = "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f";
+    const findTopic = async () => {
+      //workSpaceID = "646ba835ce27ae02d024a902";
+      // api_key = "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f";
       try {
-        console.log(workSpaceID);
+        // console.log(workSpaceID);
         await socket.emit("get_all_topics", {
-          workspace_id: workSpaceID,
-          api_key: api_key,
+          workspace_id: lineManagerCredentials.workspace_id,
+          api_key: lineManagerCredentials.api_key,
         });
         await socket.on("setting_response", (data) => {
           if (data.status === "success") {
@@ -97,11 +99,11 @@ function Dropdowns({
     //  let workSpaceID = "646ba835ce27ae02d024a902";
     //  let api_key = "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f";
     if (type === "topic") {
-      findTopic(23, 54);
+      findTopic();
     } else if (type === "ticket") {
       console.log("Ticket started", selectedTopic);
       if (Object.keys(selectedTopic).length > 0) {
-        findTicket(23, selectedTopic, 22);
+        findTicket(selectedTopic);
       }
     } else {
       return;

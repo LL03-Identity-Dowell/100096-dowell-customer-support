@@ -12,7 +12,7 @@ import io from "socket.io-client";
 const socket = io.connect("https://www.dowellchat.uxlivinglab.online/");
 
 //eslint-disable-next-line
-function CreateComponent({ closeSearchModal, option, api_key, workspace_id }) {
+function CreateComponent({ closeSearchModal, option }) {
   const [loading, setLoading] = useState(false);
   // const [searchValue, setSearchValue] = useState("");
   const [modalHeight, setModalHeight] = useState(80);
@@ -30,9 +30,12 @@ function CreateComponent({ closeSearchModal, option, api_key, workspace_id }) {
   const [linkNumber, setLinkNumber] = useState("");
   const [members, setMembers] = useState([]);
   const [masterLink, setMasterLink] = useState("");
-  const [url, setUrl] = useState("");
+  const [url, setUrl] = useState("https://www.dowellchat.uxlivinglab.online/");
   const [linkCopy, setLinkCopy] = useState(false);
   const inputRef = useRef(null);
+  const lineManagerCredentials = useSelector(
+    (state) => state.lineManagers.lineManagerCredentials
+  );
   //setting up loading to get list of managers
   useEffect(() => {
     option === "createLineManager"
@@ -47,7 +50,9 @@ function CreateComponent({ closeSearchModal, option, api_key, workspace_id }) {
     }
 
     const getManagerMembers = async () => {
-      await getManagersList();
+      if (option === "createLineManager") {
+        await getManagersList();
+      }
     };
     getManagerMembers();
     const handleResize = () => {
@@ -57,12 +62,9 @@ function CreateComponent({ closeSearchModal, option, api_key, workspace_id }) {
     };
 
     window.addEventListener("resize", handleResize);
-
     console.log(modalHeight);
-
     // Call handleResize initially
     handleResize();
-
     // Cleanup event listener
     return () => window.removeEventListener("resize", handleResize);
   }, []);
@@ -76,13 +78,18 @@ function CreateComponent({ closeSearchModal, option, api_key, workspace_id }) {
     // console.log("line manager");
     try {
       let response = await axios.post(
-        "https://100014.pythonanywhere.com/api/userinfo/",
+        "https://100093.pythonanywhere.com/api/userinfo/",
         {
-          session_id: "grajrumzvk80d98r559cs99ey7da0wt2",
+          session_id: lineManagerCredentials.session_id, //"okms05yhlfj6xl7jug9b6f6lyk8okb8o",
         }
       );
-      let responseData = await response.data;
-      setMembers(responseData.members.team_member);
+      console.log(response);
+      let responseData =
+        await response?.data?.selected_product?.userportfolio.find(
+          (item) => item.member_type === "team_member"
+        );
+      console.log("response data", responseData);
+      setMembers(responseData.username);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -94,19 +101,17 @@ function CreateComponent({ closeSearchModal, option, api_key, workspace_id }) {
     e.target.value && setManagerName(e.target.value);
   };
   //set loading until getting manager list
-
-  const createLineManager = async (user_id, api_key, workspace_id) => {
-    workspace_id = "646ba835ce27ae02d024a902";
-    api_key = "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f";
-
+  const createLineManager = async () => {
+    // workspace_id = "646ba835ce27ae02d024a902";
+    //api_key = "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f";
     try {
       await socket.emit("create_line_manager", {
         user_id: managerName,
         positions_in_a_line: 1,
         average_serving_time: 4,
         ticket_count: 0,
-        workspace_id: workspace_id,
-        api_key: api_key,
+        workspace_id: lineManagerCredentials.workspace_id,
+        api_key: lineManagerCredentials.api_key,
         created_at: new Date().toISOString(),
       });
       await socket.on("setting_response", (data) => {
@@ -127,13 +132,13 @@ function CreateComponent({ closeSearchModal, option, api_key, workspace_id }) {
 
   const createTopic = async (topic_name) => {
     // console.log("workspace id, api_key", workspace_id, api_key);
-    workspace_id = "646ba835ce27ae02d024a902";
-    api_key = "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f";
+    // workspace_id = "646ba835ce27ae02d024a902";
+    //api_key = "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f";
     try {
       await socket.emit("create_topic", {
         name: topic_name,
-        workspace_id: workspace_id,
-        api_key: api_key,
+        workspace_id: lineManagerCredentials.workspace_id,
+        api_key: lineManagerCredentials.api_key,
         created_at: new Date().toISOString(),
       });
 
@@ -189,26 +194,47 @@ function CreateComponent({ closeSearchModal, option, api_key, workspace_id }) {
       return;
     }
 
-    const linkData = {
-      number_of_links: linkNumber,
-      product_distribution: {
-        ...linkTopic,
-      },
-      usernames: [
-        "pOiUtReWsD",
-        "dFgHjKlMnO",
-        "LkOyHbNzIq",
-        "QrTzsMwXjv",
-        "UfhgJGnptE",
-      ],
-      url: url,
-      workspace_id: "646ba835ce27ae02d024a902",
-      api_key: "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f",
+    try {
+      let response = await axios.post(
+        "https://100093.pythonanywhere.com/api/userinfo/",
+        {
+          session_id: lineManagerCredentials.session_id, //"okms05yhlfj6xl7jug9b6f6lyk8okb8o",
+        }
+      );
+      // console.log("data =", response.data);
+      let responseData =
+        await response?.data?.selected_product?.userportfolio.find(
+          (item) =>
+            item.member_type === "public" &&
+            item.product === "Dowell Customer Support Centre"
+        );
+      if (linkNumber > responseData?.username.length) {
+        toast.warning(
+          "Link number must be less than or equal to existing users"
+        );
+        setLoading(false);
+        return;
+      }
+      //console.log("response data", responseData);
+      //setMembers(responseData.username);
+      // console.log("response data", responseData.username);
+      const linkData = {
+        number_of_links: linkNumber,
+        product_distribution: {
+          ...linkTopic,
+        },
+        usernames: responseData.username,
+        url: url,
+        workspace_id: lineManagerCredentials.workspace_id,
+        api_key: lineManagerCredentials.api_key,
 
-      created_at: new Date().toISOString(),
-    };
+        created_at: new Date().toISOString(),
+      };
 
-    await socket.emit("generate_share_link", linkData);
+      await socket.emit("generate_share_link", linkData);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
 
     await socket.on("share_link_response", (data) => {
       setLoading(false);
@@ -234,6 +260,7 @@ function CreateComponent({ closeSearchModal, option, api_key, workspace_id }) {
         topicName && createTopic(topicName);
       } else if (option === "createLineManager") {
         // await getLineManagerMember();
+        // getManagersList();
         if (managerName) {
           createLineManager(managerName);
         }
@@ -389,6 +416,7 @@ function CreateComponent({ closeSearchModal, option, api_key, workspace_id }) {
                       value={url}
                       onChange={(e) => setUrl(e.target.value)}
                       className="shadow appearance-none border rounded sm:w-max-[150px] md:w-[200px] py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                      readOnly
                     />
                   </div>
 
@@ -432,15 +460,15 @@ function CreateComponent({ closeSearchModal, option, api_key, workspace_id }) {
                       focus:shadow-outline overflow-y-scroll max-h-[100px]"
                     >
                       <option value="">Choose members</option>
-                      {members?.map((member) => {
+                      {members?.map((member, index) => {
                         return (
-                          <option key={member._id} value={member.name}>
-                            {member.name}
+                          <option key={index} value={member}>
+                            {member}
                           </option>
                         );
                       })}
 
-                      {loading ? (
+                      {/* {loading ? (
                         <div className="d-flex mt-3 justify-center align-items-center mx-auto">
                           <ClipLoader
                             color={"#22694de1"}
@@ -456,7 +484,7 @@ function CreateComponent({ closeSearchModal, option, api_key, workspace_id }) {
                         </div>
                       ) : (
                         ""
-                      )}
+                      )} */}
                     </select>
                   </div>
 
@@ -473,7 +501,7 @@ function CreateComponent({ closeSearchModal, option, api_key, workspace_id }) {
             </>
           )
         }
-        {loading ? (
+        {loading && option === "createLineManager" && members.length <= 0 ? (
           <div className="d-flex mt-3 justify-content-center align-items-center">
             <ClipLoader
               color={"#22694de1"}
@@ -485,10 +513,26 @@ function CreateComponent({ closeSearchModal, option, api_key, workspace_id }) {
               }}
               size={30}
             />{" "}
-            {members.length <= 0 ? "fetching members list..." : "Loading"}
+            fetching members list...
           </div>
         ) : (
-          ""
+          <>
+            {loading && (
+              <div className="d-flex mt-3 justify-content-center align-items-center">
+                <ClipLoader
+                  color={"#22694de1"}
+                  css={{
+                    display: "block",
+                    margin: "0 auto",
+                    width: "50px",
+                    height: "50px",
+                  }}
+                  size={30}
+                />{" "}
+                Loading...
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>

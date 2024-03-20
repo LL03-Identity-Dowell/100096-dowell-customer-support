@@ -13,31 +13,68 @@ import { toast } from "react-toastify";
 import { ClipLoader } from "react-spinners";
 //import { socket } from "../utils/Connection";
 import io from "socket.io-client";
+import axios from "axios";
 const socket = io.connect("https://www.dowellchat.uxlivinglab.online/");
-function LineManager({ api_key, workspace_id }) {
+function LineManager() {
   const basePath = "/linemanage/ticketDetail";
   console.log("socket", socket);
   const dispatch = useDispatch();
+  const [isOpen, setIsOpen] = useState(false);
+  const [option, setOption] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
+  const [ownerType, setOwnerType] = useState(true);
+  const lineManagerCredentials = useSelector(
+    (state) => state.lineManagers.lineManagerCredentials
+  );
   const lineManagersData = useSelector(
     (state) => state.lineManagers.lineManagersData
   );
+
   //const [selectedOption, setSelectedOption] = useState(null);
   useEffect(() => {
-    const getAllLineManager = async (workSpaceID, api_key) => {
-      workSpaceID = "646ba835ce27ae02d024a902";
-      api_key = "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f";
+    const getAllLineManager = async () => {
+      //workSpaceID = "646ba835ce27ae02d024a902";
+      //api_key = "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f";
+      console.log(
+        "space id from dispatch",
+        lineManagerCredentials.workspace_id,
+        "api key from dispatch",
+        lineManagerCredentials.api_key
+      );
+
       try {
+        let response = await axios.post(
+          "https://100093.pythonanywhere.com/api/userinfo/",
+          {
+            session_id: lineManagerCredentials.session_id, //"okms05yhlfj6xl7jug9b6f6lyk8okb8o",
+          }
+        );
+        // console.log("data =", response.data);
+        let responseData =
+          await response?.data?.selected_product?.userportfolio.findIndex(
+            (item) =>
+              item.member_type === "owner" &&
+              item.product === "Dowell Customer Support Centre"
+          );
+        if (responseData === -1) {
+          setOwnerType(false);
+        }
         await socket.emit("get_all_line_managers", {
-          workspace_id: workSpaceID,
-          api_key: api_key,
+          workspace_id: lineManagerCredentials.workspace_id,
+          api_key: lineManagerCredentials.api_key,
         });
         await socket.on("setting_response", (data) => {
           // Handle response for the event
           setLoading(false);
-          dispatch(fetchLineManagersData(data.data));
-          console.log("all line manager data", data);
+          if (Array.isArray(data?.data)) {
+            dispatch(fetchLineManagersData(data.data));
+          }
+          //console.log("all line manager data", data);
           if (data?.status === "failure") {
-            toast.warning("data not found");
+            toast.warning("Line manager in this workspace is not found", {
+              toastId: "success1",
+            });
           }
         });
       } catch (error) {
@@ -47,22 +84,13 @@ function LineManager({ api_key, workspace_id }) {
     };
 
     try {
-      getAllLineManager(20, 50);
+      getAllLineManager();
     } catch (error) {
       console.log(error);
     }
 
     // Add event listener for window resize
   }, []);
-  useEffect(() => {
-    // async () => {
-    //   await getLineManagerMember();
-    // };
-  });
-  const [isOpen, setIsOpen] = useState(false);
-  const [option, setOption] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
 
   //const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
   const openSearchModal = (Option) => {
@@ -91,12 +119,7 @@ function LineManager({ api_key, workspace_id }) {
     // <div className="font-sans flex justify-between h-auto sm:flex-col sm:pr-2 sm:w-full md:w-[95vw] md:flex-row  flex-wrap lg:flex-nowrap   lg:items-stretch  border-b-2 border-t-2 m-5 ">
     <>
       {isSearchModalOpen && (
-        <CreateComponent
-          closeSearchModal={closeSearchModal}
-          option={option}
-          api_key={api_key}
-          workspace_id={workspace_id}
-        />
+        <CreateComponent closeSearchModal={closeSearchModal} option={option} />
       )}
       <div className="bg-white w-full flex-2 shadow-md my-4 mt-12 ml-2 md:min-w-[500px]  rounded-lg  border-2 border-gray-200">
         <table className="sm:h-[450px] md:h-[450px] overflow-y-scroll w-full">
@@ -118,44 +141,44 @@ function LineManager({ api_key, workspace_id }) {
           </thead>
           <tbody className="text-gray-600 text-sm sm:h-[300px] md:h-[350px] overflow-y-scroll font-light w-full flex flex-wrap">
             {console.log("line managers data from dispatch", lineManagersData)}
-            {lineManagersData?.map((data, index) => (
-              <tr
-                key={data._id}
-                className="border-b border-gray-200 hover:bg-gray-100  flex w-full"
-              >
-                <td className="py-3 px-6 text-left sm:w-13 md:15 ">
-                  {index + 1}
-                </td>
-                <td className="py-3 px-6 text-left flex-1 sm:w-20 flex-wrap">
-                  <input
-                    type="checkbox"
-                    className="form-checkbox md:h-4 md:w-4 md:mr-2 sm:h-3 sm:w-3 sm:mr-1 text-indigo-600 transition duration-150 ease-in-out"
-                  />
-                  Till-1 common
-                </td>
-                <td className="py-3 px-6 text-left flex-1 sm:w-15">
-                  {data.user_id}
-                </td>
-                <td className="py-3 px-6 text-left flex flex-wrap flex-1 h-auto sm:w-[95%] p-1">
-                  <div className="flex justify-start flex-wrap gap-3 h-auto">
-                    <div className="bg-blue-200 rounded-sm p-2"></div>
-                    <div className="bg-green-200 rounded-sm p-2"></div>
-                    <div className="bg-green-200 rounded-sm p-2"></div>
-                    <div className="bg-green-200 rounded-sm p-2"></div>
-                  </div>
-                  <div className="flex flex-col align-middle mt-1 h-auto w-full">
-                    {/* <span className="text-md text-green-900">[</span> */}
-                    <span className="text-md">
-                      {data.ticket_count} &gt; Waiting,
-                    </span>
-                    <span className="text-md">
-                      Service time &lt; {data.average_serving_time}
-                    </span>
-                    {/* <span className="text-md">]</span> */}
-                  </div>
-                </td>
-              </tr>
-            ))}
+            {lineManagersData.length > 0 &&
+              lineManagersData?.map((data, index) => (
+                <tr
+                  key={data._id}
+                  className="border-b border-gray-200 hover:bg-gray-100  flex w-full"
+                >
+                  <td className="py-3 px-6 text-left sm:w-13 md:15 ">
+                    {index + 1}
+                  </td>
+                  <td className="py-3 px-6 text-left flex-1 sm:w-20 flex-wrap">
+                    <input
+                      type="checkbox"
+                      className="form-checkbox md:h-4 md:w-4 md:mr-2 sm:h-3 sm:w-3 sm:mr-1 text-indigo-600 transition duration-150 ease-in-out"
+                    />
+                    Till-1 common
+                  </td>
+                  <td className="py-3 px-6 text-left flex-1 sm:w-15">
+                    {data.user_id}
+                  </td>
+                  <td className="py-3 px-6 text-left flex flex-wrap flex-1 h-auto sm:w-[95%] p-1">
+                    <div className="flex justify-start flex-wrap gap-3 h-auto">
+                      <div className="bg-blue-200 rounded-sm p-2 h-2"></div>
+                      <div className="bg-green-200 rounded-sm p-2 h-2"></div>
+                      <div className="bg-green-200 rounded-sm p-2 h-2"></div>
+                      <div className="bg-green-200 rounded-sm p-2 h-2"></div>
+                    </div>
+                    <div className="flex flex-col align-middle justify-start h-auto w-full">
+                      <span className="text-md">
+                        {data.ticket_count} &gt; Waiting,
+                      </span>
+                      <span className="text-md">
+                        Service time &lt; {data.average_serving_time}
+                      </span>
+                      {/* <span className="text-md">]</span> */}
+                    </div>
+                  </td>
+                </tr>
+              ))}
             {loading ? (
               <div className="d-flex mt-3 justify-center align-items-center mx-auto">
                 <ClipLoader
@@ -259,15 +282,32 @@ function LineManager({ api_key, workspace_id }) {
                   className="absolute z-10 mt-1 ml-4 w-56 bg-white rounded-md shadow-lg "
                   style={{ transform: "translateY(-100%)" }}
                 >
-                  {options.map((option) => (
-                    <button
-                      key={option.value}
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
-                      onClick={() => handleSelect(option)}
-                    >
-                      {option.label}
-                    </button>
-                  ))}
+                  {!ownerType &&
+                    options
+                      .filter(
+                        (option) =>
+                          option.value === "createTopic" ||
+                          option.value === "generateLink"
+                      )
+                      .map((option) => (
+                        <button
+                          key={option.value}
+                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
+                          onClick={() => handleSelect(option)}
+                        >
+                          {option.label}
+                        </button>
+                      ))}
+                  {ownerType &&
+                    options.map((option) => (
+                      <button
+                        key={option.value}
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
+                        onClick={() => handleSelect(option)}
+                      >
+                        {option.label}
+                      </button>
+                    ))}
                 </div>
               )}
 

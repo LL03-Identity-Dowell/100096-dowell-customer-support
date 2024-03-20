@@ -1,31 +1,61 @@
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import formatCreatedAt from "../utils/datefromat";
 import io from "socket.io-client";
+import { toast } from "react-toastify";
+import { fetchTicketMessage } from "../Redux/ticketDetailSlice";
+import { ClipLoader } from "react-spinners";
 const socket = io.connect("https://www.dowellchat.uxlivinglab.online/");
 //eslint-disable-next-line
 
 const Chat = () => {
   //const dispatch = useDispatch();
   //console.log("data from chat summary", selectedTicket);
+  const dispatch = useDispatch();
+  const [loading, setLoading] = useState(true);
   const selectedTicket = useSelector((state) => state.tickets.selectedTicket);
   const ticketMessages = useSelector((state) => state.tickets.ticketMessage);
-  const singleMessage = useSelector((state) => state.tickets.singleMessage);
-
-  //const [loading, setLoading] = useState(true);
   let current_user = "1234";
   const [newMessage, setNewMessage] = useState("");
   const [messages, setMessages] = useState([]);
+  const lineManagerCredentials = useSelector(
+    (state) => state.lineManagers.lineManagerCredentials
+  );
+  useEffect(() => {
+    setLoading(true);
+    const getTicketMessages = async (selectedTicket) => {
+      //  const workSpaceID = "646ba835ce27ae02d024a902";
+      // const api_key = "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f";
+      // setLoading(true);
+      try {
+        await socket.emit("get_ticket_messages", {
+          ticket_id: selectedTicket._id,
+          product: selectedTicket.product,
+          workspace_id: lineManagerCredentials.workspace_id,
+          api_key: lineManagerCredentials.api_key,
+        });
+      } catch (error) {
+        toast.warn(error.message);
+      }
+    };
+
+    // If selectedTicket changes, fetch ticket messages
+    if (Object.keys(selectedTicket).length > 0) {
+      getTicketMessages(selectedTicket);
+    }
+  }, [selectedTicket]);
+
   useEffect(() => {
     async function chat() {
       if (ticketMessages.length > 0) {
+        setLoading(false);
         try {
           let messages = await Promise.all(
-            ticketMessages.map((message) => {
+            ticketMessages?.slice().map((message) => {
               return {
                 id: message._id,
-                sender: message.author !== current_user ? "receiver" : "user",
+                sender: message.author !== current_user ? "user" : "receiver",
                 type: "text",
                 content: message.message_data,
                 created_at: message.created_at,
@@ -44,6 +74,7 @@ const Chat = () => {
         // setLoading(false);
       } else {
         setMessages([]);
+        setLoading(false);
       }
     }
     // console.log("selected ticket", selectedTicket);
@@ -51,68 +82,59 @@ const Chat = () => {
       chat();
     } else {
       setMessages([]);
-      // setLoading(false);
+      setLoading(false);
     }
-  }, [current_user, selectedTicket, ticketMessages]);
+  }, [current_user, ticketMessages]);
 
-  //getting a new message when client make first request or message
-  useEffect(() => {
-    if (Object.keys(singleMessage).length > 0) {
-      const { author, is_read, created_at, message_data } = singleMessage;
-      let current_user = "1234";
-      console.log(current_user, author);
-      console.log("chat datas", author, is_read, created_at, message_data);
-      // if (author !== current_user) {
-      const message = {
-        id: messages.length + 1,
-        sender: author !== current_user ? "receiver" : "user",
-        type: "text",
-        content: message_data,
-        created_at: created_at,
-      };
-
-      setMessages([...messages, message]);
-
-      //setLoading(false);
-      //  }
-    }
-  }, [singleMessage]);
-
-  //establishing a communication when a user start chatting
+  //getting ticket messages and making a chat
   socket.on("ticket_message_response", (data) => {
-    // Handle response for the event
-    if (data.status === "success") {
-      const { author, is_read, created_at, message_data } = data.data;
-      let current_user = "1234";
-      console.log(current_user, author);
-      console.log("chat datas", author, is_read, created_at, message_data);
-      // if (author !== current_user) {
-      const message = {
-        id: messages.length + 1,
-        sender: author !== current_user ? "receiver" : "user",
-        type: "text",
-        content: message_data,
-        created_at: created_at,
-      };
+    // setLoading(false);
+    if (typeof data?.data === "object" && !Array.isArray(data?.data)) {
+      console.log("data from tickets ", data?.data);
+      //dispatch(fetchSingleMessage(data?.data));
 
-      setMessages([...messages, message]);
+      let messageResponse = data?.data;
+      if (Object.keys(messageResponse).length > 0) {
+        const { author, is_read, created_at, message_data } = messageResponse;
+        let current_user = "1234";
+        console.log(current_user, author);
+        console.log("chat datas", author, is_read, created_at, message_data);
+        // if (author !== current_user) {
+        const message = {
+          id: messages.length + 1,
+          sender: author !== current_user ? "user" : "receiver",
+          type: "text",
+          content: message_data,
+          created_at: created_at,
+        };
 
-      //setLoading(false);
-      //  }
+        setMessages([...messages, message]);
+
+        setLoading(false);
+        //  }
+      }
+
+      return;
     }
-    //console.log("ticket chat message response", data);
+
+    if (data.status === "success") {
+      dispatch(fetchTicketMessage(data?.data));
+    } else {
+      dispatch(fetchTicketMessage([]));
+    }
   });
+
   const sendChat = async (newMessage) => {
-    let workSpaceID = "646ba835ce27ae02d024a902";
-    let api_key = "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f";
+    // let workSpaceID = "646ba835ce27ae02d024a902";
+    //let api_key = "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f";
     await socket.emit("ticket_message_event", {
       ticket_id: selectedTicket._id,
       product: selectedTicket.product,
       message_data: newMessage.trim(),
       user_id: "1234",
       reply_to: "None",
-      workspace_id: workSpaceID,
-      api_key: api_key,
+      workspace_id: lineManagerCredentials.workspace_id,
+      api_key: lineManagerCredentials.api_key,
       created_at: new Date().toISOString(),
     });
 
@@ -273,6 +295,23 @@ const Chat = () => {
               </div>
             ))}
           {Object.keys(messageToDispaly).length <= 0 && ""}
+          {Object.keys(selectedTicket).length > 0 && loading ? (
+            <div className="d-flex mt-3  justify-center align-items-center mx-auto">
+              <ClipLoader
+                color={"#22694de1"}
+                css={{
+                  display: "block",
+                  margin: "0 auto",
+                  width: "50px",
+                  height: "50px",
+                }}
+                size={40}
+              />{" "}
+              <small className="text-xs">Loading ticket chat... </small>
+            </div>
+          ) : (
+            ""
+          )}
         </div>
 
         <div className="px-4 py-2  flex items-center">
@@ -298,10 +337,11 @@ const Chat = () => {
             className="flex-1  rounded-lg px-4 py-2 outline-none border-2 focus:border-blue-200 ml-2"
             placeholder="Type your message..."
           />
+          {console.log("selected ticket", Object.keys(selectedTicket).length)}
           <button
             onClick={handleSendButtonClick}
             className="ml-2 font-sans text-sm bg-[#22694de1] text-white py-2 px-4 rounded-lg shadow-md hover:bg-[#37755ce1] focus:outline-none "
-            disabled={selectedTicket ? false : true}
+            disabled={Object.keys(selectedTicket).length === 0 ? true : false}
           >
             Send
           </button>

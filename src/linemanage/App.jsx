@@ -8,17 +8,22 @@ import NavItem from "./components/NavItem";
 import { Loader } from "../components/Loader";
 
 import "./index.css";
-import { Provider } from "react-redux";
+import { Provider, useDispatch, useSelector } from "react-redux";
 import { store } from "./Redux/store";
 
 import axios from "axios";
 import Dashboards from "./components/Dashboard";
+import { fetchLineManagersCredentails } from "./Redux/lineManager";
 
 function App() {
+  const dispatch = useDispatch();
   const [searchParams] = useSearchParams();
   const session_id = searchParams.get("session_id");
   const [loadingFetchUserInfo, setLoadingFetchUserInfo] = useState(false);
   const [authenticationError, setAuthenticationError] = useState(false);
+  const lineManagerCredentials = useSelector(
+    (state) => state.lineManagers.lineManagerCredentials
+  );
 
   const [apiKey, setApiKey] = useState(() => {
     const savedApiKey = localStorage.getItem("apiKey");
@@ -83,8 +88,19 @@ function App() {
     if (userInfo && !apiKey) {
       fetchApiKey();
     }
+    if (userInfo && apiKey) {
+      dispatch(
+        fetchLineManagersCredentails({
+          api_key: apiKey,
+          workspace_id: userInfo?.client_admin_id,
+          session_id: session_id,
+        })
+      );
+      console.log("api", apiKey, "user info", userInfo?.client_admin_id);
+    }
   }, [session_id, userInfo]);
 
+  /////console.log("api key from app0", lineManagerCredentials.api_key);
   return (
     <>
       <Provider store={store}>
@@ -102,11 +118,9 @@ function App() {
         <NavItem />
         {loadingFetchUserInfo ? (
           <Loader />
-        ) : userInfo ? (
-          <Dashboards
-            api_key={apiKey}
-            workspace_id={userInfo?.client_admin_id}
-          />
+        ) : lineManagerCredentials.workspace_id &&
+          lineManagerCredentials.api_key ? (
+          <Dashboards />
         ) : authenticationError ? (
           "Authentication Failed"
         ) : (
