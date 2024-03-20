@@ -22,7 +22,7 @@ function LineManager() {
   const [option, setOption] = useState("");
   const [loading, setLoading] = useState(true);
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
-  const [ownerType, setOwnerType] = useState(true);
+  const [ownerType, setOwnerType] = useState("");
   const lineManagerCredentials = useSelector(
     (state) => state.lineManagers.lineManagerCredentials
   );
@@ -55,9 +55,13 @@ function LineManager() {
             item.member_type === "owner" &&
             item.product === "Dowell Customer Support Centre"
         );
+
         if (responseData === -1) {
           setOwnerType(false);
+        } else {
+          setOwnerType(true);
         }
+        //console.log
         await socket.emit("get_all_line_managers", {
           workspace_id: lineManagerCredentials.workspace_id,
           api_key: lineManagerCredentials.api_key,
@@ -253,14 +257,17 @@ function LineManager() {
           <NavLink className="px-3 py-1 bg-gray-200 rounded-md">&gt;</NavLink>{" "}
         </div> */}
         <div className="flex flex-col justify-center gap-4 mb-7 w-full mt-8 pr-3">
-          {ownerType ? (
+          {console.log("owner type", ownerType)}
+          {ownerType === true ? (
             <h3 className="w-[80%] text-center mx-auto items-center ">
               Setting for your customers!
             </h3>
-          ) : (
+          ) : ownerType === false ? (
             <h3 className="w-[80%] text-center mx-auto items-center ">
               Create topic and link for your customers!
             </h3>
+          ) : (
+            ""
           )}
 
           <hr className="w-[80%] text-center mx-auto items-center " />
@@ -289,7 +296,7 @@ function LineManager() {
               className="absolute z-10 mt-1 ml-4 w-56 bg-white rounded-md shadow-lg "
               style={{ transform: "translateY(-100%)" }}
             > */}
-            {!ownerType &&
+            {ownerType === false &&
               options
                 .filter(
                   (option) =>
@@ -305,7 +312,7 @@ function LineManager() {
                     {option.label}
                   </button>
                 ))}
-            {ownerType &&
+            {ownerType === true &&
               options.map((option) => (
                 <button
                   key={option.value}
