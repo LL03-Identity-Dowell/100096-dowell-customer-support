@@ -109,7 +109,6 @@ const Chat = () => {
         };
 
         setMessages([...messages, message]);
-
         setLoading(false);
         //  }
       }
