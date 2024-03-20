@@ -72,6 +72,11 @@ function CreateComponent({ closeSearchModal, option }) {
               item.member_type === "public" &&
               item.product === "Dowell Customer Support Centre"
           );
+        if (!responseData?.username) {
+          toast.warn("No usernames found!");
+          setLoading(false);
+          return;
+        }
         console.log(
           "responseData USER name count",
           responseData?.username?.length
