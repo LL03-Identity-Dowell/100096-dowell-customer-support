@@ -5,9 +5,10 @@ import Toggler from "./Toggler.jsx";
 import { faTelegramPlane } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-const ChatForm = ({ onClose, darkMode, toggleDarkMode, messageToDisplay }) => {
+const CreatedTicketChat = ({ onClose, darkMode, toggleDarkMode }) => {
   const [message, setMessage] = useState("");
   const containerRef = useRef(null);
+  const [messageToDisplay, setMessageToDisplay] = useState([]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -91,7 +92,6 @@ const ChatForm = ({ onClose, darkMode, toggleDarkMode, messageToDisplay }) => {
             </button>
           </div>
         </div>
-
         <div className=" p-4 rounded-lg shadow-lg overflow-y-auto h-[79%]  pb-10 w-full ">
           <div
             ref={containerRef}
@@ -200,4 +200,4 @@ const ChatForm = ({ onClose, darkMode, toggleDarkMode, messageToDisplay }) => {
   );
 };
 
-export default ChatForm;
+export default CreatedTicketChat;

@@ -21,7 +21,10 @@ const CreateTicket = () => {
   return (
     <section>
       {isSearchModalOpen && (
-        <SearchComponent closeSearchModal={closeSearchModal} />
+        <SearchComponent
+          closeSearchModal={closeSearchModal}
+          openSearchModal={openSearchModal}
+        />
       )}
       <TicketTopNav openSearchModal={openSearchModal} />
       <TicketMainContent />

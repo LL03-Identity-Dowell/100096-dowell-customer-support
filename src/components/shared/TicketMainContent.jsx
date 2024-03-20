@@ -98,7 +98,6 @@ const TicketMainContent = () => {
 
       fetchData();
     } else {
-      setCreateTicket(true);
     }
     if (!socket) return;
 
@@ -238,7 +237,9 @@ const TicketMainContent = () => {
 
   return (
     <div className="flex justify-center items-center ">
-      {loading && !isCreateTicket ? (
+      {loading &&
+      !isCreateTicket &&
+      JSON.parse(localStorage.getItem("create_ticket_detail")) ? (
         <Loading />
       ) : (
         <div className="main_cont">
