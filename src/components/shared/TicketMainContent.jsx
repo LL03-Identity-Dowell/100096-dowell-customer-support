@@ -18,7 +18,7 @@ const TicketMainContent = () => {
   const { createTicket } = useCreateTicketContext();
   const [getLinkRes, setGetLinkRes] = useState([]);
   const [ticketNumber, setTicketNumber] = useState("Not assigned");
-  const [apiKey, setApiKey] = useState("1b834e07-c68b-4bf6-96dd-ab7cdc62f07f");
+  const [apiKey, setApiKey] = useState("");
   const { search } = useLocation();
   const [isChatOpen, setIsChatOpen] = useState(false);
   const params = new URLSearchParams(search);
@@ -114,8 +114,8 @@ const TicketMainContent = () => {
       try {
         const response = await fetch(apiUrl);
         const responseData = await response.json();
-        // setApiKey(responseData["data"]["api_key"]);
-        setApiKey("1b834e07-c68b-4bf6-96dd-ab7cdc62f07f");
+        setApiKey(responseData["data"]["api_key"]);
+        // setApiKey("1b834e07-c68b-4bf6-96dd-ab7cdc62f07f");
       } catch (error) {
         console.error(error.message);
       }
@@ -204,7 +204,7 @@ const TicketMainContent = () => {
               ticket_id: data.data._id,
               product: data.data.product,
               workspace_id: params.get("workspace_id"),
-              api_key: "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f",
+              api_key: "",
             };
 
             socket.emit("get_ticket_messages", getTicketMessagesPayload);

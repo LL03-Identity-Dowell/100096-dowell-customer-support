@@ -381,7 +381,7 @@ function SearchComponent({ closeSearchModal, openSearchModal }) {
               </div>
             ) : (
               <div>
-                {loading && !error && !ticket?.is_closed ? (
+                {loading && !error ? (
                   <div className="flex justify-center items-center text-center w-full py-auto ">
                     <div className="animate-spin h-8 w-8 border-t-2 mt-16 mx-auto text-center   border-indigo-500 rounded-full"></div>
                   </div>
