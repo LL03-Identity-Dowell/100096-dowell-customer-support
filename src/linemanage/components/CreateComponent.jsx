@@ -166,6 +166,8 @@ function CreateComponent({ closeSearchModal, option }) {
   };
 
   const createTopic = async (topic_name) => {
+    //setLoading(false);
+
     // console.log("workspace id, api_key", workspace_id, api_key);
     // workspace_id = "646ba835ce27ae02d024a902";
     //api_key = "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f";
