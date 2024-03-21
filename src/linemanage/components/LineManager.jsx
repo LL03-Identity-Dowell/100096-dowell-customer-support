@@ -1,8 +1,8 @@
 /* eslint-disable react/prop-types */
 //import { useEffect } from "react";
-import { NavLink } from "react-router-dom";
+
 import { useEffect, useState } from "react";
-import { BsThreeDotsVertical } from "react-icons/bs";
+//import { BsThreeDotsVertical } from "react-icons/bs";
 
 import CreateComponent from "./CreateComponent";
 
@@ -16,14 +16,13 @@ import io from "socket.io-client";
 import axios from "axios";
 const socket = io.connect("https://www.dowellchat.uxlivinglab.online/");
 function LineManager() {
-  const basePath = "/linemanage/ticketDetail";
   console.log("socket", socket);
   const dispatch = useDispatch();
-  const [isOpen, setIsOpen] = useState(false);
+  //const [isOpen, setIsOpen] = useState(false);
   const [option, setOption] = useState("");
   const [loading, setLoading] = useState(true);
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
-  const [ownerType, setOwnerType] = useState(true);
+  const [ownerType, setOwnerType] = useState("");
   const lineManagerCredentials = useSelector(
     (state) => state.lineManagers.lineManagerCredentials
   );
@@ -50,16 +49,19 @@ function LineManager() {
             session_id: lineManagerCredentials.session_id, //"okms05yhlfj6xl7jug9b6f6lyk8okb8o",
           }
         );
-        // console.log("data =", response.data);
-        let responseData =
-          await response?.data?.selected_product?.userportfolio.findIndex(
-            (item) =>
-              item.member_type === "owner" &&
-              item.product === "Dowell Customer Support Centre"
-          );
+        console.log("data =", response.data);
+        let responseData = await response?.data?.portfolio_info?.findIndex(
+          (item) =>
+            item.member_type === "owner" &&
+            item.product === "Dowell Customer Support Centre"
+        );
+
         if (responseData === -1) {
           setOwnerType(false);
+        } else {
+          setOwnerType(true);
         }
+        //console.log
         await socket.emit("get_all_line_managers", {
           workspace_id: lineManagerCredentials.workspace_id,
           api_key: lineManagerCredentials.api_key,
@@ -103,14 +105,14 @@ function LineManager() {
   };
   const options = [
     { label: "Create Line Manager", value: "createLineManager" },
-    { label: "Chat Line Manager", value: "chatLineManager" },
+    // { label: "Chat Line Manager", value: "chatLineManager" },
     { label: "Create Topic", value: "createTopic" },
     { label: "Generate Link", value: "generateLink" },
   ];
 
   const handleSelect = (option) => {
     // setSelectedOption(option);'
-    setIsOpen(false);
+    // setIsOpen(false);
     openSearchModal(option.value);
     //  createTopic("login error", "1353343");
   };
@@ -169,7 +171,7 @@ function LineManager() {
                     </div>
                     <div className="flex flex-col align-middle justify-start h-auto w-full">
                       <span className="text-md">
-                        {data.ticket_count} &gt; Waiting,
+                        {data.ticket_count} Waiting,
                       </span>
                       <span className="text-md">
                         Service time &lt; {data.average_serving_time}
@@ -198,11 +200,10 @@ function LineManager() {
             )}
           </tbody>
         </table>
-        <div className="flex justify-center items-center my-10">
+        {/* <div className="flex justify-center items-center my-10">
           <button className="px-3 py-1 bg-gray-200 rounded-md mr-2">
             &lt;
           </button>{" "}
-          {/* Backward button */}
           <NavLink
             className={({ isActive }) =>
               `px-3 py-1  rounded-md mr-2 ${
@@ -254,11 +255,24 @@ function LineManager() {
             5
           </NavLink>
           <NavLink className="px-3 py-1 bg-gray-200 rounded-md">&gt;</NavLink>{" "}
-          {/* Forward button */}
-        </div>
-        <div className="flex justify-center gap-4 mb-7 w-full pr-3">
+        </div> */}
+        <div className="flex flex-col justify-center gap-4 mb-7 w-full mt-8 pr-3">
+          {console.log("owner type", ownerType)}
+          {ownerType === true ? (
+            <h3 className="w-[80%] text-center mx-auto items-center ">
+              Setting for your customers!
+            </h3>
+          ) : ownerType === false ? (
+            <h3 className="w-[80%] text-center mx-auto items-center ">
+              Create topic and link for your customers!
+            </h3>
+          ) : (
+            ""
+          )}
+
+          <hr className="w-[80%] text-center mx-auto items-center " />
           <div className="mr-auto w-full flex justify-center gap-5">
-            <button className="bg-[#22694de1] font-sans text-sm hover:bg-green-700 text-white font-bold py-2 px-2 md:w-27 rounded-md">
+            {/* <button className="bg-[#22694de1] font-sans text-sm hover:bg-green-700 text-white font-bold py-2 px-2 md:w-27 rounded-md">
               Close Line
             </button>
             <button className="bg-[#22694de1] font-sans text-sm hover:bg-green-700 text-white font-bold py-2 px-2 md:w-27 rounded-md">
@@ -269,58 +283,57 @@ function LineManager() {
             </button>
             <button className="bg-[#22694de1] font-sans text-sm hover:bg-green-700 text-white font-bold py-2 px-2 md:w-27 rounded-md">
               Serve line
-            </button>
+            </button> */}
 
-            <div
+            {/* <div
               className="cursor-pointer pt-2 text-lg relative "
-              onClick={() => setIsOpen(!isOpen)}
-            >
-              <BsThreeDotsVertical />
+              // onClick={() => setIsOpen(!isOpen)}
+            > */}
+            {/* <BsThreeDotsVertical />
 
-              {isOpen && (
-                <div
-                  className="absolute z-10 mt-1 ml-4 w-56 bg-white rounded-md shadow-lg "
-                  style={{ transform: "translateY(-100%)" }}
+              {isOpen && ( */}
+            {/* <div
+              className="absolute z-10 mt-1 ml-4 w-56 bg-white rounded-md shadow-lg "
+              style={{ transform: "translateY(-100%)" }}
+            > */}
+            {ownerType === false &&
+              options
+                .filter(
+                  (option) =>
+                    option.value === "createTopic" ||
+                    option.value === "generateLink"
+                )
+                .map((option) => (
+                  <button
+                    key={option.value}
+                    className="bg-white border border-[#22694de1] font-sans text-sm text-[#22694de1] hover:bg-green-700 hover:text-white font-bold py-2 px-2 md:w-27 rounded-md"
+                    onClick={() => handleSelect(option)}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+            {ownerType === true &&
+              options.map((option) => (
+                <button
+                  key={option.value}
+                  className="bg-white border border-[#22694de1] font-sans text-sm text-[#22694de1] hover:bg-green-700 hover:text-white font-bold py-2 px-2 md:w-27 rounded-md"
+                  onClick={() => handleSelect(option)}
                 >
-                  {!ownerType &&
-                    options
-                      .filter(
-                        (option) =>
-                          option.value === "createTopic" ||
-                          option.value === "generateLink"
-                      )
-                      .map((option) => (
-                        <button
-                          key={option.value}
-                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
-                          onClick={() => handleSelect(option)}
-                        >
-                          {option.label}
-                        </button>
-                      ))}
-                  {ownerType &&
-                    options.map((option) => (
-                      <button
-                        key={option.value}
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
-                        onClick={() => handleSelect(option)}
-                      >
-                        {option.label}
-                      </button>
-                    ))}
-                </div>
-              )}
+                  {option.label}
+                </button>
+              ))}
+          </div>
 
-              {/* <button className="bg-[#22694de1] hover:bg-green-700 text-white font-bold py-0 px-2 rounded-lg">
+          {/* <button className="bg-[#22694de1] hover:bg-green-700 text-white font-bold py-0 px-2 rounded-lg">
               Chat Manager
             </button> */}
-            </div>
-          </div>
-          {/* <button className="bg-red-400 ml-auto hover:bg-red-500 text-white font-bold py-1.5 px-2 rounded-lg ">
+          {/* </div> */}
+        </div>
+        {/* <button className="bg-red-400 ml-auto hover:bg-red-500 text-white font-bold py-1.5 px-2 rounded-lg ">
             Logout
           </button> */}
-        </div>
       </div>
+      {/* </div> */}
       {/* ticket detail */}
 
       {/* <TicketDetail /> */}

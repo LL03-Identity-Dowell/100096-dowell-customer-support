@@ -29,7 +29,7 @@ function App() {
     const savedApiKey = localStorage.getItem("apiKey");
     return savedApiKey ? JSON.parse(savedApiKey) : null;
   });
-
+  //const [portfolioCode, setPortfolioCode]=useState("");
   const [userInfo, setUserInfo] = useState(() => {
     const savedUserInfo = localStorage.getItem("userInfo");
     return savedUserInfo ? JSON.parse(savedUserInfo) : null;
@@ -45,6 +45,7 @@ function App() {
 
       .then((response) => {
         setUserInfo(response?.data?.userinfo);
+        //setPortfolioCode(response?.data?.portfolio_info?.find())
         localStorage.setItem(
           "userInfo",
           JSON.stringify(response?.data?.userinfo)
@@ -92,8 +93,10 @@ function App() {
       dispatch(
         fetchLineManagersCredentails({
           api_key: apiKey,
+          username: userInfo?.username,
           workspace_id: userInfo?.client_admin_id,
           session_id: session_id,
+          // portfolio_code:
         })
       );
       console.log("api", apiKey, "user info", userInfo?.client_admin_id);

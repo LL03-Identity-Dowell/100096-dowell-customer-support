@@ -317,16 +317,17 @@ const Chat = () => {
           <label className="cursor-pointer ml-4">
             <input type="file" className="hidden" onChange={handleFileChange} />
             <svg
-              className="h-6 w-6 text-blue-500 hover:text-blue-700"
-              fill="currentColor"
-              viewBox="0 0 20 20"
               xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              width="28"
+              height="28"
+              fill="none"
+              stroke="#22694de1"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             >
-              <path
-                fillRule="evenodd"
-                d="M11 4V1a1 1 0 011-1h3a1 1 0 011 1v3a1 1 0 11-2 0V3h-2v10h4V7a1 1 0 112 0v10a1 1 0 01-1 1H3a1 1 0 01-1-1V7a1 1 0 112 0v6h4v3a1 1 0 11-2 0v-3H4v-2h12v2h-2v3a1 1 0 11-2 0v-3h-2v2a1 1 0 11-2 0v-3a1 1 0 011-1h4a1 1 0 011 1v3h-2V7a1 1 0 112 0v3z"
-                clipRule="evenodd"
-              />
+              <path d="M21 11.2V17c0 .6-.4 1-1 1H4c-.6 0-1-.4-1-1v-5.8c0-.6.4-1 1-1h2.2M12 2v10M12 2l3.5 3.5M12 2l-3.5 3.5" />
             </svg>
           </label>
           <input

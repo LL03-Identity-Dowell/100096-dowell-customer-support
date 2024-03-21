@@ -33,6 +33,8 @@ function CreateComponent({ closeSearchModal, option }) {
   const [url, setUrl] = useState("https://www.dowellchat.uxlivinglab.online/");
   const [linkCopy, setLinkCopy] = useState(false);
   const inputRef = useRef(null);
+  const [portfolioCode, setPortfolioCode] = useState("");
+  const [userNameCount, setUserNameCount] = useState(0);
   const lineManagerCredentials = useSelector(
     (state) => state.lineManagers.lineManagerCredentials
   );
@@ -54,7 +56,40 @@ function CreateComponent({ closeSearchModal, option }) {
         await getManagersList();
       }
     };
+    const getUserNameCount = async () => {
+      setLoading(true);
+      try {
+        let response = await axios.post(
+          "https://100093.pythonanywhere.com/api/userinfo/",
+          {
+            session_id: lineManagerCredentials.session_id, //"okms05yhlfj6xl7jug9b6f6lyk8okb8o",
+          }
+        );
+        // console.log("data =", response.data);
+        let responseData =
+          await response?.data?.selected_product?.userportfolio.find(
+            (item) =>
+              item.member_type === "public" &&
+              item.product === "Dowell Customer Support Centre"
+          );
+        if (!responseData?.username) {
+          toast.warn("No usernames found!");
+          setLoading(false);
+          return;
+        }
+        console.log(
+          "responseData USER name count",
+          responseData?.username?.length
+        );
+        setUserNameCount(responseData?.username.length);
+        console.log(responseData);
+        setLoading(false);
+      } catch (e) {
+        console.log("error", e.message);
+      }
+    };
     getManagerMembers();
+    getUserNameCount();
     const handleResize = () => {
       const windowHeight = window.innerHeight;
       // Set the modal height to 80% of the window height
@@ -89,7 +124,7 @@ function CreateComponent({ closeSearchModal, option }) {
           (item) => item.member_type === "team_member"
         );
       console.log("response data", responseData);
-      setMembers(responseData.username);
+      setMembers(responseData?.username);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -208,6 +243,12 @@ function CreateComponent({ closeSearchModal, option }) {
             item.member_type === "public" &&
             item.product === "Dowell Customer Support Centre"
         );
+      if (!responseData?.username) {
+        toast.warn("Something went wrong, couldn't find your username");
+        setLoading(false);
+        return;
+      }
+      // setUserNameCount(responseData?.username.length);
       if (linkNumber > responseData?.username.length) {
         toast.warning(
           "Link number must be less than or equal to existing users"
@@ -215,15 +256,18 @@ function CreateComponent({ closeSearchModal, option }) {
         setLoading(false);
         return;
       }
+      setPortfolioCode(responseData?.portfolio_code);
+
       //console.log("response data", responseData);
       //setMembers(responseData.username);
       // console.log("response data", responseData.username);
+      let usernames = responseData?.username?.slice(0, parseInt(linkNumber));
       const linkData = {
         number_of_links: linkNumber,
         product_distribution: {
           ...linkTopic,
         },
-        usernames: responseData.username,
+        usernames: [...usernames],
         url: url,
         workspace_id: lineManagerCredentials.workspace_id,
         api_key: lineManagerCredentials.api_key,
@@ -232,8 +276,14 @@ function CreateComponent({ closeSearchModal, option }) {
       };
 
       await socket.emit("generate_share_link", linkData);
+      ///////console.log("link generated", linkgenerated);
+      /// if (linkgenerated) {
+      markUserNamesUsedAPI(usernames);
+      /// }
     } catch (error) {
       console.error("Error fetching data:", error);
+      toast.error(error.message);
+      setLoading(false);
     }
 
     await socket.on("share_link_response", (data) => {
@@ -246,6 +296,30 @@ function CreateComponent({ closeSearchModal, option }) {
       }
       //sconsole.log("Master Link response:", data);
     });
+  };
+  // removing public usernames
+  const markUserNamesUsedAPI = (usernames) => {
+    let baseurl = `https://100093.pythonanywhere.com/api/remove_public_usernames/`;
+
+    const data = {
+      org_id: lineManagerCredentials.workspace_id,
+      product: "Dowell Customer Support Centre",
+      username: lineManagerCredentials.username,
+      session_id: lineManagerCredentials.session_id,
+      usernames,
+      portfolio_code: portfolioCode,
+    };
+
+    console.log("data", data);
+
+    axios
+      .post(baseurl, data)
+      .then((response) => {
+        console.log("Set usernames used response:", response.data);
+      })
+      .catch((error) => {
+        console.error("set usernames used:", error);
+      });
   };
 
   const handleSubmit = async (event) => {
@@ -360,6 +434,24 @@ function CreateComponent({ closeSearchModal, option }) {
                   onSubmit={handleLinkSubmit}
                   className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 sm:w-[350px] md:w-[400px]"
                 >
+                  <div className="mb-4 flex sm:flex-col md:flex-row sm:gap-5 md:gap-10 sm:w-max-[300px] md:w-[400px]">
+                    <label
+                      htmlFor="usernamecount"
+                      className="block text-gray-700 text-sm font-bold sm:w-max-[70px] md:w-[100px] mb-2"
+                    >
+                      UserName Count:
+                    </label>
+                    <input
+                      type="number"
+                      id="usernamecount"
+                      name="usernamecount"
+                      value={userNameCount}
+                      //onChange={(e) => setUrl()}
+                      className="shadow appearance-none border rounded sm:w-max-[150px] h-8 md:w-[200px] py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                      readOnly
+                    />
+                  </div>
+
                   <div className="mb-4 flex sm:flex-col md:flex-row sm:gap-5 md:gap-10 sm:md:w-max-[380px] md:w-[400px]">
                     <label
                       htmlFor="input1"
