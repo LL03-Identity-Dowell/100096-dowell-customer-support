@@ -4,10 +4,22 @@ import { chat } from "../../assets/index.js";
 import Toggler from "./Toggler.jsx";
 import { faTelegramPlane } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useLocation } from "react-router-dom";
 
-const ChatForm = ({ onClose, darkMode, toggleDarkMode, messageToDisplay }) => {
+const ChatForm = ({
+  onClose,
+  darkMode,
+  toggleDarkMode,
+  messageToDisplay,
+  ticketDetail,
+  apiKey,
+  socket,
+}) => {
   const [message, setMessage] = useState("");
   const containerRef = useRef(null);
+
+  const { search } = useLocation();
+  const params = new URLSearchParams(search);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -33,7 +45,6 @@ const ChatForm = ({ onClose, darkMode, toggleDarkMode, messageToDisplay }) => {
   const handleSend = (e) => {
     e.preventDefault();
     if (message.trim() !== "" && ticketDetail) {
-      scrollToBottom();
       const ticketMessagePayload = {
         ticket_id: JSON.parse(localStorage.getItem("create_ticket_detail"))._id,
         product: JSON.parse(localStorage.getItem("create_ticket_detail"))

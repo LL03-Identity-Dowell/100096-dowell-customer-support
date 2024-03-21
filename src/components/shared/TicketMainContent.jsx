@@ -394,10 +394,13 @@ const TicketMainContent = () => {
             </Formik>
             {isChatOpen && !loading ? (
               <ChatForm
+                apiKey={apiKey}
+                ticketDetail={ticketDetail}
                 onClose={toggleChat}
                 darkMode={darkMode}
                 toggleDarkMode={toggleDarkMode}
                 messageToDisplay={messageToDisplay}
+                socket={socket}
               />
             ) : (
               ""
