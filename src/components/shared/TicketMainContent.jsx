@@ -188,7 +188,6 @@ const TicketMainContent = () => {
         product: values.topic,
       };
       await socket.emit("create_ticket", payload);
-      window.location.reload();
 
       await new Promise((resolve) => {
         socket.on("ticket_response", (data) => {
