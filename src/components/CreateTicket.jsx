@@ -1,11 +1,14 @@
 import { useState } from "react";
 import SearchComponent from "./shared/SearchComponent";
-import TicketLogo from "./shared/TicketLogo";
 import TicketMainContent from "./shared/TicketMainContent";
 import TicketTopNav from "./shared/TicketTopNav";
 
 const CreateTicket = () => {
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
+
+  const toggleLoading = (state) => {
+    setLoading(state);
+  };
 
   const openSearchModal = () => {
     setIsSearchModalOpen(true);
@@ -18,13 +21,13 @@ const CreateTicket = () => {
   return (
     <section>
       {isSearchModalOpen && (
-        <SearchComponent closeSearchModal={closeSearchModal} />
+        <SearchComponent
+          closeSearchModal={closeSearchModal}
+          openSearchModal={openSearchModal}
+        />
       )}
       <TicketTopNav openSearchModal={openSearchModal} />
-      <div className="main_cont">
-        <TicketLogo />
-        <TicketMainContent />
-      </div>
+      <TicketMainContent />
     </section>
   );
 };
