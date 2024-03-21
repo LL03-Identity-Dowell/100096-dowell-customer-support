@@ -112,9 +112,14 @@ function Dropdowns({
     console.log("new ticket", data);
     //console.log()
     if (data?.status === "success") {
-      dispatch(fetchTicketInfo([...ticketInfo, data?.data]));
+      if (data?.data?.product === selectedTopic.name) {
+        dispatch(fetchTicketInfo([...ticketInfo, data?.data]));
+      }
+
       //ticketInfoToShow = [...ticketInfo, data?.data];
-      toast.success("new ticket added", { toastId: "success1" });
+      toast.success(`new ticket added in ${data?.data?.product}`, {
+        toastId: "success1",
+      });
     } else {
       return;
     }
