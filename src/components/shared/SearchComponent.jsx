@@ -116,6 +116,7 @@ function SearchComponent({ closeSearchModal, openSearchModal }) {
 
     const ticket = findTicketById(searchValue.trim());
 
+    console.log(ticket);
     if (ticket) {
       setTicket(ticket);
       console.log(ticket);
@@ -258,6 +259,7 @@ function SearchComponent({ closeSearchModal, openSearchModal }) {
     const storedcData = JSON.parse(
       localStorage.getItem("create_ticket_detail")
     );
+
     setTicketDetail(storedcData);
     setOpenChat(!openChat);
   };
