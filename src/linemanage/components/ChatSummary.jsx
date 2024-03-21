@@ -89,38 +89,41 @@ const Chat = () => {
   //getting ticket messages and making a chat
   socket.on("ticket_message_response", (data) => {
     // setLoading(false);
+    console.log("message data", data);
     if (typeof data?.data === "object" && !Array.isArray(data?.data)) {
       console.log("data from tickets ", data?.data);
       //dispatch(fetchSingleMessage(data?.data));
 
       let messageResponse = data?.data;
-      if (Object.keys(messageResponse).length > 0) {
-        const { author, is_read, created_at, message_data } = messageResponse;
-        let current_user = "1234";
-        console.log(current_user, author);
-        console.log("chat datas", author, is_read, created_at, message_data);
-        // if (author !== current_user) {
-        const message = {
-          id: messages.length + 1,
-          sender: author !== current_user ? "user" : "receiver",
-          type: "text",
-          content: message_data,
-          created_at: created_at,
-        };
+      if (messageResponse.ticket_id === selectedTicket._id) {
+        if (Object.keys(messageResponse).length > 0) {
+          const { author, is_read, created_at, message_data } = messageResponse;
+          let current_user = "1234";
+          console.log(current_user, author);
+          console.log("chat datas", author, is_read, created_at, message_data);
+          // if (author !== current_user) {
+          const message = {
+            id: messages.length + 1,
+            sender: author !== current_user ? "user" : "receiver",
+            type: "text",
+            content: message_data,
+            created_at: created_at,
+          };
 
-        setMessages([...messages, message]);
-        setLoading(false);
-        //  }
+          setMessages([...messages, message]);
+          setLoading(false);
+          //  }
+        }
       }
-
       return;
     }
-
+    //if (data?.data?.ticket_id === selectedTicket._id) {
     if (data.status === "success") {
       dispatch(fetchTicketMessage(data?.data));
     } else {
       dispatch(fetchTicketMessage([]));
     }
+    //}
   });
 
   const sendChat = async (newMessage) => {

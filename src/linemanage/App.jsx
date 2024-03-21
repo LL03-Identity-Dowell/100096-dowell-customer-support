@@ -27,18 +27,24 @@ function App() {
 
   const [apiKey, setApiKey] = useState(() => {
     const savedApiKey = localStorage.getItem("apiKey");
-    return savedApiKey ? JSON.parse(savedApiKey) : null;
+    console.log("saved api key", typeof savedApiKey);
+    return savedApiKey && savedApiKey !== "undefined"
+      ? JSON.parse(savedApiKey)
+      : null;
   });
-  //const [portfolioCode, setPortfolioCode]=useState("");
+
   const [userInfo, setUserInfo] = useState(() => {
     const savedUserInfo = localStorage.getItem("userInfo");
-    return savedUserInfo ? JSON.parse(savedUserInfo) : null;
+    // console.log("type of user info", typeof savedUserInfo);
+    return savedUserInfo && savedUserInfo !== "undefined"
+      ? JSON.parse(savedUserInfo)
+      : null;
   });
 
   const getUserInfo = async () => {
     setLoadingFetchUserInfo(true);
     const session_id = searchParams.get("session_id");
-    axios
+    await axios
       .post("https://100014.pythonanywhere.com/api/userinfo/", {
         session_id: session_id,
       })
@@ -69,6 +75,7 @@ function App() {
         "apiKey",
         JSON.stringify(responseData?.data?.api_key)
       );
+      console.log("api key data", responseData?.data?.api_key);
       setApiKey(responseData?.data?.api_key);
     } catch (error) {
       console.error("Fetch Api Key Error", error.message);
@@ -85,10 +92,11 @@ function App() {
       }
       getUserInfo();
     }
-
+    console.log("api key", !apiKey, "value", apiKey);
     if (userInfo && !apiKey) {
       fetchApiKey();
     }
+
     if (userInfo && apiKey) {
       dispatch(
         fetchLineManagersCredentails({
@@ -99,9 +107,10 @@ function App() {
           // portfolio_code:
         })
       );
-      console.log("api", apiKey, "user info", userInfo?.client_admin_id);
     }
-  }, [session_id, userInfo]);
+    console.log("api", apiKey, "user info", userInfo?.client_admin_id);
+    //}
+  }, [session_id, apiKey, userInfo]);
 
   /////console.log("api key from app0", lineManagerCredentials.api_key);
   return (
@@ -119,10 +128,17 @@ function App() {
           pauseOnHover
         />
         <NavItem />
+        {console.log(
+          "in jsx",
+          lineManagerCredentials.workspace_id,
+          "session",
+          session_id,
+          "api key",
+          lineManagerCredentials.api_key
+        )}
         {loadingFetchUserInfo ? (
           <Loader />
-        ) : lineManagerCredentials.workspace_id &&
-          lineManagerCredentials.api_key ? (
+        ) : lineManagerCredentials.workspace_id && apiKey && session_id ? (
           <Dashboards />
         ) : authenticationError ? (
           "Authentication Failed"

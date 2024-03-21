@@ -41,7 +41,7 @@ function CreateComponent({ closeSearchModal, option }) {
   //setting up loading to get list of managers
   useEffect(() => {
     option === "createLineManager"
-      ? members.length === 0
+      ? members?.length === 0
         ? setLoading(true)
         : setLoading(false)
       : "";
@@ -81,7 +81,7 @@ function CreateComponent({ closeSearchModal, option }) {
           "responseData USER name count",
           responseData?.username?.length
         );
-        setUserNameCount(responseData?.username.length);
+        setUserNameCount(responseData?.username?.length);
         console.log(responseData);
         setLoading(false);
       } catch (e) {
@@ -249,7 +249,7 @@ function CreateComponent({ closeSearchModal, option }) {
         return;
       }
       // setUserNameCount(responseData?.username.length);
-      if (linkNumber > responseData?.username.length) {
+      if (linkNumber > responseData?.username?.length) {
         toast.warning(
           "Link number must be less than or equal to existing users"
         );
@@ -593,7 +593,7 @@ function CreateComponent({ closeSearchModal, option }) {
             </>
           )
         }
-        {loading && option === "createLineManager" && members.length <= 0 ? (
+        {loading && option === "createLineManager" && members?.length <= 0 ? (
           <div className="d-flex mt-3 justify-content-center align-items-center">
             <ClipLoader
               color={"#22694de1"}
