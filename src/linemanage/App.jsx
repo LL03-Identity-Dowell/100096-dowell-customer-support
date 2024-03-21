@@ -138,7 +138,9 @@ function App() {
         )}
         {loadingFetchUserInfo ? (
           <Loader />
-        ) : lineManagerCredentials.workspace_id && apiKey && session_id ? (
+        ) : lineManagerCredentials.workspace_id &&
+          lineManagerCredentials.api_key &&
+          lineManagerCredentials.session_id ? (
           <Dashboards />
         ) : authenticationError ? (
           "Authentication Failed"

@@ -260,8 +260,9 @@ function CreateComponent({ closeSearchModal, option }) {
       }
       setPortfolioCode(responseData?.portfolio_code);
 
-      //console.log("response data", responseData);
-      //setMembers(responseData.username);
+      //console.log("workspace id", lineManagerCredentials.workspace_id);
+
+      //setMembers(lineManagerCredentials.workspace_id,);
       // console.log("response data", responseData.username);
       let usernames = responseData?.username?.slice(0, parseInt(linkNumber));
       const linkData = {
@@ -294,7 +295,8 @@ function CreateComponent({ closeSearchModal, option }) {
         setMasterLink(data.data);
         toast.success("generated successfully");
       } else {
-        toast.warn("some error happened");
+        toast.warn("some error happened", data.data);
+        console.log(data);
       }
       //sconsole.log("Master Link response:", data);
     });
