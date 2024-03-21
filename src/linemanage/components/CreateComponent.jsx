@@ -267,7 +267,7 @@ function CreateComponent({ closeSearchModal, option }) {
         product_distribution: {
           ...linkTopic,
         },
-        usernames: usernames,
+        usernames: [...usernames],
         url: url,
         workspace_id: lineManagerCredentials.workspace_id,
         api_key: lineManagerCredentials.api_key,
