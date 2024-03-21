@@ -56,7 +56,7 @@ const TicketMainContent = () => {
             ticket_id: ticketId,
             product: product,
             workspace_id: params.get("workspace_id"),
-            api_key: "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f",
+            api_key: apiKey,
           });
 
           await socket.on("ticket_message_response", (data) => {
