@@ -115,6 +115,7 @@ const TicketMainContent = () => {
         const response = await fetch(apiUrl);
         const responseData = await response.json();
         setApiKey(responseData["data"]["api_key"]);
+
         // setApiKey("1b834e07-c68b-4bf6-96dd-ab7cdc62f07f");
       } catch (error) {
         console.error(error.message);
@@ -128,8 +129,9 @@ const TicketMainContent = () => {
         link_id: params.get("link_id"),
         api_key: apiKey,
       });
+    } else {
     }
-  }, []);
+  }, [apiKey]);
 
   socket.on("share_link_response", (data) => {
     if (Array.isArray(data?.data)) {
@@ -188,12 +190,13 @@ const TicketMainContent = () => {
         product: values.topic,
       };
       await socket.emit("create_ticket", payload);
-      window.location.reload();
 
       await new Promise((resolve) => {
         socket.on("ticket_response", (data) => {
           if (data.status === "success") {
             createTicket(data.data);
+
+            console.log(data.data);
 
             setTicketNumber(data.data._id);
             localStorage.setItem(
@@ -204,7 +207,7 @@ const TicketMainContent = () => {
               ticket_id: data.data._id,
               product: data.data.product,
               workspace_id: params.get("workspace_id"),
-              api_key: "",
+              api_key: apiKey,
             };
 
             socket.emit("get_ticket_messages", getTicketMessagesPayload);
@@ -217,12 +220,10 @@ const TicketMainContent = () => {
       });
 
       actions.setSubmitting(false);
-      setCreatingTicket(false);
       return () => {
         socket.disconnect();
       };
     } catch (error) {
-      setCreatingTicket(false);
       console.log(error);
     }
   };
