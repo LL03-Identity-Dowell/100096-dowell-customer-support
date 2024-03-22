@@ -4,13 +4,13 @@ import { useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useCreateTicketContext } from "../../context/CreateTicketContext.jsx";
 import io from "socket.io-client";
+const socket = io.connect("https://www.dowellchat.uxlivinglab.online");
 
 import { ClipLoader } from "react-spinners";
 import CreateTicketSchema from "../../schema/CreateTicketSchema.jsx";
 import TicketLogo from "./TicketLogo.jsx";
 import Loading from "../Loading.jsx";
 import ChatForm from "./ChatForm.jsx";
-const socket = io.connect("https://www.dowellchat.uxlivinglab.online");
 
 const TicketMainContent = () => {
   const form = useRef();
@@ -36,9 +36,9 @@ const TicketMainContent = () => {
   const [ticketDetail, setTicketDetail] = useState({});
   const [darkMode, setDarkMode] = useState(true);
 
-  useEffect(() => {
-    setLoading(true);
-  }, [isCreateTicket, isChatOpen]);
+  // useEffect(() => {
+  //   setLoading(true);
+  // }, [isCreateTicket, isChatOpen]);
 
   useEffect(() => {
     if (JSON.parse(localStorage.getItem("create_ticket_detail"))) {
@@ -114,9 +114,10 @@ const TicketMainContent = () => {
       try {
         const response = await fetch(apiUrl);
         const responseData = await response.json();
-        setApiKey(responseData["data"]["api_key"]);
+        // setApiKey(responseData["data"]["api_key"]);
 
-        // setApiKey("1b834e07-c68b-4bf6-96dd-ab7cdc62f07f");
+        // console.log(responseData["data"]["api_key"]);
+        setApiKey("1b834e07-c68b-4bf6-96dd-ab7cdc62f07f");
       } catch (error) {
         console.error(error.message);
       }
@@ -189,20 +190,21 @@ const TicketMainContent = () => {
         api_key: apiKey,
         product: values.topic,
       };
+
+      console.log(payload);
       await socket.emit("create_ticket", payload);
 
       await new Promise((resolve) => {
         socket.on("ticket_response", (data) => {
           if (data.status === "success") {
             createTicket(data.data);
-
-            console.log(data.data);
-
             setTicketNumber(data.data._id);
             localStorage.setItem(
               "create_ticket_detail",
               JSON.stringify(data.data)
             );
+
+            setTicketDetail(data.data);
             const getTicketMessagesPayload = {
               ticket_id: data.data._id,
               product: data.data.product,

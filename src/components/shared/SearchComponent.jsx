@@ -4,19 +4,18 @@ import io, { Socket } from "socket.io-client";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import formatCreatedAt from "../../linemanage/utils/datefromat.js";
-import { chat } from "../../assets/index.js";
 import Toggler from "./Toggler.jsx";
 import { faTelegramPlane } from "@fortawesome/free-brands-svg-icons";
 const socket = io.connect("https://www.dowellchat.uxlivinglab.online");
 
-function SearchComponent({ closeSearchModal, openSearchModal }) {
+function SearchComponent({ closeSearchModal, linkRes }) {
   const [messages, setMessages] = useState([]);
   const { search } = useLocation();
   const params = new URLSearchParams(search);
   const [searchValue, setSearchValue] = useState("");
   const searchInputRef = useRef(null);
   const [apiKey, setApiKey] = useState("");
-  const [getLinkRes, setGetLinkRes] = useState([]);
+  const [getLinkRes, setGetLinkRes] = useState(linkRes || []);
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState(null);
   const [ticket, setTicket] = useState(null);
@@ -27,23 +26,7 @@ function SearchComponent({ closeSearchModal, openSearchModal }) {
   const [message, setMessage] = useState("");
   const containerRef = useRef(null);
   const [ticketDetail, setTicketDetail] = useState({});
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (
-        containerRef.current &&
-        !containerRef.current.contains(event.target)
-      ) {
-        toggleChat();
-      }
-    };
-
-    document.addEventListener("click", handleClickOutside);
-
-    return () => {
-      document.removeEventListener("click", handleClickOutside);
-    };
-  }, []);
+  const [products, setProducts] = useState(false);
 
   socket.on("ticket_message_response", (data) => {
     if (data.status === "success") {
@@ -76,8 +59,10 @@ function SearchComponent({ closeSearchModal, openSearchModal }) {
 
     if (message.trim() !== "" && ticketDetail) {
       const ticketMessagePayload = {
-        ticket_id: JSON.parse(localStorage.getItem("create_ticket_detail"))._id,
-        product: JSON.parse(localStorage.getItem("create_ticket_detail"))
+        ticket_id: JSON.parse(
+          localStorage.getItem("create_ticket_detail_search")
+        )._id,
+        product: JSON.parse(localStorage.getItem("create_ticket_detail_search"))
           .product,
         message_data: message,
         user_id: "12345",
@@ -93,6 +78,13 @@ function SearchComponent({ closeSearchModal, openSearchModal }) {
   };
 
   const toggleDropdown = () => {
+    if (apiKey) {
+      socket.emit("get_share_link_details", {
+        workspace_id: params.get("workspace_id"),
+        link_id: params.get("link_id"),
+        api_key: apiKey,
+      });
+    }
     setIsOpen(!isOpen);
   };
 
@@ -119,7 +111,6 @@ function SearchComponent({ closeSearchModal, openSearchModal }) {
     console.log(ticket);
     if (ticket) {
       setTicket(ticket);
-      console.log(ticket);
     } else {
       setTicket(null);
       setError("Ticket Not found");
@@ -160,18 +151,12 @@ function SearchComponent({ closeSearchModal, openSearchModal }) {
 
     window.addEventListener("resize", handleResize);
     handleResize();
-
-    return () => {
-      window.removeEventListener("resize", handleResize);
-      socket.disconnect();
-    };
   }, []);
 
   socket.on("share_link_response", (data) => {
     if (Array.isArray(data?.data)) {
       setGetLinkRes(data?.data);
     } else {
-      toast.error(data?.data);
       console.error("Expected an array for getLinkRes, received:", data?.data);
       setGetLinkRes([]);
     }
@@ -194,18 +179,33 @@ function SearchComponent({ closeSearchModal, openSearchModal }) {
     socket.emit("get_tickets", payload);
   };
 
-  const handleOpenChat = () => {
-    ticket &&
-      localStorage.setItem("create_ticket_detail", JSON.stringify(ticket));
+  const findLinks = () => {
+    setProducts(true);
+    if (apiKey) {
+      socket.emit("get_share_link_details", {
+        workspace_id: params.get("workspace_id"),
+        link_id: params.get("link_id"),
+        api_key: apiKey,
+      });
+    }
+  };
 
-    if (JSON.parse(localStorage.getItem("create_ticket_detail"))) {
+  const handleOpenChat = () => {
+    console.log(ticket);
+    ticket &&
+      localStorage.setItem(
+        "create_ticket_detail_search",
+        JSON.stringify(ticket)
+      );
+
+    if (JSON.parse(localStorage.getItem("create_ticket_detail_search"))) {
       const fetchData = async () => {
         try {
           const ticketId = JSON.parse(
-            localStorage.getItem("create_ticket_detail")
+            localStorage.getItem("create_ticket_detail_search")
           )._id;
           const product = JSON.parse(
-            localStorage.getItem("create_ticket_detail")
+            localStorage.getItem("create_ticket_detail_search")
           ).product;
 
           await socket.emit("get_ticket_messages", {
@@ -257,7 +257,7 @@ function SearchComponent({ closeSearchModal, openSearchModal }) {
     }
 
     const storedcData = JSON.parse(
-      localStorage.getItem("create_ticket_detail")
+      localStorage.getItem("create_ticket_detail_search")
     );
 
     setTicketDetail(storedcData);
@@ -281,11 +281,11 @@ function SearchComponent({ closeSearchModal, openSearchModal }) {
         onClick={closeModal}
       >
         <div
-          className={`bg-white w-[95%] sm:w-[80%] md:w-[60%] lg:w-[50%] h-[300px] -mt-72 overflow-auto px-10 py-6 md:p-6 rounded-lg min-w-xl animate-fadeIn`}
+          className={`bg-white w-[95%] sm:w-[90%] md:w-[60%] lg:w-[50%] h-[300px] -mt-72 overflow-auto px-10 py-6 md:p-6 rounded-lg min-w-xl animate-fadeIn`}
         >
           <div className="flex justify-center items-center  ">
             <div className="relative inline-block text-left mr-2">
-              <div>
+              <div onClick={findLinks}>
                 <button
                   type="button"
                   className="inline-flex justify-between w-full px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-100"
@@ -425,7 +425,11 @@ function SearchComponent({ closeSearchModal, openSearchModal }) {
                   darkMode ? "text-white" : "text-slate-900"
                 } font-semibold p-2 mb-2`}
               >
-                {JSON.parse(localStorage.getItem("create_ticket_detail"))._id}
+                {
+                  JSON.parse(
+                    localStorage.getItem("create_ticket_detail_search")
+                  )?._id
+                }
               </h2>
               <div className="flex justify-end items-end overflow-hidden h-10 min-w-20 pr-1">
                 <Toggler darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
@@ -456,8 +460,11 @@ function SearchComponent({ closeSearchModal, openSearchModal }) {
                 className="custom-scrollbar space-y-4 pl-1 -pr-1 pb-5 w-full"
               >
                 {!messageToDisplay.length && (
-                  <div className="flex justify-center items-center text-center w-full py-auto ">
-                    <div className="animate-spin h-8 w-8 border-t-2 mt-24 mx-auto text-center   border-indigo-500 rounded-full"></div>
+                  <div className="text-center">
+                    <div className="flex justify-center items-center text-center w-full py-auto ">
+                      <div className="animate-spin h-8 w-8 border-t-2 mt-24 mx-auto text-center   border-indigo-500 rounded-full"></div>
+                    </div>
+                    <p className=" text-18px text-white mt-5">Loading...</p>
                   </div>
                 )}
                 {messageToDisplay.map((message) => (
