@@ -114,10 +114,7 @@ const TicketMainContent = () => {
       try {
         const response = await fetch(apiUrl);
         const responseData = await response.json();
-        // setApiKey(responseData["data"]["api_key"]);
-
-        // console.log(responseData["data"]["api_key"]);
-        setApiKey("1b834e07-c68b-4bf6-96dd-ab7cdc62f07f");
+        setApiKey(responseData["data"]["api_key"]);
       } catch (error) {
         console.error(error.message);
       }
@@ -166,7 +163,6 @@ const TicketMainContent = () => {
   let messageToDisplay = [...messages]
     .filter((message) => message.content !== "") // Filter out items with empty content
     .sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevFormData) => ({

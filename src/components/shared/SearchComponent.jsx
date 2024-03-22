@@ -71,7 +71,6 @@ function SearchComponent({ closeSearchModal, linkRes }) {
         api_key: apiKey,
         created_at: new Date().toISOString(),
       };
-
       await socket.emit("ticket_message_event", ticketMessagePayload);
     }
     setMessage("");
@@ -128,7 +127,6 @@ function SearchComponent({ closeSearchModal, linkRes }) {
         const response = await fetch(apiUrl);
         const responseData = await response.json();
         setApiKey(responseData["data"]["api_key"]);
-        // setApiKey("1b834e07-c68b-4bf6-96dd-ab7cdc62f07f");
       } catch (error) {
         console.error(error.message);
       }
@@ -191,7 +189,6 @@ function SearchComponent({ closeSearchModal, linkRes }) {
   };
 
   const handleOpenChat = () => {
-    console.log(ticket);
     ticket &&
       localStorage.setItem(
         "create_ticket_detail_search",
@@ -400,7 +397,7 @@ function SearchComponent({ closeSearchModal, linkRes }) {
                 {error && (
                   <div className="flex justify-center items-center mt-16 text-red-400">
                     {" "}
-                    Ticket Not Found{" "}
+                    Ticket Not Found
                   </div>
                 )}
               </div>

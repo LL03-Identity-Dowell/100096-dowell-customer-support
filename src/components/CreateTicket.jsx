@@ -26,8 +26,7 @@ const CreateTicket = () => {
       try {
         const response = await fetch(apiUrl);
         const responseData = await response.json();
-        // setApiKey(responseData["data"]["api_key"]);
-        setApiKey("1b834e07-c68b-4bf6-96dd-ab7cdc62f07f");
+        setApiKey(responseData["data"]["api_key"]);
       } catch (error) {
         console.error(error.message);
       }
