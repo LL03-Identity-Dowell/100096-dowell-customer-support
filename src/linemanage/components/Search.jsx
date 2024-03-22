@@ -18,7 +18,7 @@ import { ClipLoader } from "react-spinners";
 //import { toast } from "react-toastify";
 
 if (!socket.connected) {
-  toast.warn("socket is not connected");
+  // toast.warn("socket is not connected");
 } else {
   toast.success("socket is connected successfully");
 }
@@ -46,6 +46,7 @@ function Dropdowns({
     console.log("selected ticket data", selectedTicket);
     const findTicket = async (product) => {
       const { name } = product;
+      console.log("product=", product, "NAME=", name);
       //console.log(workSpaceID, product, api_key);
       //workSpaceID = "646ba835ce27ae02d024a902";
       //api_key = "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f";
@@ -56,9 +57,10 @@ function Dropdowns({
           api_key: lineManagerCredentials.api_key,
         });
         await socket.on("ticket_response", (data) => {
+          console.log("ticket response", data);
           // Handle response for the event
           setLoading(false);
-          console.log("ticket response", data["data"]);
+          // console.log("ticket response", data["data"]);
           if (data?.status === "success") {
             dispatch(fetchTicketInfo(data?.data));
           } else {
@@ -167,6 +169,7 @@ function Dropdowns({
                   key={data.id}
                   className="option"
                   onClick={() => {
+                    console.log("data to check", data);
                     handleOptionClick(data.name, data);
                   }}
                 >

@@ -73,7 +73,9 @@ function CreateComponent({ closeSearchModal, option }) {
               item.product === "Dowell Customer Support Centre"
           );
         if (!responseData?.username) {
-          toast.warn("No usernames found!");
+          toast.warn("No usernames found!", {
+            toastId: "success1",
+          });
           setLoading(false);
           return;
         }
