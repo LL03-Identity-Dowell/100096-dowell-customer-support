@@ -18,7 +18,7 @@ function Dashboards() {
             <Dropdowns search={"Search Ticket Number"} type={"ticket"} />
           </div>
         </div>
-        <div className="w-full h-auto flex md:flex md:flex-row">
+        <div className="w-full h-auto flex sm:flex-col  md:flex-row">
           <TicketDetail />
           <div className="flex-1 w-full h-full  mt-3">
             <Chat isOpen={true} />

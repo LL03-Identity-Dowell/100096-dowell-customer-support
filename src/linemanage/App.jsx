@@ -19,11 +19,15 @@ function App() {
   const dispatch = useDispatch();
   const [searchParams] = useSearchParams();
   const session_id = searchParams.get("session_id");
+  const id = searchParams.get("id");
   const [loadingFetchUserInfo, setLoadingFetchUserInfo] = useState(false);
   const [authenticationError, setAuthenticationError] = useState(false);
   const lineManagerCredentials = useSelector(
     (state) => state.lineManagers.lineManagerCredentials
   );
+  // const localId = sessionStorage.getItem("id")
+  //   ? JSON.parse(sessionStorage.getItem("id"))
+  //   : null;
 
   const [apiKey, setApiKey] = useState(() => {
     const savedApiKey = localStorage.getItem("apiKey");
@@ -41,11 +45,11 @@ function App() {
       : null;
   });
 
-  const getUserInfo = async () => {
+  const getUserInfo = async (url) => {
     setLoadingFetchUserInfo(true);
     const session_id = searchParams.get("session_id");
     await axios
-      .post("https://100014.pythonanywhere.com/api/userinfo/", {
+      .post(url, {
         session_id: session_id,
       })
 
@@ -89,8 +93,13 @@ function App() {
           "https://100014.pythonanywhere.com/?redirect_url=" +
           `${window.location.href}`;
         return;
+      } else if (!id) {
+        // console.log("owner enterred");
+        getUserInfo("https://100014.pythonanywhere.com/api/userinfo/");
+      } else {
+        //console.log("user enterred");
+        getUserInfo("https://100093.pythonanywhere.com/api/userinfo/");
       }
-      getUserInfo();
     }
     console.log("api key", !apiKey, "value", apiKey);
     if (userInfo && !apiKey) {
@@ -105,6 +114,7 @@ function App() {
           workspace_id: userInfo?.client_admin_id,
           session_id: session_id,
           // portfolio_code:
+          ownerType: !id,
         })
       );
     }
