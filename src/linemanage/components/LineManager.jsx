@@ -67,6 +67,9 @@ function LineManager() {
           api_key: lineManagerCredentials.api_key,
         });
         await socket.on("setting_response", (data) => {
+          console.log("workspace_id", lineManagerCredentials.workspace_id);
+          console.log("api_key", lineManagerCredentials.api_key);
+          console.log("line managers data", data);
           // Handle response for the event
           setLoading(false);
           if (Array.isArray(data?.data)) {

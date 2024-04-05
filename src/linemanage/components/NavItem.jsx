@@ -4,6 +4,7 @@ export default function NavItem({ component }) {
     "https://100014.pythonanywhere.com/sign-out?redirect_url=" +
     window.location.origin;
   const handleLogout = () => {
+    localStorage.clear();
     window.location.replace(dowellLogoutUrl);
   };
   return (
