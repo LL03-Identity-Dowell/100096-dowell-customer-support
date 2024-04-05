@@ -22,7 +22,7 @@ function LineManager() {
   const [option, setOption] = useState("");
   const [loading, setLoading] = useState(true);
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
-  const [ownerType, setOwnerType] = useState("");
+  //const [ownerType, setOwnerType] = useState("");
   const lineManagerCredentials = useSelector(
     (state) => state.lineManagers.lineManagerCredentials
   );
@@ -50,7 +50,7 @@ function LineManager() {
           }
         );
         console.log("data =", response.data);
-        let responseData = await response?.data?.portfolio_info?.findIndex(
+        /* let responseData = await response?.data?.portfolio_info?.findIndex(
           (item) =>
             item.member_type === "owner" &&
             item.product === "Dowell Customer Support Centre"
@@ -60,7 +60,7 @@ function LineManager() {
           setOwnerType(false);
         } else {
           setOwnerType(true);
-        }
+        }*/
         //console.log
         await socket.emit("get_all_line_managers", {
           workspace_id: lineManagerCredentials.workspace_id,
@@ -147,7 +147,7 @@ function LineManager() {
               lineManagersData?.map((data, index) => (
                 <tr
                   key={data._id}
-                  className="border-b border-gray-200 hover:bg-gray-100  flex w-full"
+                  className="border-b border-gray-200 hover:bg-gray-100 h-[60%] flex w-full"
                 >
                   <td className="py-3 px-6 text-left sm:w-13 md:15 ">
                     {index + 1}
@@ -163,11 +163,37 @@ function LineManager() {
                     {data.user_id}
                   </td>
                   <td className="py-3 px-6 text-left flex flex-wrap flex-1 h-auto sm:w-[95%] p-1">
-                    <div className="flex justify-start flex-wrap gap-3 h-auto">
-                      <div className="bg-blue-200 rounded-sm p-2 h-2"></div>
+                    <div className="flex justify-start flex-wrap gap-1 h-auto">
+                      {Array.from(
+                        {
+                          length:
+                            data.ticket_count < 20 ? data.ticket_count : 20,
+                        },
+                        (index) => {
+                          //if (index > 20) return;
+                          return (
+                            <div
+                              key={index}
+                              className="bg-blue-200 rounded-sm p-2 h-2"
+                            ></div>
+                          );
+                        }
+                      )}
+                      {data.ticket_count < 20 ? (
+                        ""
+                      ) : (
+                        <small
+                          style={{
+                            color: "green",
+                            fontSize: "25px",
+                          }}
+                        >
+                          ...
+                        </small>
+                      )}
+                      {/* <div className="bg-green-200 rounded-sm p-2 h-2"></div>
                       <div className="bg-green-200 rounded-sm p-2 h-2"></div>
-                      <div className="bg-green-200 rounded-sm p-2 h-2"></div>
-                      <div className="bg-green-200 rounded-sm p-2 h-2"></div>
+                      <div className="bg-green-200 rounded-sm p-2 h-2"></div> */}
                     </div>
                     <div className="flex flex-col align-middle justify-start h-auto w-full">
                       <span className="text-md">
@@ -257,12 +283,12 @@ function LineManager() {
           <NavLink className="px-3 py-1 bg-gray-200 rounded-md">&gt;</NavLink>{" "}
         </div> */}
         <div className="flex flex-col justify-center gap-4 mb-7 w-full mt-8 pr-3">
-          {console.log("owner type", ownerType)}
-          {ownerType === true ? (
+          {console.log("owner type", lineManagerCredentials.ownerType)}
+          {lineManagerCredentials.ownerType === true ? (
             <h3 className="w-[80%] text-center mx-auto items-center ">
               Setting for your customers!
             </h3>
-          ) : ownerType === false ? (
+          ) : lineManagerCredentials.ownerType === false ? (
             <h3 className="w-[80%] text-center mx-auto items-center ">
               Create topic and link for your customers!
             </h3>
@@ -296,7 +322,7 @@ function LineManager() {
               className="absolute z-10 mt-1 ml-4 w-56 bg-white rounded-md shadow-lg "
               style={{ transform: "translateY(-100%)" }}
             > */}
-            {ownerType === false &&
+            {lineManagerCredentials.ownerType === false &&
               options
                 .filter(
                   (option) =>
@@ -312,7 +338,7 @@ function LineManager() {
                     {option.label}
                   </button>
                 ))}
-            {ownerType === true &&
+            {lineManagerCredentials.ownerType === true &&
               options.map((option) => (
                 <button
                   key={option.value}

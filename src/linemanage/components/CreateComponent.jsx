@@ -73,7 +73,9 @@ function CreateComponent({ closeSearchModal, option }) {
               item.product === "Dowell Customer Support Centre"
           );
         if (!responseData?.username) {
-          toast.warn("No usernames found!");
+          toast.warn("No usernames found!", {
+            toastId: "success1",
+          });
           setLoading(false);
           return;
         }
@@ -363,7 +365,7 @@ function CreateComponent({ closeSearchModal, option }) {
         className={`bg-white h-[90%] overflow-auto relative p-4 md:p-6 rounded-lg w-full max-w-md animate-fadeIn`}
       >
         <div className="flex justify-between w-full relative mb-7 ">
-          <NavItem />
+          <NavItem component={true} />
           <button
             onClick={closeSearchModal}
             className=" -top-5 w-10 h-10 font-bold text-2xl text-red-500  rounded-full p-2 hover:text-red-400 absolute right-0"
@@ -380,7 +382,7 @@ function CreateComponent({ closeSearchModal, option }) {
                 <h3 className="mb-5">Fill Topic Information</h3>
                 <form
                   onSubmit={handleSubmit}
-                  className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
+                  className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 "
                 >
                   <div className="mb-4 flex sm:flex-col md:flex-row">
                     <label
@@ -419,7 +421,7 @@ function CreateComponent({ closeSearchModal, option }) {
           // eslint-disable-next-line
           option === "generateLink" && (
             <>
-              <div className="max-w-[400px] mx-auto overflow-x-hidden">
+              <div className="max-w-[400px]   mx-auto ">
                 <h3 className="mb-5">Fill Link Information</h3>
                 {masterLink && (
                   <div className="flex w-auto justify-center align-middle mx-auto  h-15 p-2  border border-r-8 gap-1">
@@ -436,9 +438,9 @@ function CreateComponent({ closeSearchModal, option }) {
                 )}
                 <form
                   onSubmit={handleLinkSubmit}
-                  className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 sm:w-[350px] md:w-[400px]"
+                  className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 sm:w-[350px] md:w-[410px] sm:h-[150px] md:h-[350px] overflow-y-scroll"
                 >
-                  <div className="mb-4 flex sm:flex-col md:flex-row sm:gap-5 md:gap-10 sm:w-max-[300px] md:w-[400px]">
+                  <div className="mb-4 flex sm:flex-col md:flex-row sm:gap-5 md:gap-10 sm:w-max-[300px] md:w-[400px] ">
                     <label
                       htmlFor="usernamecount"
                       className="block text-gray-700 text-sm font-bold sm:w-max-[70px] md:w-[100px] mb-2"
@@ -472,7 +474,6 @@ function CreateComponent({ closeSearchModal, option }) {
                       className="shadow appearance-none border rounded sm:w-max-[150px] md:w-[200px] py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     />
                   </div>
-
                   {topicData &&
                     //eslint-disable-next-line
                     topicData?.map((data) => {

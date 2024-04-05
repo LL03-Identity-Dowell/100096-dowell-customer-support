@@ -47,6 +47,20 @@ const Chat = () => {
   }, [selectedTicket]);
 
   useEffect(() => {
+    const targetNode = document.getElementById("scroller");
+
+    const config = { childList: true };
+    //eslint-disable-next-line
+    const callback = function (mutationsList, observer) {
+      for (let mutation of mutationsList) {
+        if (mutation.type === "childList") {
+          targetNode.scrollTop = targetNode.scrollHeight;
+        }
+      }
+    };
+
+    const observer = new MutationObserver(callback);
+    observer.observe(targetNode, config);
     async function chat() {
       if (ticketMessages.length > 0) {
         setLoading(false);
@@ -117,13 +131,13 @@ const Chat = () => {
       }
       return;
     }
-    //if (data?.data?.ticket_id === selectedTicket._id) {
+    // if (data?.data?.ticket_id === selectedTicket._id) {
     if (data.status === "success") {
       dispatch(fetchTicketMessage(data?.data));
     } else {
       dispatch(fetchTicketMessage([]));
     }
-    //}
+    // }
   });
 
   const sendChat = async (newMessage) => {
@@ -251,7 +265,10 @@ const Chat = () => {
         {/* Chat content goes here */}
 
         {/* Render chat messages */}
-        <div className="space-y-4 px-4 py-6 sm:h-[100px] md:h-[300px] overflow-y-scroll">
+        <div
+          className="space-y-4 px-4 py-6 sm:h-[100px] md:h-[300px] overflow-y-scroll"
+          id="scroller"
+        >
           {Object.keys(messageToDispaly).length > 0 &&
             messageToDispaly?.map((message) => (
               <div

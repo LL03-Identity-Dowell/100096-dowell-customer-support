@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import { useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -62,7 +62,7 @@ const TicketMainContent = () => {
           await socket.on("ticket_message_response", (data) => {
             const ticketMessages = data.data;
             let current_user = "12345";
-            async function chat() {
+            async function chats() {
               if (ticketMessages.length > 0) {
                 try {
                   let messages = await Promise.all(
@@ -88,7 +88,7 @@ const TicketMainContent = () => {
               }
             }
 
-            chat();
+            chats();
           });
         } catch (error) {
           console.error("Error fetching ticket messages:", error);
@@ -207,7 +207,6 @@ const TicketMainContent = () => {
               workspace_id: params.get("workspace_id"),
               api_key: apiKey,
             };
-
             socket.emit("get_ticket_messages", getTicketMessagesPayload);
 
             toggleChat();
