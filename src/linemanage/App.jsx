@@ -25,6 +25,12 @@ function App() {
   const lineManagerCredentials = useSelector(
     (state) => state.lineManagers.lineManagerCredentials
   );
+  const [ownerType, setOwnerType] = useState(() => {
+    const savedOwnerType = localStorage.getItem("ownerType");
+    return savedOwnerType && savedOwnerType !== "undefined"
+      ? JSON.parse(savedOwnerType)
+      : true;
+  });
   // const localId = sessionStorage.getItem("id")
   //   ? JSON.parse(sessionStorage.getItem("id"))
   //   : null;
@@ -44,18 +50,41 @@ function App() {
       ? JSON.parse(savedUserInfo)
       : null;
   });
-
-  const getUserInfo = async (url) => {
+  if (!session_id) {
+    window.location.replace(
+      "https://100014.pythonanywhere.com/?redirect_url=https://100093.pythonanywhere.com"
+    );
+  }
+  const getUserInfo = async (url, type) => {
     setLoadingFetchUserInfo(true);
+    console.log("url", url);
     const session_id = searchParams.get("session_id");
+    //console.log("session_id==", session_id);
     await axios
-      .post(url, {
+      .post(`${url}`, {
         session_id: session_id,
       })
 
       .then((response) => {
+        //console.log("response in then", response?.data);
+        if (type === "other") {
+          let responseData = response?.data?.portfolio_info?.findIndex(
+            (item) =>
+              item.member_type === "owner" &&
+              item.product === "Dowell Customer Support Centre"
+          );
+
+          if (responseData === -1) {
+            localStorage.setItem("ownerType", JSON.stringify(false));
+            setOwnerType(false);
+          } else {
+            localStorage.setItem("ownerType", JSON.stringify(true));
+            setOwnerType(true);
+          }
+        }
         setUserInfo(response?.data?.userinfo);
         //setPortfolioCode(response?.data?.portfolio_info?.find())
+        //  console.log("response data user detail", response?.data);
         localStorage.setItem(
           "userInfo",
           JSON.stringify(response?.data?.userinfo)
@@ -75,6 +104,7 @@ function App() {
     try {
       const response = await fetch(apiUrl);
       const responseData = await response.json();
+
       localStorage.setItem(
         "apiKey",
         JSON.stringify(responseData?.data?.api_key)
@@ -94,11 +124,11 @@ function App() {
           `${window.location.href}`;
         return;
       } else if (!id) {
-        // console.log("owner enterred");
-        getUserInfo("https://100014.pythonanywhere.com/api/userinfo/");
+        console.log("owner enterred");
+        getUserInfo("https://100014.pythonanywhere.com/api/userinfo/", "owner");
       } else {
-        //console.log("user enterred");
-        getUserInfo("https://100093.pythonanywhere.com/api/userinfo/");
+        console.log("user enterred");
+        getUserInfo("https://100093.pythonanywhere.com/api/userinfo/", "other");
       }
     }
     console.log("api key", !apiKey, "value", apiKey);
@@ -107,6 +137,7 @@ function App() {
     }
 
     if (userInfo && apiKey) {
+      // const ownerType = localStorage.getItem("ownerType");
       dispatch(
         fetchLineManagersCredentails({
           api_key: apiKey,
@@ -114,7 +145,7 @@ function App() {
           workspace_id: userInfo?.client_admin_id,
           session_id: session_id,
           // portfolio_code:
-          ownerType: !id,
+          ownerType: ownerType,
         })
       );
     }

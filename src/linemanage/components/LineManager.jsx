@@ -13,10 +13,10 @@ import { toast } from "react-toastify";
 import { ClipLoader } from "react-spinners";
 //import { socket } from "../utils/Connection";
 import io from "socket.io-client";
-import axios from "axios";
+//import axios from "axios";
 const socket = io.connect("https://www.dowellchat.uxlivinglab.online/");
 function LineManager() {
-  console.log("socket", socket);
+  //console.log("socket", socket);
   const dispatch = useDispatch();
   //const [isOpen, setIsOpen] = useState(false);
   const [option, setOption] = useState("");
@@ -43,7 +43,7 @@ function LineManager() {
       );
 
       try {
-        let response = await axios.post(
+        /*let response = await axios.post(
           "https://100093.pythonanywhere.com/api/userinfo/",
           {
             session_id: lineManagerCredentials.session_id, //"okms05yhlfj6xl7jug9b6f6lyk8okb8o",
