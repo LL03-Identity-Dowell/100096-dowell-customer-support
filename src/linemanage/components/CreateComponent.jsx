@@ -34,7 +34,8 @@ function CreateComponent({ closeSearchModal, option }) {
   const [linkCopy, setLinkCopy] = useState(false);
   const inputRef = useRef(null);
   const [portfolioCode, setPortfolioCode] = useState("");
-  const [userNameCount, setUserNameCount] = useState(0);
+  const [activeLink, setActiveLink] = useState(true);
+  //const [userNameCount, setUserNameCount] = useState(0);
   const lineManagerCredentials = useSelector(
     (state) => state.lineManagers.lineManagerCredentials
   );
@@ -56,42 +57,50 @@ function CreateComponent({ closeSearchModal, option }) {
         await getManagersList();
       }
     };
+    /*
     const getUserNameCount = async () => {
-      setLoading(true);
-      try {
-        let response = await axios.post(
+      if (option === "generateLink") {
+        setLoading(true);
+
+        try {
+          /*let response = await axios.post(
           "https://100093.pythonanywhere.com/api/userinfo/",
           {
             session_id: lineManagerCredentials.session_id, //"okms05yhlfj6xl7jug9b6f6lyk8okb8o",
           }
         );
-        // console.log("data =", response.data);
-        let responseData =
-          await response?.data?.selected_product?.userportfolio.find(
+          let response = localStorage.getItem("userInfo");
+          response = JSON.parse(response)?.selected_product;
+          // console.log("data =", response.data);
+          let responseData = await response?.userportfolio.filter(
             (item) =>
               item.member_type === "public" &&
               item.product === "Dowell Customer Support Centre"
           );
-        if (!responseData?.username) {
-          toast.warn("No usernames found!", {
-            toastId: "success1",
-          });
+          responseData = responseData.map((items) => items?.username);
+          responseData = await arrayWithMostElements(responseData);
+
+          if (!responseData) {
+            toast.warn("No usernames found!", {
+              toastId: "success1",
+            });
+            setLoading(false);
+            return;
+          }
+          console.log("responseData USER name count", responseData?.length);
+          setUserNameCount(responseData?.length);
+          //console.log(responseData);
           setLoading(false);
-          return;
+        } catch (e) {
+          console.log("error", e.message);
         }
-        console.log(
-          "responseData USER name count",
-          responseData?.username?.length
-        );
-        setUserNameCount(responseData?.username?.length);
-        console.log(responseData);
-        setLoading(false);
-      } catch (e) {
-        console.log("error", e.message);
       }
     };
+*/
     getManagerMembers();
-    getUserNameCount();
+
+    //getUserNameCount();
+
     const handleResize = () => {
       const windowHeight = window.innerHeight;
       // Set the modal height to 80% of the window height
@@ -106,6 +115,22 @@ function CreateComponent({ closeSearchModal, option }) {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  function generateRandomString(length) {
+    let result = "";
+    const characters =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    const charactersLength = characters.length;
+    for (let i = 0; i < length; i++) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+  }
+
+  // Generate four random strings of length 10
+  const randomUserNames = (linknumber) => {
+    return Array.from({ length: linknumber }, () => generateRandomString(12));
+  };
+
   const closeModal = (e) => {
     if (e.target.classList.contains("modal-overlay")) {
       closeSearchModal();
@@ -114,25 +139,25 @@ function CreateComponent({ closeSearchModal, option }) {
   const getManagersList = async () => {
     // console.log("line manager");
     try {
-      let response = await axios.post(
+      /* let response = await axios.post(
         "https://100093.pythonanywhere.com/api/userinfo/",
         {
           session_id: lineManagerCredentials.session_id, //"okms05yhlfj6xl7jug9b6f6lyk8okb8o",
         }
+      );*/
+      //  console.log(response);
+      let response = localStorage.getItem("userInfo");
+      //console.log("data response ", response);
+      response = JSON.parse(response)?.selected_product;
+      let responseData = await response?.userportfolio.find(
+        (item) => item.member_type === "team_member"
       );
-      console.log(response);
-      let responseData =
-        await response?.data?.selected_product?.userportfolio.find(
-          (item) => item.member_type === "team_member"
-        );
-      console.log("response data", responseData);
+      //console.log("response data", responseData);
       setMembers(responseData?.username);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
   };
-  //console.log("member", members);
-  // get members to be added as line manager
 
   const handleAddManager = (e) => {
     e.target.value && setManagerName(e.target.value);
@@ -168,11 +193,6 @@ function CreateComponent({ closeSearchModal, option }) {
   };
 
   const createTopic = async (topic_name) => {
-    //setLoading(false);
-
-    // console.log("workspace id, api_key", workspace_id, api_key);
-    // workspace_id = "646ba835ce27ae02d024a902";
-    //api_key = "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f";
     try {
       await socket.emit("create_topic", {
         name: topic_name,
@@ -213,6 +233,7 @@ function CreateComponent({ closeSearchModal, option }) {
   const handleLinkSubmit = async (event) => {
     event.preventDefault();
     setLoading(true);
+    setActiveLink(false);
     let sum = 0;
     if (!linkNumber || !url) {
       toast.warning("Please fill in all fields");
@@ -234,39 +255,57 @@ function CreateComponent({ closeSearchModal, option }) {
     }
 
     try {
-      let response = await axios.post(
+      let response = localStorage.getItem("userInfo");
+      // console.log("data response ", response);
+      response = JSON.parse(response)?.selected_product;
+      /* let response = await axios.post(
         "https://100093.pythonanywhere.com/api/userinfo/",
         {
           session_id: lineManagerCredentials.session_id, //"okms05yhlfj6xl7jug9b6f6lyk8okb8o",
         }
-      );
+      );*/
       // console.log("data =", response.data);
-      let responseData =
-        await response?.data?.selected_product?.userportfolio.find(
-          (item) =>
-            item.member_type === "public" &&
-            item.product === "Dowell Customer Support Centre"
-        );
-      if (!responseData?.username) {
+      /*let responseData = await response.userportfolio.find(
+        (item) =>
+          item.member_type === "public" &&
+          item.product === "Dowell Customer Support Centre"
+      );*/
+      // response = JSON.parse(response)?.selected_product;
+      // console.log("data =", response.data);
+      /*  let responseData = await response?.userportfolio.filter(
+        (item) =>
+          item.member_type === "public" &&
+          item.product === "Dowell Customer Support Centre"
+      );
+      let responseUserNames = responseData.map((items) => items?.username);
+      responseUserNames = await arrayWithMostElements(responseUserNames);
+
+      if (!responseUserNames) {
         toast.warn("Something went wrong, couldn't find your username");
         setLoading(false);
         return;
       }
       // setUserNameCount(responseData?.username.length);
-      if (linkNumber > responseData?.username?.length) {
+      if (linkNumber > responseUserNames?.length) {
         toast.warning(
           "Link number must be less than or equal to existing users"
         );
         setLoading(false);
         return;
       }
+      */
+      let responseData = await response?.userportfolio.find(
+        (item) =>
+          item.member_type === "public" &&
+          item.product === "Dowell Customer Support Centre"
+      );
       setPortfolioCode(responseData?.portfolio_code);
 
       //console.log("workspace id", lineManagerCredentials.workspace_id);
 
       //setMembers(lineManagerCredentials.workspace_id,);
       // console.log("response data", responseData.username);
-      let usernames = responseData?.username?.slice(0, parseInt(linkNumber));
+      let usernames = randomUserNames(parseInt(linkNumber));
       const linkData = {
         number_of_links: linkNumber,
         product_distribution: {
@@ -295,7 +334,9 @@ function CreateComponent({ closeSearchModal, option }) {
       setLoading(false);
       if (data.status === "success") {
         setMasterLink(data.data);
-        toast.success("generated successfully");
+        toast.success("generated successfully", {
+          toastId: "success1",
+        });
       } else {
         toast.warn("some error happened", data.data);
         console.log(data);
@@ -440,6 +481,7 @@ function CreateComponent({ closeSearchModal, option }) {
                   onSubmit={handleLinkSubmit}
                   className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 sm:w-[350px] md:w-[410px] sm:h-[150px] md:h-[350px] overflow-y-scroll"
                 >
+                  {/*  
                   <div className="mb-4 flex sm:flex-col md:flex-row sm:gap-5 md:gap-10 sm:w-max-[300px] md:w-[400px] ">
                     <label
                       htmlFor="usernamecount"
@@ -457,6 +499,7 @@ function CreateComponent({ closeSearchModal, option }) {
                       readOnly
                     />
                   </div>
+                  */}
 
                   <div className="mb-4 flex sm:flex-col md:flex-row sm:gap-5 md:gap-10 sm:md:w-max-[380px] md:w-[400px]">
                     <label
@@ -521,6 +564,7 @@ function CreateComponent({ closeSearchModal, option }) {
                     <button
                       type="submit"
                       className="bg-[#22694de1] font-sans text-sm hover:bg-green-700 text-white font-bold py-2 px-2 sm:w-[150px] md:w-[200px] rounded-md"
+                      disabled={!activeLink}
                     >
                       Generate Link
                     </button>

@@ -10,7 +10,6 @@ import { Loader } from "../components/Loader";
 import "./index.css";
 import { Provider, useDispatch, useSelector } from "react-redux";
 import { store } from "./Redux/store";
-
 import axios from "axios";
 import Dashboards from "./components/Dashboard";
 import { fetchLineManagersCredentails } from "./Redux/lineManager";
@@ -18,7 +17,7 @@ import { fetchLineManagersCredentails } from "./Redux/lineManager";
 function App() {
   const dispatch = useDispatch();
   const [searchParams] = useSearchParams();
-  const session_id = searchParams.get("session_id");
+  let session_id = searchParams.get("session_id");
   const id = searchParams.get("id");
   const [loadingFetchUserInfo, setLoadingFetchUserInfo] = useState(false);
   const [authenticationError, setAuthenticationError] = useState(false);
@@ -31,6 +30,11 @@ function App() {
       ? JSON.parse(savedOwnerType)
       : true;
   });
+  const savedSession = localStorage.getItem("session");
+  const session =
+    savedSession && savedSession !== "undefined"
+      ? JSON.parse(savedSession)
+      : null;
   // const localId = sessionStorage.getItem("id")
   //   ? JSON.parse(sessionStorage.getItem("id"))
   //   : null;
@@ -45,20 +49,25 @@ function App() {
 
   const [userInfo, setUserInfo] = useState(() => {
     const savedUserInfo = localStorage.getItem("userInfo");
-    // console.log("type of user info", typeof savedUserInfo);
+
+    console.log("user info detail", JSON.parse(savedUserInfo)?.userinfo);
     return savedUserInfo && savedUserInfo !== "undefined"
-      ? JSON.parse(savedUserInfo)
+      ? JSON.parse(savedUserInfo)?.userinfo
       : null;
   });
   if (!session_id) {
-    window.location.replace(
-      "https://100014.pythonanywhere.com/?redirect_url=https://100093.pythonanywhere.com"
-    );
+    if (!session) {
+      window.location.replace(
+        "https://100014.pythonanywhere.com/?redirect_url=https://www.dowellchat.uxlivinglab.online"
+      );
+    } else {
+      session_id = session;
+    }
   }
   const getUserInfo = async (url, type) => {
     setLoadingFetchUserInfo(true);
     console.log("url", url);
-    const session_id = searchParams.get("session_id");
+    //const session_id = searchParams.get("session_id");
     //console.log("session_id==", session_id);
     await axios
       .post(`${url}`, {
@@ -84,11 +93,10 @@ function App() {
         }
         setUserInfo(response?.data?.userinfo);
         //setPortfolioCode(response?.data?.portfolio_info?.find())
-        //  console.log("response data user detail", response?.data);
-        localStorage.setItem(
-          "userInfo",
-          JSON.stringify(response?.data?.userinfo)
-        );
+        console.log("response data user detail", response?.data);
+        localStorage.setItem("userInfo", JSON.stringify(response?.data));
+        // setSession(session_id);
+        localStorage.setItem("session", JSON.stringify(session_id));
         setLoadingFetchUserInfo(false);
       })
       .catch((error) => {
@@ -120,8 +128,8 @@ function App() {
     if (!userInfo) {
       if (!session_id) {
         window.location.href =
-          "https://100014.pythonanywhere.com/?redirect_url=" +
-          `${window.location.href}`;
+          // "https://100014.pythonanywhere.com/?redirect_url=" +
+          `https://www.dowellchat.uxlivinglab.online/`; //`${window.location.href}`;
         return;
       } else if (!id) {
         console.log("owner enterred");
@@ -141,8 +149,8 @@ function App() {
       dispatch(
         fetchLineManagersCredentails({
           api_key: apiKey,
-          username: userInfo?.username,
-          workspace_id: userInfo?.client_admin_id,
+          username: userInfo.username,
+          workspace_id: userInfo.client_admin_id,
           session_id: session_id,
           // portfolio_code:
           ownerType: ownerType,
@@ -153,7 +161,6 @@ function App() {
     //}
   }, [session_id, apiKey, userInfo]);
 
-  /////console.log("api key from app0", lineManagerCredentials.api_key);
   return (
     <>
       <Provider store={store}>
