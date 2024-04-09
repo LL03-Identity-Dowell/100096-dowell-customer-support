@@ -608,24 +608,6 @@ function CreateComponent({ closeSearchModal, option }) {
                           </option>
                         );
                       })}
-
-                      {/* {loading ? (
-                        <div className="d-flex mt-3 justify-center align-items-center mx-auto">
-                          <ClipLoader
-                            color={"#22694de1"}
-                            css={{
-                              display: "block",
-                              margin: "0 auto",
-                              width: "50px",
-                              height: "40px",
-                            }}
-                            size={20}
-                          />{" "}
-                          Loading
-                        </div>
-                      ) : (
-                        ""
-                      )} */}
                     </select>
                   </div>
 
