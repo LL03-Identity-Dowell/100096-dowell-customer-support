@@ -8,6 +8,8 @@ const socket = io.connect("https://www.dowellchat.uxlivinglab.online/");
 //import { socket } from "../utils/Connection";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  fetchTopicData,
+  fetchSelectedTopic,
   fetchSelectedTicket,
   fetchTicketInfo,
 } from "../Redux/ticketDetailSlice";
@@ -15,17 +17,22 @@ import {
 import { ClipLoader } from "react-spinners";
 //import { toast } from "react-toastify";
 
+if (!socket.connected) {
+  // toast.warn("socket is not connected");
+} else {
+  toast.success("socket is connected successfully");
+}
 //eslint-disable-next-line
-function TicketSearch({
+function Dropdowns({
   //eslint-disable-next-line
   search,
   //eslint-disable-next-line
+  type,
 }) {
   const dispatch = useDispatch();
   const topicData = useSelector((state) => state.tickets.topicData);
   const selectedTopic = useSelector((state) => state.tickets.selectedTopic);
   const selectedTicket = useSelector((state) => state.tickets.selectedTicket);
-  //const ticketMessages = useSelector((state) => state.tickets.ticketMessage);
   const [loading, setLoading] = useState(true);
   const ticketInfo = useSelector((state) => state.tickets.ticketInfo);
   // let ticketInfoToShow = [...ticketInfo];
@@ -34,7 +41,6 @@ function TicketSearch({
   const lineManagerCredentials = useSelector(
     (state) => state.lineManagers.lineManagerCredentials
   );
-
   useEffect(() => {
     console.log("topic data", topicData);
     console.log("selected ticket data", selectedTicket);
@@ -67,19 +73,48 @@ function TicketSearch({
       }
     };
 
-    if (Object.keys(selectedTopic).length > 0) {
-      findTicket(selectedTopic);
+    const findTopic = async () => {
+      //workSpaceID = "646ba835ce27ae02d024a902";
+      // api_key = "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f";
+      try {
+        // console.log(workSpaceID);
+        await socket.emit("get_all_topics", {
+          workspace_id: lineManagerCredentials.workspace_id,
+          api_key: lineManagerCredentials.api_key,
+        });
+        await socket.on("setting_response", (data) => {
+          if (data.status === "success") {
+            // console.log("topic data in useeffect", data?.data);
+            dispatch(fetchTopicData(data?.data));
+            // setTopic(data?.data);
+          } else {
+            throw new Error();
+          }
+        });
+      } catch (error) {
+        toast.error("Some thing went wrong.we will fix soon");
+        console.error(error);
+      }
+    };
+    //  let workSpaceID = "646ba835ce27ae02d024a902";
+    //  let api_key = "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f";
+    if (type === "topic") {
+      findTopic();
+    } else if (type === "ticket") {
+      console.log("Ticket started", selectedTopic);
+      if (Object.keys(selectedTopic).length > 0) {
+        findTicket(selectedTopic);
+      }
     } else {
       return;
     }
-  }, [selectedTopic]);
+  }, [type, selectedTopic, socket]);
 
   socket.on("new_ticket", (data) => {
     console.log("new ticket", data);
     //console.log()
     if (data?.status === "success") {
       if (data?.data?.product === selectedTopic.name) {
-        console.log("entered to update", data?.data);
         dispatch(fetchTicketInfo([...ticketInfo, data?.data]));
       }
 
@@ -102,7 +137,8 @@ function TicketSearch({
 
   const handleOptionClick = (option, data) => {
     setSearchTerm(option);
-    dispatch(fetchSelectedTicket(data));
+    type === "topic" ? dispatch(fetchSelectedTopic(data)) : "";
+    type === "ticket" ? dispatch(fetchSelectedTicket(data)) : "";
     setDropdownOpen(false);
   };
 
@@ -123,19 +159,40 @@ function TicketSearch({
       </div>
       {isDropdownOpen && (
         <div className="dropdown rounded-md overflow-y-scroll max-h-[200px]">
-          {console.log("ticket info", ticketInfo)}
-          {ticketInfo &&
+          {console.log("topic data", topicData)}
+          {type === "topic" &&
+            topicData &&
             //eslint-disable-next-line
+            topicData?.slice().map((data) => {
+              return (
+                <div
+                  key={data.id}
+                  className="option"
+                  onClick={() => {
+                    console.log("data to check", data);
+                    handleOptionClick(data.name, data);
+                  }}
+                >
+                  {data.name}
+                </div>
+              );
+            })}
+          {console.log("ticket info", ticketInfo)}
+          {type === "ticket" &&
+            ticketInfo &&
+            //eslint-disable-next-line
+
             ticketInfo
-              .slice()
+              ?.slice()
               .sort((a, b) => {
                 // Convert the created_at string to Date objects for comparison
                 const dateA = new Date(a.created_at);
                 const dateB = new Date(b.created_at);
 
                 // Compare the dates
-                return dateA - dateB;
+                return dateB - dateA;
               })
+
               .map((data, index) => {
                 return (
                   <div
@@ -149,7 +206,7 @@ function TicketSearch({
                   </div>
                 );
               })}
-          {ticketInfo ? (
+          {type === "ticket" && ticketInfo ? (
             loading ? (
               <div className="d-flex mt-3 justify-center align-items-center mx-auto">
                 <ClipLoader
@@ -178,4 +235,4 @@ function TicketSearch({
   );
 }
 
-export default TicketSearch;
+export default Dropdowns;

@@ -27,12 +27,10 @@ const Chat = () => {
   );
   useEffect(() => {
     setLoading(true);
-    //console.log("outer selected ticket", selectedTicket._id);
     const getTicketMessages = async (selectedTicket) => {
       //  const workSpaceID = "646ba835ce27ae02d024a902";
       // const api_key = "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f";
       // setLoading(true);
-      console.log("inner selected ticket", selectedTicket._id);
       try {
         await socket.emit("get_ticket_messages", {
           ticket_id: selectedTicket._id,
@@ -40,31 +38,13 @@ const Chat = () => {
           workspace_id: lineManagerCredentials.workspace_id,
           api_key: lineManagerCredentials.api_key,
         });
-        socket.on("ticket_message_response", (data) => {
-          if (
-            // if (data?.data?.ticket_id === selectedTicket._id) {
-            data.status === "success" &&
-            data?.operation === "get_ticket_messages" &&
-            Array.isArray(data?.data)
-          ) {
-            dispatch(fetchTicketMessage(data?.data));
-          } else if (data.status === "failure") {
-            console.log("failure enterred");
-            dispatch(fetchTicketMessage([]));
-          }
-          // } else {
-          //
-          // }
-        });
       } catch (error) {
         toast.warn(error.message);
       }
     };
 
-    // setMessages([]);
     // If selectedTicket changes, fetch ticket messages
-    if (Object.keys(selectedTicket).length > 0) {
-      //dispatch(fetchTicketMessage([]));
+    if (selectedTicket && Object.keys(selectedTicket).length > 0) {
       getTicketMessages(selectedTicket);
     }
   }, [selectedTicket]);
@@ -86,11 +66,10 @@ const Chat = () => {
     observer.observe(targetNode, config);
     async function chat() {
       if (ticketMessages.length > 0) {
-        let msgtodisplay = [...ticketMessages];
         setLoading(false);
         try {
           let messages = await Promise.all(
-            msgtodisplay?.slice().map((message) => {
+            ticketMessages?.slice().map((message) => {
               return {
                 id: message._id,
                 sender: message.author !== current_user ? "user" : "receiver",
@@ -104,8 +83,6 @@ const Chat = () => {
           if (messages.length > 0) {
             //  console.log("inner loading", loading);
             setMessages(messages);
-          } else {
-            setMessages([]);
           }
         } catch (error) {
           console.log(error);
@@ -118,53 +95,53 @@ const Chat = () => {
       }
     }
     // console.log("selected ticket", selectedTicket);
-    if (ticketMessages.length > 0) {
+    if (ticketMessages && Object.keys(ticketMessages).length > 0) {
       chat();
     } else {
       setMessages([]);
+      setLoading(false);
     }
-    setLoading(false);
-  }, [ticketMessages]);
+  }, [current_user, ticketMessages]);
 
   //getting ticket messages and making a chat
   //useEffect(() => {
+  //getting ticket messages and making a chat
   socket.on("ticket_message_response", (data) => {
     // setLoading(false);
-    //   console.log("message data", data);
-    // if (data?.operation === "send_message") {
-    // console.log("data from tickets ", data?.data);
-    //dispatch(fetchSingleMessage(data?.data));
-    // console.log("outer if", "selected ticket", selectedTicket._id);
+    console.log("message data", data);
+    if (typeof data?.data === "object" && !Array.isArray(data?.data)) {
+      console.log("data from tickets ", data?.data);
+      //dispatch(fetchSingleMessage(data?.data));
 
-    if (
-      data?.operation === "send_message" &&
-      typeof data?.data === "object" &&
-      !Array.isArray(data?.data)
-    ) {
       let messageResponse = data?.data;
-      console.log("data operation", data?.operation === "send_message");
       if (messageResponse.ticket_id === selectedTicket._id) {
         if (Object.keys(messageResponse).length > 0) {
-          const { author, created_at, message_data } = messageResponse;
+          const { author, is_read, created_at, message_data } = messageResponse;
           let current_user = "1234";
+          console.log(current_user, author);
+          console.log("chat datas", author, is_read, created_at, message_data);
           // if (author !== current_user) {
           const message = {
-            id: created_at + message_data,
+            id: messages.length + 1,
             sender: author !== current_user ? "user" : "receiver",
             type: "text",
             content: message_data,
             created_at: created_at,
           };
-          console.log("messages====", messageResponse);
-          setMessages((prevMessages) => [...prevMessages, message]);
 
+          setMessages([...messages, message]);
+          setLoading(false);
           //  }
         }
       }
-      // return;
+      return;
     }
-    //console.log("data messages=", data);
-
+    // if (data?.data?.ticket_id === selectedTicket._id) {
+    if (data.status === "success") {
+      dispatch(fetchTicketMessage(data?.data));
+    } else {
+      dispatch(fetchTicketMessage([]));
+    }
     // }
   });
   //}, [selectedTicket.id]);
@@ -318,7 +295,7 @@ const Chat = () => {
           {Object.keys(messageToDispaly).length > 0 &&
             messageToDispaly?.map((message) => (
               <div
-                key={message.id}
+                key={message.created_at}
                 className={`flex font-sans text-sm ${
                   message.sender === "user" ? "justify-start" : "justify-end"
                 }`}

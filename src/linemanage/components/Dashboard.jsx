@@ -1,8 +1,7 @@
 import Chat from "./ChatSummary";
 import LineManager from "./LineManager";
 import TicketDetail from "./TicketDetail";
-import TicketSearch from "./TicketSearch";
-import TopicSearch from "./TopicSearch";
+import Dropdowns from "./Search";
 
 //eslint-disable-next-line
 function Dashboards() {
@@ -12,11 +11,10 @@ function Dashboards() {
       <div className="w-full h-auto flex-1 flex flex-col">
         <div className="flex justify-between gap-2 px-2 pt-4">
           <div className="flex-1">
-            <TopicSearch search="Search Topic" />
+            <Dropdowns search={"Search Ticket Number"} type={"topic"} />
           </div>
-
           <div className="flex-2">
-            <TicketSearch search={"Search Ticket Number"} />
+            <Dropdowns search={"Search Ticket Number"} type={"ticket"} />
           </div>
         </div>
         <div className="w-full h-auto flex sm:flex-col  md:flex-row">
