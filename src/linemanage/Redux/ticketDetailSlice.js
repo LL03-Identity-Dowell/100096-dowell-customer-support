@@ -27,6 +27,7 @@ const ticketsSlice = createSlice({
     },
     fetchSelectedTicket(state, action) {
       state.loading = false;
+      //state.selectedTicket=[];
       state.selectedTicket = action.payload;
     },
     fetchTicketInfo(state, action) {

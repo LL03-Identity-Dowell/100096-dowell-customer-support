@@ -13,11 +13,13 @@ import { toast } from "react-toastify";
 import { ClipLoader } from "react-spinners";
 //import { socket } from "../utils/Connection";
 import io from "socket.io-client";
+import { fetchSelectedTicket } from "../Redux/ticketDetailSlice";
 //import axios from "axios";
 const socket = io.connect("https://www.dowellchat.uxlivinglab.online/");
 function LineManager() {
   //console.log("socket", socket);
   const dispatch = useDispatch();
+  const ticketInfo = useSelector((state) => state.tickets.ticketInfo);
   //const [isOpen, setIsOpen] = useState(false);
   const [option, setOption] = useState("");
   const [loading, setLoading] = useState(true);
@@ -119,7 +121,9 @@ function LineManager() {
     openSearchModal(option.value);
     //  createTopic("login error", "1353343");
   };
-
+  const handleTicketClick = (data) => {
+    dispatch(fetchSelectedTicket(data));
+  };
   return (
     // <div className="font-sans flex justify-between h-auto sm:flex-col sm:pr-2 sm:w-full md:w-[95vw] md:flex-row  flex-wrap lg:flex-nowrap   lg:items-stretch  border-b-2 border-t-2 m-5 ">
     <>
@@ -147,10 +151,10 @@ function LineManager() {
           <tbody className="text-gray-600 text-sm sm:h-[300px] md:h-[350px] overflow-y-scroll font-light w-full flex flex-wrap">
             {console.log("line managers data from dispatch", lineManagersData)}
             {lineManagersData.length > 0 &&
-              lineManagersData?.map((data, index) => (
+              lineManagersData?.map((data1, index) => (
                 <tr
-                  key={data._id}
-                  className="border-b border-gray-200 hover:bg-gray-100 h-[60%] flex w-full"
+                  key={data1._id}
+                  className="border-b border-gray-200 hover:bg-gray-100 sm:h-[60%] md:h-[70%] flex w-full"
                 >
                   <td className="py-3 px-6 text-left sm:w-13 md:15 ">
                     {index + 1}
@@ -163,48 +167,55 @@ function LineManager() {
                     Till-1 common
                   </td>
                   <td className="py-3 px-6 text-left flex-1 sm:w-15">
-                    {data.user_id}
+                    {data1.user_id}
                   </td>
-                  <td className="py-3 px-6 text-left flex flex-wrap flex-1 h-auto sm:w-[95%] p-1">
-                    <div className="flex justify-start flex-wrap gap-1 h-auto">
-                      {Array.from(
-                        {
-                          length:
-                            data.ticket_count < 20 ? data.ticket_count : 20,
-                        },
-                        (index) => {
-                          //if (index > 20) return;
-                          return (
-                            <div
-                              key={index}
-                              className="bg-blue-200 rounded-sm p-2 h-2"
-                            ></div>
-                          );
-                        }
-                      )}
-                      {data.ticket_count < 20 ? (
-                        ""
-                      ) : (
-                        <small
-                          style={{
-                            color: "green",
-                            fontSize: "25px",
-                          }}
-                        >
-                          ...
-                        </small>
-                      )}
+                  <td className="py-3 px-6 text-left flex flex-wrap flex-1 sm:w-[95%] p-1">
+                    <div className="flex justify-start flex-wrap gap-1 sm:w-[140px] md:w-[120px] sm:h-[120px] md:h-[150px] overflow-y-scroll">
+                      {console.log("ticket info", ticketInfo)}
+                      {ticketInfo &&
+                        //eslint-disable-next-line
+                        ticketInfo
+                          .slice()
+                          .sort((a, b) => {
+                            // Convert the created_at string to Date objects for comparison
+                            const dateA = new Date(a.created_at);
+                            const dateB = new Date(b.created_at);
+
+                            // Compare the dates
+                            return dateB - dateA;
+                          })
+                          .map((data, index) => {
+                            //if (index > 20) return;
+                            return (
+                              data1?.user_id === data?.line_manager && (
+                                <button
+                                  key={index}
+                                  className={`${
+                                    data.is_closed
+                                      ? "bg-red-300"
+                                      : "bg-blue-200"
+                                  } rounded-sm p-2 h-8 m-1`}
+                                  onClick={() => handleTicketClick(data)}
+                                >
+                                  {index}
+                                </button>
+                              )
+                            );
+                          })}
+
                       {/* <div className="bg-green-200 rounded-sm p-2 h-2"></div>
                       <div className="bg-green-200 rounded-sm p-2 h-2"></div>
                       <div className="bg-green-200 rounded-sm p-2 h-2"></div> */}
                     </div>
                     <div className="flex flex-col align-middle justify-start h-auto w-full">
                       <span className="text-md">
-                        {data.ticket_count} Waiting,
+                        {data1.ticket_count} Waiting,
                       </span>
-                      <span className="text-md">
-                        Service time &lt; {data.average_serving_time}
-                      </span>
+                      {/* <span className="text-md">
+                        Service time &lt; {data1.average_serving_time}
+                      </span> */}
+                      <p>blue ticket-active</p>
+                      <p>red ticket-closed</p>
                       {/* <span className="text-md">]</span> */}
                     </div>
                   </td>
