@@ -14,10 +14,12 @@ import { ClipLoader } from "react-spinners";
 //import { socket } from "../utils/Connection";
 import io from "socket.io-client";
 import { fetchSelectedTicket } from "../Redux/ticketDetailSlice";
+import TextInfo from "./TextInfo";
 //import axios from "axios";
 const socket = io.connect("https://www.dowellchat.uxlivinglab.online/");
 function LineManager() {
   //console.log("socket", socket);
+  const [startIndex, setStartIndex] = useState(0);
   const dispatch = useDispatch();
   const ticketInfo = useSelector((state) => state.tickets.ticketInfo);
   //const [isOpen, setIsOpen] = useState(false);
@@ -31,7 +33,7 @@ function LineManager() {
   const lineManagersData = useSelector(
     (state) => state.lineManagers.lineManagersData
   );
-  const [navIndex, setNavIndex] = useState(0)
+  const [navIndex, setNavIndex] = useState(0);
 
   const [currentPage, setCurrentPage] = useState(0);
   const itemsPerPage = 15; // 3 rows * 5 columns = 15 items per page
@@ -40,16 +42,24 @@ function LineManager() {
 
   const handleNextPage = () => {
     setCurrentPage((prevPage) => Math.min(prevPage + 1, totalPages - 1));
-    setNavIndex(index + 9)
+    setNavIndex(navIndex + 15);
   };
-
-  
 
   const handlePrevPage = () => {
     setCurrentPage((prevPage) => Math.max(prevPage - 1, 0));
   };
 
-  //const [selectedOption, setSelectedOption] = useState(null);
+  const handlePrevClick = () => {
+    if (startIndex > 0) {
+      setStartIndex(startIndex - 15);
+    }
+  };
+  const handleNextClick = () => {
+    if (startIndex + 15 < ticketInfo.length) {
+      setStartIndex(startIndex + 15);
+    }
+  };
+
   useEffect(() => {
     const getAllLineManager = async () => {
       //workSpaceID = "646ba835ce27ae02d024a902";
@@ -186,57 +196,18 @@ function LineManager() {
                   <td className="py-3 px-6 text-left flex-1 sm:w-15">
                     {data1.user_id}
                   </td>
-                  <td className="py-3 px-6 text-left flex flex-wrap flex-1 sm:w-[95%] p-1">
-                    <div className="flex justify-start flex-wrap gap-1 mx-auto text-center px-auto sm:w-full md:w-full lg:w-full xl:w-full">
-                      {ticketInfo &&
-                        ticketInfo
-                          .slice(
-                            currentPage * itemsPerPage,
-                            (currentPage + 1) * itemsPerPage
-                          )
-                          .sort((a, b) => {
-                            // Convert the created_at string to Date objects for comparison
-                            const dateA = new Date(a.created_at);
-                            const dateB = new Date(b.created_at);
+                  <td className="text-center flex flex-wrap flex-1 sm:w-[95%] p-1">
+                    {console.log(ticketInfo)}
+                    <div className="flex justify-center items-start flex-wrap gap-1 mx-auto text-center px-auto sm:w-full md:w-full lg:w-full xl:w-full">
+                      <TextInfo
+                        ticketInfo={ticketInfo}
+                        data1={data1}
+                        handleNextClick={handleNextClick}
+                        handlePrevClick={handlePrevClick}
+                        startIndex={startIndex}
+                      />
+                    </div>
 
-                            // Compare the dates
-                            return dateB - dateA;
-                          })
-                          .map((data, index) => {
-                           if(index >= navIndex && <= navIndex+9)
-                           { return (
-                              data1?.user_id === data?.line_manager && (
-                                <button
-                                  key={index}
-                                  className={`${
-                                    data.is_closed
-                                      ? "bg-red-300"
-                                      : "bg-blue-200"
-                                  } rounded-sm  h-8 w-[18%]`}
-                                  onClick={() => handleTicketClick(data)}
-                                >
-                                  {index}
-                                </button>
-                              )
-                            ) } else return
-                          })}
-                    </div>
-                    <div className="flex justify-between w-full mt-5 px-5">
-                      <button
-                        onClick={handlePrevPage}
-                        disabled={currentPage === 0}
-                        className="bg-gray-200 px-4 py-1 rounded-md"
-                      >
-                        Previous
-                      </button>
-                      <button
-                        onClick={handleNextPage}
-                        disabled={currentPage === totalPages - 1}
-                        className="bg-gray-200 px-4 py-1 rounded-md"
-                      >
-                        Next
-                      </button>
-                    </div>
                     <div className="flex  align-middle justify-start  h-auto w-full mt-2 gap-x-2">
                       <span className="text-md text-sm ">
                         {data1.ticket_count} Waiting,
