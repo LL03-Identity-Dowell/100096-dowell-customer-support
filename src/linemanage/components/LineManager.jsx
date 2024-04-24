@@ -31,6 +31,23 @@ function LineManager() {
   const lineManagersData = useSelector(
     (state) => state.lineManagers.lineManagersData
   );
+  const [navIndex, setNavIndex] = useState(0)
+
+  const [currentPage, setCurrentPage] = useState(0);
+  const itemsPerPage = 15; // 3 rows * 5 columns = 15 items per page
+
+  const totalPages = Math.ceil(ticketInfo.length / itemsPerPage);
+
+  const handleNextPage = () => {
+    setCurrentPage((prevPage) => Math.min(prevPage + 1, totalPages - 1));
+    setNavIndex(index + 9)
+  };
+
+  
+
+  const handlePrevPage = () => {
+    setCurrentPage((prevPage) => Math.max(prevPage - 1, 0));
+  };
 
   //const [selectedOption, setSelectedOption] = useState(null);
   useEffect(() => {
@@ -170,12 +187,13 @@ function LineManager() {
                     {data1.user_id}
                   </td>
                   <td className="py-3 px-6 text-left flex flex-wrap flex-1 sm:w-[95%] p-1">
-                    <div className="flex justify-start flex-wrap gap-1 sm:w-[140px] md:w-[120px] sm:h-[120px] md:h-[150px] overflow-y-scroll">
-                      {console.log("ticket info", ticketInfo)}
+                    <div className="flex justify-start flex-wrap gap-1 mx-auto text-center px-auto sm:w-full md:w-full lg:w-full xl:w-full">
                       {ticketInfo &&
-                        //eslint-disable-next-line
                         ticketInfo
-                          .slice()
+                          .slice(
+                            currentPage * itemsPerPage,
+                            (currentPage + 1) * itemsPerPage
+                          )
                           .sort((a, b) => {
                             // Convert the created_at string to Date objects for comparison
                             const dateA = new Date(a.created_at);
@@ -185,8 +203,8 @@ function LineManager() {
                             return dateB - dateA;
                           })
                           .map((data, index) => {
-                            //if (index > 20) return;
-                            return (
+                           if(index >= navIndex && <= navIndex+9)
+                           { return (
                               data1?.user_id === data?.line_manager && (
                                 <button
                                   key={index}
@@ -194,28 +212,40 @@ function LineManager() {
                                     data.is_closed
                                       ? "bg-red-300"
                                       : "bg-blue-200"
-                                  } rounded-sm p-2 h-8 m-1`}
+                                  } rounded-sm  h-8 w-[18%]`}
                                   onClick={() => handleTicketClick(data)}
                                 >
                                   {index}
                                 </button>
                               )
-                            );
+                            ) } else return
                           })}
-
-                      {/* <div className="bg-green-200 rounded-sm p-2 h-2"></div>
-                      <div className="bg-green-200 rounded-sm p-2 h-2"></div>
-                      <div className="bg-green-200 rounded-sm p-2 h-2"></div> */}
                     </div>
-                    <div className="flex flex-col align-middle justify-start h-auto w-full">
-                      <span className="text-md">
+                    <div className="flex justify-between w-full mt-5 px-5">
+                      <button
+                        onClick={handlePrevPage}
+                        disabled={currentPage === 0}
+                        className="bg-gray-200 px-4 py-1 rounded-md"
+                      >
+                        Previous
+                      </button>
+                      <button
+                        onClick={handleNextPage}
+                        disabled={currentPage === totalPages - 1}
+                        className="bg-gray-200 px-4 py-1 rounded-md"
+                      >
+                        Next
+                      </button>
+                    </div>
+                    <div className="flex  align-middle justify-start  h-auto w-full mt-2 gap-x-2">
+                      <span className="text-md text-sm ">
                         {data1.ticket_count} Waiting,
                       </span>
                       {/* <span className="text-md">
                         Service time &lt; {data1.average_serving_time}
                       </span> */}
-                      <p>blue ticket-active</p>
-                      <p>red ticket-closed</p>
+                      <p className="text-green-500">blue ticket-active</p>
+                      <p className="text-red-400">red ticket-closed</p>
                       {/* <span className="text-md">]</span> */}
                     </div>
                   </td>
