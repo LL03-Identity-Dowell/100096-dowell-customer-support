@@ -186,19 +186,19 @@ function LineManager() {
                   <td className="py-3 sm:w-12  px-3 text-left sm:w-13 md:15 ">
                     {index + 1}
                   </td>
-                  <td className="py-3    px-3  text-left flex-1   flex-wrap">
+                  <td className="py-3 w-[22%]   px-3  text-left flex-1   flex-wrap">
                     <input
                       type="checkbox"
                       className="form-checkbox md:h-4 md:w-4 md:mr-2 sm:h-3 sm:w-3 sm:mr-1 text-indigo-600 transition duration-150 ease-in-out"
                     />
                     Till-1 common
                   </td>
-                  <td className="py-3 px-6  text-left  sm:w-15">
+                  <td className="py-3 px-3 w-[23%]   text-left  sm:w-15">
                     {data1.user_id}
                   </td>
-                  <td className="text-center  w-full flex-1  flex-wrap   min-h-[350px]">
+                  <td className="text-end w-[55%] flex-1  flex-wrap mx-auto   min-h-[350px]">
                     {console.log(ticketInfo)}
-                    <div className="flex justify-center w-full items-start flex-wrap gap-1 mx-auto text-center px-auto sm:w-full md:w-full lg:w-full xl:w-full">
+                    <div className="flex justify-center w-full  items-start flex-wrap gap-1 mx-auto text-center ">
                       <TextInfo
                         ticketInfo={ticketInfo}
                         data1={data1}
@@ -210,17 +210,21 @@ function LineManager() {
 
                     <div className="flex  flex-col align-middle justify-start pt-1   h-auto w-full  gap-x-2">
                       <span className="text-md text-sm ">
-                        <span className="font-bold gap-2 text-md">
+                        <span className="font-bold gap-2 flex justify-center items-center w-full text-center text-md">
                           {data1.ticket_count} Waiting,
                         </span>
                       </span>
                       {/* <span className="text-md">
                         Service time &lt; {data1.average_serving_time}
                       </span> */}
-                      <div className="flex justify-between items-center">
+                      <div className="flex justify-between items-center ">
                         {" "}
-                        <p className="text-green-500">blue ticket-active</p>
-                        <p className="text-red-400 ">red ticket-closed</p>
+                        <p className="text-green-500 text-sm">
+                          blue ticket-active
+                        </p>
+                        <p className="text-red-400 text-sm ">
+                          red ticket-closed
+                        </p>
                       </div>
                       {/* <span className="text-md">]</span> */}
                     </div>

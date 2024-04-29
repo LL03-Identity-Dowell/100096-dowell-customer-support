@@ -14,7 +14,7 @@ const TextInfo = ({
   };
   return (
     <div className="h-full">
-      <ul className="w-full  text-center ">
+      <ul className="w-full  text-end ">
         {ticketInfo
           .slice(startIndex, startIndex + 15)
           .sort((a, b) => {
