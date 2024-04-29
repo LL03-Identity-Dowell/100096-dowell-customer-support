@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { fetchSelectedTicket } from "../Redux/ticketDetailSlice";
+import { useDispatch } from "react-redux";
 
 const TextInfo = ({
   ticketInfo,
@@ -7,9 +8,13 @@ const TextInfo = ({
   handleNextClick,
   startIndex,
 }) => {
+  const dispatch = useDispatch();
+  const handleTicketClick = (data) => {
+    dispatch(fetchSelectedTicket(data));
+  };
   return (
-    <div>
-      <ul className="w-full text-center ">
+    <div className="h-full">
+      <ul className="w-full  text-center ">
         {ticketInfo
           .slice(startIndex, startIndex + 15)
           .sort((a, b) => {
@@ -26,8 +31,10 @@ const TextInfo = ({
                 <button
                   key={index}
                   className={`${
-                    data.is_closed ? "bg-red-300" : "bg-blue-200"
-                  } rounded-sm  h-8 w-[16%] m-1  ${
+                    data.is_closed
+                      ? "bg-red-300 hover:bg-red-500 hover:text-white  hover:font-bold duration-500"
+                      : "bg-blue-300 hover:bg-blue-500 hover:text-white  hover:font-bold duration-500"
+                  } rounded-sm  h-8  w-[16%] m-1  ${
                     startIndex == 0 ? "w-[16.2%] px-1" : "w-[16%]"
                   }`}
                   onClick={() => handleTicketClick(data)}
@@ -37,12 +44,12 @@ const TextInfo = ({
               )
             );
           })}
-        <div className="flex justify-between md:px-5 md:pt-5 ">
+        <div className="flex justify-between  mt-2 ">
           <div>
             {startIndex > 0 && (
               <button
                 type="button"
-                className="bg-slate-200 px-2 py-1 rounded-sm hover:bg-slate-300 duration-500"
+                className="bg-slate-200 px-2 py-1  rounded-sm hover:bg-slate-300 duration-500"
                 onClick={handlePrevClick}
                 disabled={startIndex === 0}
               >

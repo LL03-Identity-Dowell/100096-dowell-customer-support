@@ -161,44 +161,44 @@ function LineManager() {
         <table className="sm:h-[450px] md:h-[450px] overflow-y-scroll w-full">
           <thead>
             <tr className="bg-[#22694de1] text-white uppercase text-sm leading-normal flex flex-wrap ">
-              <th className=" sm:p-auto sm:w-16 md:18 md:py-3 md:px-6 text-left border-r-2 border-r-[#1a543ee1]">
+              <th className=" sm:p-auto sm:w-12 flex justify-center items-center text-center md:18  md:py-3 md:px-3  border-r-2 border-r-[#1a543ee1]">
                 SN
               </th>
-              <th className="py-3 px-6 text-left   flex-1  border-r-2 border-r-[#1a543ee1]">
+              <th className="py-3  px-1  text-left flex-1 border-r-2 border-r-[#1a543ee1]">
                 Line/Service Desk Name
               </th>
-              <th className="sm:p-auto flex-1 md:py-3 md:px-6 text-left border-r-2 border-r-[#1a543ee1]">
+              <th className="sm:p-auto flex  flex-1 justify-center items-center text-center md:py-3 px-1  border-r-2 border-r-[#1a543ee1]">
                 Service Manager
               </th>
-              <th className="sm:p-auto flex-1 md:py-3 md:px-6 text-left">
+              <th className="sm:p-auto flex flex-1 justify-center items-center md:py-3 px-20 text-left">
                 Tickets in waiting
               </th>
             </tr>
           </thead>
-          <tbody className="text-gray-600 text-sm sm:h-[300px] md:h-[350px] overflow-y-scroll font-light w-full flex flex-wrap">
+          <tbody className="text-gray-600 text-sm  h-[350px] overflow-y-scroll font-light w-full flex flex-wrap">
             {console.log("line managers data from dispatch", lineManagersData)}
             {lineManagersData.length > 0 &&
               lineManagersData?.map((data1, index) => (
                 <tr
                   key={data1._id}
-                  className="border-b border-gray-200 hover:bg-gray-100 sm:h-[60%] md:h-[70%] flex w-full"
+                  className="border-b border-gray-200 hover:bg-gray-100 sm:h-[60%] flex-1 "
                 >
-                  <td className="py-3 px-6 text-left sm:w-13 md:15 ">
+                  <td className="py-3 sm:w-12  px-3 text-left sm:w-13 md:15 ">
                     {index + 1}
                   </td>
-                  <td className="py-3 px-6 text-left flex-1 sm:w-20 flex-wrap">
+                  <td className="py-3    px-3  text-left flex-1   flex-wrap">
                     <input
                       type="checkbox"
                       className="form-checkbox md:h-4 md:w-4 md:mr-2 sm:h-3 sm:w-3 sm:mr-1 text-indigo-600 transition duration-150 ease-in-out"
                     />
                     Till-1 common
                   </td>
-                  <td className="py-3 px-6 text-left flex-1 sm:w-15">
+                  <td className="py-3 px-6  text-left  sm:w-15">
                     {data1.user_id}
                   </td>
-                  <td className="text-center flex flex-wrap flex-1 sm:w-[95%] p-1">
+                  <td className="text-center  w-full flex-1  flex-wrap   min-h-[350px]">
                     {console.log(ticketInfo)}
-                    <div className="flex justify-center items-start flex-wrap gap-1 mx-auto text-center px-auto sm:w-full md:w-full lg:w-full xl:w-full">
+                    <div className="flex justify-center w-full items-start flex-wrap gap-1 mx-auto text-center px-auto sm:w-full md:w-full lg:w-full xl:w-full">
                       <TextInfo
                         ticketInfo={ticketInfo}
                         data1={data1}
@@ -208,15 +208,20 @@ function LineManager() {
                       />
                     </div>
 
-                    <div className="flex  align-middle justify-start  h-auto w-full mt-2 gap-x-2">
+                    <div className="flex  flex-col align-middle justify-start pt-1   h-auto w-full  gap-x-2">
                       <span className="text-md text-sm ">
-                        {data1.ticket_count} Waiting,
+                        <span className="font-bold gap-2 text-md">
+                          {data1.ticket_count} Waiting,
+                        </span>
                       </span>
                       {/* <span className="text-md">
                         Service time &lt; {data1.average_serving_time}
                       </span> */}
-                      <p className="text-green-500">blue ticket-active</p>
-                      <p className="text-red-400">red ticket-closed</p>
+                      <div className="flex justify-between items-center">
+                        {" "}
+                        <p className="text-green-500">blue ticket-active</p>
+                        <p className="text-red-400 ">red ticket-closed</p>
+                      </div>
                       {/* <span className="text-md">]</span> */}
                     </div>
                   </td>
