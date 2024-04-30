@@ -73,6 +73,7 @@ function TicketDetail() {
                 No previous messages
               </p>
             )}
+
             {Object.keys(selectedTicket).length > 0 && loading ? (
               <div className="d-flex mt-3  justify-center align-items-center mx-auto">
                 <ClipLoader

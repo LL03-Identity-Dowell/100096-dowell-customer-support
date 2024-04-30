@@ -113,9 +113,9 @@ const Chat = () => {
       console.log("data from tickets ", data?.data);
       //dispatch(fetchSingleMessage(data?.data));
 
-      let messageResponse = data?.data;
-      if (messageResponse.ticket_id === selectedTicket._id) {
-        if (Object.keys(messageResponse).length > 0) {
+      if (data?.data.ticket_id === selectedTicket._id) {
+        let messageResponse = data?.data;
+        if (Object.keys(data?.data).length > 0) {
           const { author, is_read, created_at, message_data } = messageResponse;
           let current_user = "1234";
           console.log(current_user, author);

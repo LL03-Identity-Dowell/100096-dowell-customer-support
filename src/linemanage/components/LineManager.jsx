@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 //import { useEffect } from "react";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 //import { BsThreeDotsVertical } from "react-icons/bs";
 
 import CreateComponent from "./CreateComponent";
@@ -24,16 +24,62 @@ function LineManager() {
   const [option, setOption] = useState("");
   const [loading, setLoading] = useState(true);
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
+  const [waitingTime, setWaitingTime] = useState(0);
   //const [ownerType, setOwnerType] = useState("");
+  const ref = useRef();
   const lineManagerCredentials = useSelector(
     (state) => state.lineManagers.lineManagerCredentials
   );
   const lineManagersData = useSelector(
     (state) => state.lineManagers.lineManagersData
   );
+  async function addWaitingTime() {
+    console.log("waiting time", waitingTime);
+    if (!ref.current.value || ref.current.value.waitingTime <= 0) {
+      return;
+    }
+    function createMetaSetting() {
+      const lineData = {
+        waiting_time: parseInt(ref.current.value),
+        operation_time: "12s",
+        workspace_id: lineManagerCredentials.workspace_id,
+        api_key: lineManagerCredentials.api_key,
 
+        created_at: new Date().toISOString(),
+      };
+
+      socket.emit("create_meta_setting", lineData);
+    }
+    createMetaSetting();
+    getMetaSetting();
+    // await socket.on("setting_response", (data) => {
+    //   console.log("datas", data);
+    //   // Handle response for the event
+    //   // console.log("data", data?.data[0].waiting_time);
+    //   if (data.operation === "get_meta_setting") {
+    //     setWaitingTime(data?.data[0]?.waiting_time);
+    //   }
+    // });
+  }
+  async function getMetaSetting() {
+    await socket.emit("get_meta_setting", {
+      // workspace_id: "63cf89a0dcc2a171957b290b"
+      //  api_key: "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f",
+      workspace_id: lineManagerCredentials.workspace_id,
+      api_key: lineManagerCredentials.api_key,
+    });
+  }
+  socket.on("setting_response", (data) => {
+    // Handle response for the event
+    // console.log("data", data?.data[0].waiting_time);
+    if (data.operation === "get_meta_setting") {
+      setWaitingTime(data?.data[0]?.waiting_time);
+      console.log("data", data);
+    }
+  });
   //const [selectedOption, setSelectedOption] = useState(null);
   useEffect(() => {
+    getMetaSetting();
     const getAllLineManager = async () => {
       //workSpaceID = "646ba835ce27ae02d024a902";
       //api_key = "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f";
@@ -64,24 +110,28 @@ function LineManager() {
           setOwnerType(true);
         }*/
         //console.log
+
         await socket.emit("get_all_line_managers", {
           workspace_id: lineManagerCredentials.workspace_id,
           api_key: lineManagerCredentials.api_key,
         });
+
         await socket.on("setting_response", (data) => {
-          console.log("workspace_id", lineManagerCredentials.workspace_id);
-          console.log("api_key", lineManagerCredentials.api_key);
-          console.log("line managers data", data);
-          // Handle response for the event
-          setLoading(false);
-          if (Array.isArray(data?.data)) {
-            dispatch(fetchLineManagersData(data.data));
-          }
-          //console.log("all line manager data", data);
-          if (data?.status === "failure") {
-            toast.warning("Line manager in this workspace is not found", {
-              toastId: "success1",
-            });
+          if (data.operation === "get_all_line_managers") {
+            console.log("workspace_id", lineManagerCredentials.workspace_id);
+            console.log("api_key", lineManagerCredentials.api_key);
+            console.log("line managers data", data);
+            // Handle response for the event
+            setLoading(false);
+            if (Array.isArray(data?.data)) {
+              dispatch(fetchLineManagersData(data.data));
+            }
+            //console.log("all line manager data", data);
+            if (data?.status === "failure") {
+              toast.warning("Line manager in this workspace is not found", {
+                toastId: "success1",
+              });
+            }
           }
         });
       } catch (error) {
@@ -98,6 +148,10 @@ function LineManager() {
 
     // Add event listener for window resize
   }, []);
+
+  // useEffect(() => {
+
+  // }, []);
 
   //const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
   const openSearchModal = (Option) => {
@@ -209,13 +263,15 @@ function LineManager() {
                     </div>
                     <div className="flex flex-col align-middle justify-start h-auto w-full">
                       <span className="text-md">
-                        {data1.ticket_count} Waiting,
+                        {waitingTime} Waiting Time
+                        {/* {waitingTime} Waiting Time, */}
                       </span>
                       {/* <span className="text-md">
                         Service time &lt; {data1.average_serving_time}
                       </span> */}
-                      <p>blue ticket-active</p>
-                      <p>red ticket-closed</p>
+                      {console.log("user id", data1)}
+                      {console.log("workspace id", lineManagerCredentials)}
+
                       {/* <span className="text-md">]</span> */}
                     </div>
                   </td>
@@ -362,6 +418,22 @@ function LineManager() {
                   {option.label}
                 </button>
               ))}
+          </div>
+          <div className="flex gap-1 w-[80%] h-auto mt-3 mx-auto">
+            <input
+              type="number"
+              ref={ref}
+              id="waitingTimeInput"
+              className="w-10 h-7
+                          border border-[#4c8670e1] rounded
+                          "
+            />
+            <button
+              className="w-[100px] p-1 rounded h-7 text-white flex bg-[#1a543ee1] hover:bg-[#2d755ae1]"
+              onClick={() => addWaitingTime()}
+            >
+              <small>Add Waiting</small>
+            </button>
           </div>
 
           {/* <button className="bg-[#22694de1] hover:bg-green-700 text-white font-bold py-0 px-2 rounded-lg">
