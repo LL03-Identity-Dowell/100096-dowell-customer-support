@@ -13,7 +13,7 @@ import { toast } from "react-toastify";
 import { ClipLoader } from "react-spinners";
 //import { socket } from "../utils/Connection";
 import io from "socket.io-client";
-import { fetchSelectedTicket } from "../Redux/ticketDetailSlice";
+//import { fetchSelectedTicket } from "../Redux/ticketDetailSlice";
 import TextInfo from "./TextInfo";
 //import axios from "axios";
 const socket = io.connect("https://www.dowellchat.uxlivinglab.online/");
@@ -79,21 +79,21 @@ function LineManager() {
       console.log("data", data);
     }
   });
-  const [navIndex, setNavIndex] = useState(0);
+  // const [navIndex, setNavIndex] = useState(0);
 
-  const [currentPage, setCurrentPage] = useState(0);
-  const itemsPerPage = 15; // 3 rows * 5 columns = 15 items per page
+  //const [currentPage, setCurrentPage] = useState(0);
+  //const itemsPerPage = 15; // 3 rows * 5 columns = 15 items per page
 
-  const totalPages = Math.ceil(ticketInfo.length / itemsPerPage);
+  //const totalPages = Math.ceil(ticketInfo.length / itemsPerPage);
 
-  const handleNextPage = () => {
-    setCurrentPage((prevPage) => Math.min(prevPage + 1, totalPages - 1));
-    setNavIndex(navIndex + 15);
-  };
+  // const handleNextPage = () => {
+  //   setCurrentPage((prevPage) => Math.min(prevPage + 1, totalPages - 1));
+  //   setNavIndex(navIndex + 15);
+  // };
 
-  const handlePrevPage = () => {
-    setCurrentPage((prevPage) => Math.max(prevPage - 1, 0));
-  };
+  // const handlePrevPage = () => {
+  //   setCurrentPage((prevPage) => Math.max(prevPage - 1, 0));
+  // };
 
   const handlePrevClick = () => {
     if (startIndex > 0) {
@@ -203,9 +203,9 @@ function LineManager() {
     openSearchModal(option.value);
     //  createTopic("login error", "1353343");
   };
-  const handleTicketClick = (data) => {
-    dispatch(fetchSelectedTicket(data));
-  };
+  // const handleTicketClick = (data) => {
+  //   dispatch(fetchSelectedTicket(data));
+  // };
   return (
     // <div className="font-sans flex justify-between h-auto sm:flex-col sm:pr-2 sm:w-full md:w-[95vw] md:flex-row  flex-wrap lg:flex-nowrap   lg:items-stretch  border-b-2 border-t-2 m-5 ">
     <>
