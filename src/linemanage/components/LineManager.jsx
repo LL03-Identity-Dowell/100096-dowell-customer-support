@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 //import { useEffect } from "react";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 //import { BsThreeDotsVertical } from "react-icons/bs";
 
 import CreateComponent from "./CreateComponent";
@@ -13,7 +13,7 @@ import { toast } from "react-toastify";
 import { ClipLoader } from "react-spinners";
 //import { socket } from "../utils/Connection";
 import io from "socket.io-client";
-import { fetchSelectedTicket } from "../Redux/ticketDetailSlice";
+//import { fetchSelectedTicket } from "../Redux/ticketDetailSlice";
 import TextInfo from "./TextInfo";
 //import axios from "axios";
 const socket = io.connect("https://www.dowellchat.uxlivinglab.online/");
@@ -26,13 +26,77 @@ function LineManager() {
   const [option, setOption] = useState("");
   const [loading, setLoading] = useState(true);
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
+  const [waitingTime, setWaitingTime] = useState(0);
   //const [ownerType, setOwnerType] = useState("");
+  const ref = useRef();
   const lineManagerCredentials = useSelector(
     (state) => state.lineManagers.lineManagerCredentials
   );
   const lineManagersData = useSelector(
     (state) => state.lineManagers.lineManagersData
   );
+<<<<<<< HEAD
+=======
+  async function addWaitingTime() {
+    console.log("waiting time", waitingTime);
+    if (!ref.current.value || ref.current.value.waitingTime <= 0) {
+      return;
+    }
+    function createMetaSetting() {
+      const lineData = {
+        waiting_time: parseInt(ref.current.value),
+        operation_time: "12s",
+        workspace_id: lineManagerCredentials.workspace_id,
+        api_key: lineManagerCredentials.api_key,
+
+        created_at: new Date().toISOString(),
+      };
+
+      socket.emit("create_meta_setting", lineData);
+    }
+    createMetaSetting();
+    getMetaSetting();
+    // await socket.on("setting_response", (data) => {
+    //   console.log("datas", data);
+    //   // Handle response for the event
+    //   // console.log("data", data?.data[0].waiting_time);
+    //   if (data.operation === "get_meta_setting") {
+    //     setWaitingTime(data?.data[0]?.waiting_time);
+    //   }
+    // });
+  }
+  async function getMetaSetting() {
+    await socket.emit("get_meta_setting", {
+      // workspace_id: "63cf89a0dcc2a171957b290b"
+      //  api_key: "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f",
+      workspace_id: lineManagerCredentials.workspace_id,
+      api_key: lineManagerCredentials.api_key,
+    });
+  }
+  socket.on("setting_response", (data) => {
+    // Handle response for the event
+    // console.log("data", data?.data[0].waiting_time);
+    if (data.operation === "get_meta_setting") {
+      setWaitingTime(data?.data[0]?.waiting_time);
+      console.log("data", data);
+    }
+  });
+  // const [navIndex, setNavIndex] = useState(0);
+
+  //const [currentPage, setCurrentPage] = useState(0);
+  //const itemsPerPage = 15; // 3 rows * 5 columns = 15 items per page
+
+  //const totalPages = Math.ceil(ticketInfo.length / itemsPerPage);
+
+  // const handleNextPage = () => {
+  //   setCurrentPage((prevPage) => Math.min(prevPage + 1, totalPages - 1));
+  //   setNavIndex(navIndex + 15);
+  // };
+
+  // const handlePrevPage = () => {
+  //   setCurrentPage((prevPage) => Math.max(prevPage - 1, 0));
+  // };
+>>>>>>> 98c6784f61f1b0ebad79fc01f5a5a5b2e4b7b67d
 
   const handlePrevClick = () => {
     if (startIndex > 0) {
@@ -46,6 +110,7 @@ function LineManager() {
   };
 
   useEffect(() => {
+    getMetaSetting();
     const getAllLineManager = async () => {
       //workSpaceID = "646ba835ce27ae02d024a902";
       //api_key = "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f";
@@ -76,24 +141,28 @@ function LineManager() {
           setOwnerType(true);
         }*/
         //console.log
+
         await socket.emit("get_all_line_managers", {
           workspace_id: lineManagerCredentials.workspace_id,
           api_key: lineManagerCredentials.api_key,
         });
+
         await socket.on("setting_response", (data) => {
-          console.log("workspace_id", lineManagerCredentials.workspace_id);
-          console.log("api_key", lineManagerCredentials.api_key);
-          console.log("line managers data", data);
-          // Handle response for the event
-          setLoading(false);
-          if (Array.isArray(data?.data)) {
-            dispatch(fetchLineManagersData(data.data));
-          }
-          //console.log("all line manager data", data);
-          if (data?.status === "failure") {
-            toast.warning("Line manager in this workspace is not found", {
-              toastId: "success1",
-            });
+          if (data.operation === "get_all_line_managers") {
+            console.log("workspace_id", lineManagerCredentials.workspace_id);
+            console.log("api_key", lineManagerCredentials.api_key);
+            console.log("line managers data", data);
+            // Handle response for the event
+            setLoading(false);
+            if (Array.isArray(data?.data)) {
+              dispatch(fetchLineManagersData(data.data));
+            }
+            //console.log("all line manager data", data);
+            if (data?.status === "failure") {
+              toast.warning("Line manager in this workspace is not found", {
+                toastId: "success1",
+              });
+            }
           }
         });
       } catch (error) {
@@ -111,6 +180,10 @@ function LineManager() {
     // Add event listener for window resize
   }, []);
 
+  // useEffect(() => {
+
+  // }, []);
+
   //const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
   const openSearchModal = (Option) => {
     setOption(Option);
@@ -127,12 +200,21 @@ function LineManager() {
   //   { label: "Generate Link", value: "generateLink" },
   // ];
 
+<<<<<<< HEAD
   // const handleSelect = (option) => {
   //   // setSelectedOption(option);'
   //   // setIsOpen(false);
   //   openSearchModal(option.value);
   //   //  createTopic("login error", "1353343");
   // };
+=======
+  const handleSelect = (option) => {
+    // setSelectedOption(option);'
+    // setIsOpen(false);
+    openSearchModal(option.value);
+    //  createTopic("login error", "1353343");
+  };
+>>>>>>> 98c6784f61f1b0ebad79fc01f5a5a5b2e4b7b67d
   // const handleTicketClick = (data) => {
   //   dispatch(fetchSelectedTicket(data));
   // };
@@ -192,7 +274,17 @@ function LineManager() {
                       />
                     </div>
 
+<<<<<<< HEAD
                     <div className="flex  flex-col align-start justify-end pt-1 pl-8    h-auto w-full  ">
+=======
+                    <div className="flex  flex-col align-middle justify-start pt-1   h-auto w-full  gap-x-2">
+                      <span className="text-md text-sm ">
+                        <span className="font-bold gap-2 flex justify-center items-center w-full text-center text-md">
+                          {waitingTime} Waiting Time
+                          {/* {waitingTime} Waiting Time, */}
+                        </span>
+                      </span>
+>>>>>>> 98c6784f61f1b0ebad79fc01f5a5a5b2e4b7b67d
                       {/* <span className="text-md">
                         Service time &lt; {data1.average_serving_time}
                       </span> */}
@@ -359,6 +451,22 @@ function LineManager() {
                   {option.label}
                 </button>
               ))} */}
+          </div>
+          <div className="flex gap-1 w-[80%] h-auto mt-3 mx-auto">
+            <input
+              type="number"
+              ref={ref}
+              id="waitingTimeInput"
+              className="w-10 h-7
+                          border border-[#4c8670e1] rounded
+                          "
+            />
+            <button
+              className="w-[100px] p-1 rounded h-7 text-white flex bg-[#1a543ee1] hover:bg-[#2d755ae1]"
+              onClick={() => addWaitingTime()}
+            >
+              <small>Add Waiting</small>
+            </button>
           </div>
 
           {/* <button className="bg-[#22694de1] hover:bg-green-700 text-white font-bold py-0 px-2 rounded-lg">

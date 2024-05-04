@@ -147,13 +147,15 @@ function CreateComponent({ closeSearchModal, option }) {
       );*/
       //  console.log(response);
       let response = localStorage.getItem("userInfo");
-      //console.log("data response ", response);
+      console.log("data response ", response);
       response = JSON.parse(response)?.selected_product;
-      let responseData = await response?.userportfolio.find(
+      //added filter
+      let responseData = await response?.userportfolio.filter(
         (item) => item.member_type === "team_member"
       );
+      let username = responseData.map((items) => items?.username);
       //console.log("response data", responseData);
-      setMembers(responseData?.username);
+      setMembers(username);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -181,7 +183,7 @@ function CreateComponent({ closeSearchModal, option }) {
         console.log("created manager data response", data);
         setLoading(false);
         if (data.status === "failure") {
-          toast.warning("Failure to create manager");
+          toast.warning(data?.data);
         } else if (data.status === "success") {
           toast.success("successfully created");
         }

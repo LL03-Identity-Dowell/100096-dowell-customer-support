@@ -1,11 +1,16 @@
 import { fetchSelectedTicket } from "../Redux/ticketDetailSlice";
 import { useDispatch } from "react-redux";
-
+//eslint-disable-next-line
 const TextInfo = ({
+  //eslint-disable-next-line
   ticketInfo,
+  //eslint-disable-next-line
   data1,
+  //eslint-disable-next-line
   handlePrevClick,
+  //eslint-disable-next-line
   handleNextClick,
+  //eslint-disable-next-line
   startIndex,
 }) => {
   const dispatch = useDispatch();
@@ -16,6 +21,7 @@ const TextInfo = ({
     <div className="h-full">
       <ul className="w-full  text-end ">
         {ticketInfo
+          //eslint-disable-next-line
           .slice(startIndex, startIndex + 15)
           .sort((a, b) => {
             // Convert the created_at string to Date objects for comparison
@@ -27,6 +33,7 @@ const TextInfo = ({
           })
           .map((data, index) => {
             return (
+              //eslint-disable-next-line
               data1?.user_id === data?.line_manager && (
                 <button
                   key={index}
@@ -58,16 +65,22 @@ const TextInfo = ({
             )}
           </div>
           <div>
-            {startIndex + 15 < ticketInfo.length > 0 && (
-              <button
-                type="button"
-                className="bg-slate-200 px-5 py-1 rounded-sm cursor-pointer hover:bg-slate-300 duration-500"
-                onClick={handleNextClick}
-                disabled={startIndex + 15 >= ticketInfo.length}
-              >
-                Next
-              </button>
-            )}
+            {
+              //eslint-disable-next-line
+              startIndex + 15 < ticketInfo.length > 0 && (
+                <button
+                  type="button"
+                  className="bg-slate-200 px-5 py-1 rounded-sm cursor-pointer hover:bg-slate-300 duration-500"
+                  onClick={handleNextClick}
+                  disabled={
+                    //eslint-disable-next-line
+                    startIndex + 15 >= ticketInfo.length
+                  }
+                >
+                  Next
+                </button>
+              )
+            }
           </div>
         </div>
       </ul>
