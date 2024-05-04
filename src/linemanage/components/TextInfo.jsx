@@ -44,7 +44,7 @@ const TextInfo = ({
               )
             );
           })}
-        <div className="flex justify-between  mt-2 ">
+        <div className="flex justify-between  mt-2 pl-8 ">
           <div>
             {startIndex > 0 && (
               <button

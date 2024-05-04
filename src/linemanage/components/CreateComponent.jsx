@@ -399,36 +399,37 @@ function CreateComponent({ closeSearchModal, option }) {
 
   return (
     <div
-      className={`fixed  h-auto md:h-full inset-0 z-50 flex items-center justify-center bg-gray-900 bg-opacity-50 modal-overlay`}
+      className={`relative b md:h-[600px] inset-0 z-50 flex items-center justify-center  bg-opacity-50 `}
       onClick={closeModal}
     >
       <div
-        className={`bg-white h-[90%] overflow-auto relative p-4 md:p-6 rounded-lg w-full max-w-md animate-fadeIn`}
+        className={` h-[90%] bg-white shadow-2xl  border-2 border-gray-100 overflow-auto mt-[80px] relative p-4 md:p-6 rounded-lg w-full md:max-w-[50%] `}
       >
-        <div className="flex justify-between w-full relative mb-7 ">
-          <NavItem component={true} />
+        {/* <div className="flex justify-between w-full relative mb-7 ">
           <button
             onClick={closeSearchModal}
             className=" -top-5 w-10 h-10 font-bold text-2xl text-red-500  rounded-full p-2 hover:text-red-400 absolute right-0"
           >
             X
           </button>
-        </div>
+        </div> */}
 
         {
           // eslint-disable-next-line
           option === "createTopic" && (
             <>
-              <div className="max-w-md mx-auto">
-                <h3 className="mb-5">Fill Topic Information</h3>
+              <div className="max-w-[400px] mx-auto">
+                <h3 className="mb-10 text-center font-bold text-xl w-full">
+                  Fill Topic Information
+                </h3>
                 <form
                   onSubmit={handleSubmit}
-                  className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 "
+                  className="bg-white   rounded px-4 py-8 "
                 >
-                  <div className="mb-4 flex sm:flex-col md:flex-row">
+                  <div className="mb-4 gap-y-2">
                     <label
                       htmlFor="input1"
-                      className="block text-gray-700 text-sm font-bold w-1/2 mb-2"
+                      className="block mb-4 text-black  font-bold  "
                     >
                       Topic Name
                     </label>
@@ -445,7 +446,7 @@ function CreateComponent({ closeSearchModal, option }) {
                   <div className="flex items-center w-full justify-center">
                     <button
                       type="submit"
-                      className="bg-[#22694de1] font-sans text-sm hover:bg-green-700 text-white font-bold py-2 px-2 md:w-27 rounded-md"
+                      className="w-[80%] duration-500 font-sans text-sm mt-10 bg-[#22C55E] hover:bg-green-700 text-white font-bold py-2 px-2 md:w-27 rounded-md"
                     >
                       Create Topic
                     </button>
@@ -463,7 +464,9 @@ function CreateComponent({ closeSearchModal, option }) {
           option === "generateLink" && (
             <>
               <div className="max-w-[400px]   mx-auto ">
-                <h3 className="mb-5">Fill Link Information</h3>
+                <h3 className="mb-10 w-full text-center text-xl font-bold">
+                  Fill Link Information
+                </h3>
                 {masterLink && (
                   <div className="flex w-auto justify-center align-middle mx-auto  h-15 p-2  border border-r-8 gap-1">
                     <input
@@ -479,7 +482,7 @@ function CreateComponent({ closeSearchModal, option }) {
                 )}
                 <form
                   onSubmit={handleLinkSubmit}
-                  className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 sm:w-[350px] md:w-[410px] sm:h-[150px] md:h-[350px] overflow-y-scroll"
+                  className="bg-white  rounded px-4 pt-6  h-full mb-4 sm:h-[150px] md:h-full overflow-y-scroll"
                 >
                   {/*  
                   <div className="mb-4 flex sm:flex-col md:flex-row sm:gap-5 md:gap-10 sm:w-max-[300px] md:w-[400px] ">
@@ -501,10 +504,10 @@ function CreateComponent({ closeSearchModal, option }) {
                   </div>
                   */}
 
-                  <div className="mb-4 flex sm:flex-col md:flex-row sm:gap-5 md:gap-10 sm:md:w-max-[380px] md:w-[400px]">
+                  <div className="mb-4 flex sm:flex-col  sm:gap-2  sm:md:w-max-[380px] md:w-[400px]">
                     <label
                       htmlFor="input1"
-                      className="block text-gray-700 text-sm font-bold sm:w-max-[70px] md:w-[100px] mb-2"
+                      className="block text-black  font-bold sm:w-max-[70px] md:w-[100px] mb-2"
                     >
                       Link Number
                     </label>
@@ -514,7 +517,7 @@ function CreateComponent({ closeSearchModal, option }) {
                       name="linkNumber"
                       value={linkNumber}
                       onChange={(e) => setLinkNumber(e.target.value)}
-                      className="shadow appearance-none border rounded sm:w-max-[150px] md:w-[200px] py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                      className="shadow  appearance-none border rounded w-[90%]  py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     />
                   </div>
                   {topicData &&
@@ -522,12 +525,12 @@ function CreateComponent({ closeSearchModal, option }) {
                     topicData?.map((data) => {
                       return (
                         <div
-                          className="mb-4 flex sm:flex-col md:flex-row sm:gap-5 md:gap-10 sm:md:w-max-[300px] md:w-[400px]"
+                          className="mb-4 flex sm:flex-col  sm:gap-2  sm:md:w-max-[300px] md:w-[400px]"
                           key={data._id}
                         >
                           <label
                             htmlFor="input1"
-                            className="block text-gray-700 text-sm font-bold sm:w-max-[70px] md:w-[100px] mb-2"
+                            className="block text-gray-700  font-bold sm:w-max-[70px] md:w-[100px] mb-2"
                           >
                             {data.name}
                           </label>
@@ -537,15 +540,15 @@ function CreateComponent({ closeSearchModal, option }) {
                             name={data.name}
                             value={linkTopic[`${data.name}`]}
                             onChange={handleTopic}
-                            className="shadow appearance-none border rounded sm:w-max-[150px] md:w-[200px] py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            className="shadow appearance-none border rounded w-[90%] py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                           />
                         </div>
                       );
                     })}
-                  <div className="mb-4 flex sm:flex-col md:flex-row sm:gap-5 md:gap-10 sm:w-max-[300px] md:w-[400px]">
+                  <div className="mb-4 flex sm:flex-col  gap-2   sm:w-max-[300px] md:w-[400px]">
                     <label
                       htmlFor="input1"
-                      className="block text-gray-700 text-sm font-bold sm:w-max-[70px] md:w-[100px] mb-2"
+                      className="block text-gray-700 font-bold sm:w-max-[70px] md:w-[100px] mb-2"
                     >
                       URL
                     </label>
@@ -555,15 +558,15 @@ function CreateComponent({ closeSearchModal, option }) {
                       name="linkurl"
                       value={url}
                       onChange={(e) => setUrl(e.target.value)}
-                      className="shadow appearance-none border rounded sm:w-max-[150px] md:w-[200px] py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                      className="shadow appearance-none border rounded w-[90%] py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                       readOnly
                     />
                   </div>
 
-                  <div className="flex items-center w-full sm:justify-start md:justify-end">
+                  <div className="flex items-center sm:justify-start md:justify-end w-full">
                     <button
                       type="submit"
-                      className="bg-[#22694de1] font-sans text-sm hover:bg-green-700 text-white font-bold py-2 px-2 sm:w-[150px] md:w-[200px] rounded-md"
+                      className="bg-[#22C55E] duration-500 mx-auto mt-5 font-sans text-sm hover:bg-green-700 text-white font-bold py-2 px-2 w-[80%] rounded-md"
                       disabled={!activeLink}
                     >
                       Generate Link
@@ -579,16 +582,18 @@ function CreateComponent({ closeSearchModal, option }) {
           // eslint-disable-next-line
           option === "createLineManager" && (
             <>
-              <div className="max-w-md mx-auto mt-16">
-                <h3 className="mb-5">Fill Line Manager Information</h3>
+              <div className="max-w-md mx-auto ">
+                <h3 className="mb-10 w-full text-center text-xl font-[700]">
+                  Fill Line Manager Information
+                </h3>
                 <form
                   onSubmit={handleSubmit}
-                  className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
+                  className="bg-white rounded md:px-8 pt-6 pb-8 mb-4"
                 >
-                  <div className="mb-4 flex sm:flex-col md:flex-row">
+                  <div className="mb-4 gap-y-2 flex sm:flex-col ">
                     <label
                       htmlFor="input1"
-                      className="block text-gray-700 text-sm font-bold w-1/2 mb-2"
+                      className="block   font-bold w-1/2 mb-2"
                     >
                       Manager Name
                     </label>
@@ -596,7 +601,7 @@ function CreateComponent({ closeSearchModal, option }) {
                       id="dropdown"
                       value={managerName}
                       onChange={handleAddManager}
-                      className="shadow appearance-none border rounded w-full
+                      className="shadow-sm cursor-pointer appearance-none border rounded w-full
                       py-1 px-2 text-gray-700 leading-tight focus:outline-none
                       focus:shadow-outline overflow-y-scroll max-h-[100px]"
                     >
@@ -611,10 +616,10 @@ function CreateComponent({ closeSearchModal, option }) {
                     </select>
                   </div>
 
-                  <div className="flex items-center w-full justify-center">
+                  <div className="flex items-center w-full mt-10 justify-center">
                     <button
                       type="submit"
-                      className="bg-[#22694de1] font-sans text-sm hover:bg-green-700 text-white font-bold py-2 px-2 md:w-27 rounded-md"
+                      className="bg-[#22C55E]  w-[80%] mx-auto duration-500 font-sans text-sm hover:bg-green-700 text-white font-bold py-2 px-2 md:w-27 rounded-md"
                     >
                       Create Manager
                     </button>

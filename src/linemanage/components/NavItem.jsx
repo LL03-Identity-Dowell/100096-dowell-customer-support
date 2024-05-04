@@ -1,5 +1,27 @@
+import { Link } from "react-router-dom";
+import { Profile } from "../../assets";
+import { useEffect, useState } from "react";
+import queryString from "query-string";
+
 //eslint-disable-next-line
 export default function NavItem({ component }) {
+  const [isHovered, setIsHovered] = useState(false);
+  const [sessionId, setSessionId] = useState(null);
+  const [id, setId] = useState(null);
+
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    const sessionParam = url.searchParams.get("session_id");
+    const idParam = url.searchParams.get("id");
+    setSessionId(sessionParam);
+    setId(idParam);
+  }, []);
+
+  const queryParams = queryString.stringify({
+    session_id: sessionId,
+    id: id,
+  });
+
   const dowellLogoutUrl =
     "https://100014.pythonanywhere.com/sign-out?redirect_url=" +
     window.location.origin;
@@ -7,13 +29,14 @@ export default function NavItem({ component }) {
     localStorage.clear();
     window.location.replace(dowellLogoutUrl);
   };
+
   return (
-    <div className="flex justify-start bg-[#22C55E] bg-opacity-[9%] items-center text-center">
+    <div className="flex w-full md:px-5  fixed  justify-start z-50 bg-[#e3fded] items-center text-center">
       <div className="flex justify-start  w-full flex-2">
         <a className="flex justify-start  items-start ps-2.5 md:mb-2 sm:mb-2 md:mr-2 h-16">
           <img
             src="https://psp-logos.uptimerobot.com/logos/2021049-1676548510.png"
-            className="md:w-16 md:h-16  md:ml-5 rounded-md border-none"
+            className="md:w-16 md:h-16   rounded-md border-none"
             alt="Flowbite Logo"
           />
         </a>
@@ -33,9 +56,42 @@ export default function NavItem({ component }) {
         </div>
       )} */}
 
-      {/* <div>
-        <FaUser />
-      </div> */}
+      <div
+        className="relative max-w-[50px] text-end"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
+        <div className="relative inline-block cursor-pointer">
+          <img className="w-8 h-8" src={Profile} alt="Profile" />
+        </div>
+        <div
+          onMouseEnter={() => setIsHovered(true)}
+          className={`absolute z-50 min-w-28 -left-16   pt-2  p-4  bg-white border border-gray-300 rounded shadow ${
+            isHovered ? "block" : "hidden"
+          }`}
+        >
+          <ul className="w-full flex flex-col gap-y-3 text-center">
+            <li>
+              <a className="hover:text-[#22C55E]" href="#">
+                Profile
+              </a>
+            </li>
+            <li>
+              <Link
+                className="hover:text-[#22C55E]"
+                to={`/linemanage/settings?${queryParams}`}
+              >
+                Settings
+              </Link>
+            </li>
+            <li>
+              <a className="hover:text-[#22C55E]" href="#">
+                Logrout
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
     </div>
   );
 }
