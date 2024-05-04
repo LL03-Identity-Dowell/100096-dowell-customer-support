@@ -220,73 +220,84 @@ function LineManager() {
         <CreateComponent closeSearchModal={closeSearchModal} option={option} />
       )} */}
       <div className="bg-g w-[99%] flex-2 border  border-[#7E7E7E] shadow-md my-4 mt-16 ml-2 md:min-w-[500px]  rounded-md md:h-[660px] ">
-        <table className="sm:h-[450px] md:h-[450px] overflow-y-scroll w-full">
+        <table className="sm:h-[450px]  md:h-[450px]     overflow-y-scroll w-full">
           <thead>
-            <tr className="bg-[#22C55E] border border-[#7E7E7E] text-white uppercase rounded-t-md text-sm leading-normal flex flex-wrap">
-              <th className="sm:p-auto sm:w-8 flex justify-center items-center text-center md:w-18 md:py-3 md:px-3 border-r border-r-[#7E7E7E]">
+            <tr className="bg-[#22C55E] border  border-[#7E7E7E] text-white uppercase rounded-t-md text-sm leading-normal flex flex-wrap ">
+              <th className=" sm:p-auto sm:w-8 flex justify-center items-center text-center md:18  md:py-3 md:px-3  border-r border-r-[#7E7E7E]">
                 SN
               </th>
-              <th className="py-3 sm:max-w-[18%] px-1 text-center border-r border-r-[#7E7E7E]">
+              <th className="py-3 sm:max-w-[18%]   px-1  text-center  border-r  border-r-[#7E7E7E]">
                 Line/Service Desk Name
               </th>
-              <th className="flex sm:max-w-[15%] px-1 justify-center items-center text-center md:py-3 border-r border-r-[#7E7E7E]">
+              <th className=" flex sm:max-w-[15%]  px-1  justify-center items-center text-center md:py-3  border-r border-r-[#7E7E7E]">
                 Service Manager
               </th>
-              <th className="flex flex-1 justify-center items-center md:py-3">
+              <th className=" flex flex-1 justify-center items-center md:py-3 ">
                 Tickets in waiting
               </th>
             </tr>
           </thead>
-          <tbody className="text-gray-600 text-sm border border-t-0 border-[#7E7E7E] h-[350px] overflow-y-scroll font-light w-full flex flex-wrap">
-            {console.log("line managers data from dispatch", lineManagersData)}
+          <tbody className="text-gray-600 text-sm border border-t-0   border-[#7E7E7E]  h-[350px] overflow-y-scroll font-light w-full flex flex-wrap">
+            {console.log("line managers data  from dispatch", lineManagersData)}
             {lineManagersData.length > 0 &&
-              lineManagersData.map((data1, index) => (
+              lineManagersData?.map((data1, index) => (
                 <tr
                   key={data1._id}
-                  className="border-b border-[#7E7E7E] hover:bg-gray-100 sm:h-[58%] flex-1"
+                  className="border-b  hover:bg-gray-100 sm:h-[100%] flex-1 "
                 >
-                  <td className="py-3 sm:w-8 border-r border-[#7E7E7E] text-left sm:w-13">
+                  <td className="py-3 sm:w-8 border-r border-[#7E7E7E]   text-left sm:w-13  ">
                     {index + 1}
                   </td>
-                  <td className="py-3 sm:max-w-[18%] font-bold border-r border-[#7E7E7E] text-left">
+                  <td className="py-3 sm:max-w-[18%]    font-bold border-r border-[#7E7E7E]     text-left    ">
                     <input
                       type="checkbox"
-                      className="form-checkbox md:h-4 text-indigo-600 transition duration-150 ease-in-out"
+                      className="form-checkbox md:h-4   text-indigo-600 transition duration-150 ease-in-out"
                     />
                     Till-1 common
                   </td>
-                  <td className="py-3 sm:max-w-[15%] border-r border-[#7E7E7E] text-left">
+                  <td className="py-3  sm:max-w-[15%] border-r border-[#7E7E7E]   text-left   ">
                     {data1.user_id}
                   </td>
-                  <td className="text-center flex-1 flex-wrap min-h-[350px]">
-                    <div className="flex justify-center flex-1 items-start flex-wrap gap-1 mx-auto text-center">
-                      {/* Insert TextInfo component here */}
+                  <td className="text-center  flex-1  flex-wrap   min-h-[350px]">
+                    <div className="flex justify-center flex-1  items-start flex-wrap gap-1 mx-auto text-center ">
+                      <TextInfo
+                        ticketInfo={ticketInfo}
+                        data1={data1}
+                        handleNextClick={handleNextClick}
+                        handlePrevClick={handlePrevClick}
+                        startIndex={startIndex}
+                      />
                     </div>
-                    <div className="flex flex-col align-start justify-end pt-1 pl-8 h-auto w-full">
-                      <div className="flex flex-col align-middle justify-start pt-1 h-auto w-full gap-x-2">
-                        <span className="text-md text-sm">
+
+                    <div className="flex  flex-col align-start justify-end pt-1 pl-8    h-auto w-full  ">
+                      <div className="flex  flex-col align-middle justify-start pt-1   h-auto w-full  gap-x-2">
+                        <span className="text-md text-sm ">
                           <span className="font-bold gap-2 flex justify-center items-center w-full text-center text-md">
                             {waitingTime} Waiting Time
                             {/* {waitingTime} Waiting Time, */}
                           </span>
                         </span>
-                        <div className="flex justify-between gap-5 items-end min-h-10">
-                          <p className="text-md text-sm">
+                        {/* <span className="text-md">
+                        Service time &lt; {data1.average_serving_time}
+                      </span> */}
+                        <div className="flex justify-between gap-5 items-end  min-h-10 ">
+                          <p className="text-md text-sm  ">
                             <span className="font-bold gap-2 flex justify-center items-center w-full text-center text-md">
                               {data1.ticket_count} Waiting,
                             </span>
                           </p>
-                          <div className="flex justify-end gap-5 items-end min-h-10">
-                            <div className="flex justify-center items-center gap-2">
+                          <div className="flex justify-end gap-5 items-end  min-h-10">
+                            <div className="flex justify-center items-center gap-2 ">
                               <div className="w-3 h-3 rounded-sm bg-blue-400"></div>
                               <p className="text-blue-400 font-bold">Open</p>
                             </div>
-                            <div className="flex justify-center items-center gap-2">
+                            <div className="flex justify-center items-center gap-2 ">
                               <div className="w-3 h-3 rounded-sm bg-red-400"></div>
                               <p className="text-red-400 font-bold">Closed</p>
                             </div>
                           </div>
                         </div>
+                        {/* <span className="text-md">]</span> */}
                       </div>
                     </div>
                   </td>
@@ -311,7 +322,6 @@ function LineManager() {
             )}
           </tbody>
         </table>
-
         {/* <div className="flex justify-center items-center my-10">
           <button className="px-3 py-1 bg-gray-200 rounded-md mr-2">
             &lt;
