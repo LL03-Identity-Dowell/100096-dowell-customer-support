@@ -199,10 +199,10 @@ const Chat = () => {
   };
   return (
     <div
-      className={` flex flex-col pb-4 border-b border-gray-300 shadow-md h-svh mr-2`}
+      className={` flex flex-col  px-2 py-2 rounded-[14.35px] border border-[#5B5B5B] shadow-md h-svh mr-2`}
     >
-      <div className="flex justify-between bg-[#22694de1]  border-b border-gray-200 px-4 py-4 w-full">
-        <h2 className="font-sans sm:text-sm md:text-[16px] font-medium text-white uppercase">
+      <div className="flex justify-between  bg-white border border-[#22C55E] py-4 text-[#22C55E]  border-b  px-4 rounded-t-md rounded-b-sm w-full">
+        <h2 className=" sm:text-sm mb-5 md:text-[16px]  text-[#22C55E] font-[700]  uppercase">
           Summary of Last Chat
         </h2>
         <button
@@ -225,24 +225,24 @@ const Chat = () => {
           {/* </svg> */}
         </button>
       </div>
-      <div className="w-[100%] flex flex-col justify-between h-full">
-        <div className="mr-auto lex mb-6  pt-2 font-sans text-sm flex justify-center gap-5 w-[100%]">
-          <button className="bg-gray-300  hover:bg-gray-400 text-black font-bold py-2 px-1.5 text-sm  rounded-md">
+      <div className="w-[100%]  flex flex-col justify-between h-full">
+        <div className="mr-auto  lex mb-3   font-sans text-sm flex justify-center items-center mt-2 gap-5 w-[100%]">
+          <button className="bg-[#667080] bg-opacity-[16%] flex justify-center  hover:bg-gray-400 text-black font-bold py-2 px-1.5 text-sm  rounded-sm">
             <input
               type="checkbox"
-              className="form-checkbox h-4 w-4 mr-1 text-indigo-600 transition duration-150 ease-in-out"
+              className="form-checkbox h-3 w-3 mr-3 text-indigo-600 transition duration-150 rounded-sm ease-in-out"
             />
             Verify ID
           </button>
-          <button className="bg-gray-300 hover:bg-gray-400 text-black font-bold py-2 px-1  rounded-md">
+          <button className="bg-[#667080] bg-opacity-[16%] hover:bg-gray-400 text-black font-bold py-2 px-1  rounded-sm">
             Reopen Ticket
           </button>
           <button
             className={`${
               !selectedTicket?.is_closed
-                ? "bg-gray-300 hover:bg-gray-400"
+                ? "bg-[#667080] bg-opacity-[16%] hover:bg-gray-400"
                 : "bg-red-300 hover:bg-red-400"
-            } " text-black font-bold py-2 px-1 rounded-md`}
+            } " text-black font-bold py-2 px-1 rounded-sm`}
             onClick={() => closeTicket()}
             disabled={selectedTicket?.is_closed}
           >
@@ -257,39 +257,47 @@ const Chat = () => {
             Logout
           </button> */}
         </div>
-        <div className="flex gap-2 font-sans text-sm">
+        <div className="flex justify-center gap-2  font-sans text-sm">
           <p className="ml-2 text-lg">Level:</p>
-          <button className="bg-gray-300 hover:bg-gray-350 px-3 py-0.5 mb-2 text-[#287757e1] rounded-full">
+          <button className="hover:bg-gray-350 w-6 h-6 text-white bg-[#22C55E] rounded-full">
             1
           </button>
-          <button className="bg-[#22694de1] hover:bg-[#287757e1] px-3 py-0.5 mb-2 text-white rounded-full">
+          <button className="hover:bg-gray-350 w-6 h-6 text-[#22C55E] bg-white border border-[#22C55E] rounded-full">
             2
           </button>
-          <button className="bg-[#22694de1] hover:bg-[#287757e1] px-3 py-0.5 mb-2 text-white rounded-full">
+          <button className="hover:bg-gray-350 w-6 h-6 text-[#22C55E] bg-white border border-[#22C55E] rounded-full">
             3
           </button>
-          <button className="bg-[#22694de1] hover:bg-[#287757e1] px-3 py-0.5 mb-2 text-white rounded-full">
+          <button className="hover:bg-gray-350 w-6 h-6 text-[#22C55E] bg-white border border-[#22C55E] rounded-full">
             4
           </button>
-          <button className="bg-[#22694de1] hover:bg-[#287757e1] px-3 py-0.5 mb-2 text-white rounded-full">
+          <button className="hover:bg-gray-350 w-6 h-6 text-[#22C55E] bg-white border border-[#22C55E] rounded-full">
             5
           </button>
-          <button className="bg-[#22694de1] hover:bg-[#287757e1] px-3 py-0.5 mb-2 text-white rounded-full">
+          <button className="hover:bg-gray-350 w-6 h-6 text-[#22C55E] bg-white border border-[#22C55E] rounded-full">
             6
           </button>
-          <button className="bg-[#22694de1] hover:bg-[#287757e1] px-3 py-0.5 mb-2 text-white rounded-full">
-            7
+          <button className="hover:bg-gray-350 w-6 h-6 text-[#22C55E] bg-white border border-[#22C55E] rounded-full">
+            6
           </button>
-          <button className="bg-[#22694de1] hover:bg-[#287757e1] px-3 py-0.5 mb-2 text-white rounded-full mr-2">
+          <button className="hover:bg-gray-350 w-6 h-6 text-[#22C55E] bg-white border border-[#22C55E] rounded-full">
             8
+          </button>
+          <button className="hover:bg-gray-350 w-6 h-6 text-[#22C55E] bg-white border border-[#22C55E] rounded-full">
+            9
           </button>
         </div>
         <hr className="bg-slate-500 mt-3 w-full" />
         {/* Chat content goes here */}
 
         {/* Render chat messages */}
+
+        <div className="bg-green-500 rounded-t-md rounded-b-sm py-3">
+          <p className="text-white w-full sm:px-5">{selectedTicket._id}</p>
+        </div>
+        {console.log(messageToDispaly)}
         <div
-          className="space-y-4 px-4 py-6 sm:h-[100px] md:h-[300px] overflow-y-scroll"
+          className="space-y-4   py-3 sm:h-[100px]  md:h-[250px] overflow-y-scroll"
           id="scroller"
         >
           {Object.keys(messageToDispaly).length > 0 &&
@@ -356,8 +364,8 @@ const Chat = () => {
           )}
         </div>
 
-        <div className="px-4 py-2  flex items-center">
-          <label className="cursor-pointer ml-4">
+        <div className="px-4   flex items-center">
+          <label className="cursor-pointer mx-auto">
             <input type="file" className="hidden" onChange={handleFileChange} />
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -377,7 +385,7 @@ const Chat = () => {
             type="text"
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
-            className="flex-1  rounded-lg px-4 py-2 outline-none border-2 focus:border-blue-200 ml-2"
+            className="flex-1  rounded-lg px-2 py-2 outline-none border-2 focus:border-blue-200 ml-2"
             placeholder="Type your message..."
           />
           {console.log("selected ticket", Object.keys(selectedTicket).length)}

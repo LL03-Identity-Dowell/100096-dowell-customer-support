@@ -23,9 +23,9 @@ function TicketDetail() {
     setLoading(false);
   }, [ticketMessages]);
   return (
-    <div className="flex-1 w-full m-3 mx-3 ml-1 px-1 rounded-none border-none md:min-w-[300px] h-svh shadow-lg">
-      <div className="w-[100%] flex flex-col text-center">
-        <div className="w-full bg-[#436850] text-white border-2 rounded-md py-3 sm:text-sm md:text-[16px] font-sans">
+    <div className="flex-1 w-full  mx-1 my-3 px-1    border border-[#5B5B5B] md:min-w-[300px] h-svh rounded-lg shadow-lg">
+      <div className="w-[100%] flex flex-col  text-center ">
+        <div className="w-full bg-[#22C55E] text-white border-2 rounded-t-lg py-3 sm:text-sm md:text-[16px] font-sans">
           <h3 className="uppercase">Ticket ID </h3>
           <p>{selectedTicket._id}</p>
           <p className="uppercase">Level - 01</p>
@@ -42,13 +42,13 @@ function TicketDetail() {
               <td className="py-3 px-6 text-left">Email:</td>
               <td className="py-3 px-6 text-left">{selectedTicket.email}</td>
             </tr>
-            <tr className="border-b border-gray-200 hover:bg-gray-100">
+            <tr className="border-b mx-auto border-gray-200 hover:bg-gray-100">
               <td className="py-3 px-6 text-left">User Type:</td>
               <td className="py-3 px-6 text-left">Public</td>
             </tr>
           </tbody>
         </table>
-        <h3 className="my-5 text-lg">Previous Chat</h3>
+        <h3 className="my-5 font-bold">Previous Chat</h3>
         <table className="w-full">
           <tbody className="text-gray-600 text-sm font-light overflow-y-scroll">
             {console.log("ticket message", ticketMessages)}

@@ -335,7 +335,7 @@ function SearchComponent({ closeSearchModal, linkRes }) {
                         ));
                       })
                     ) : (
-                      <div className="flex justify-center  items-center  w-32 p-2 -ml-2">
+                      <div className="flex justify-center  items-center   w-32 p-2 -ml-2">
                         <div className="animate-spin h-6 w-6 border-t-2  mx-auto text-center   border-gray-900 rounded-full"></div>
                       </div>
                     )}
@@ -343,21 +343,23 @@ function SearchComponent({ closeSearchModal, linkRes }) {
                 </div>
               )}
             </div>
-            <input
-              ref={searchInputRef}
-              type="text"
-              id="ticket_id"
-              className="w-[70%] px-5  outline-1 outline-slate-300 mx-auto bg-gray-100 p-2 rounded-3xl  flex-none"
-              placeholder="Search with ticket number"
-              value={searchValue}
-              onChange={handleSearchChange}
-            />
-            <button
-              onClick={handleSearch}
-              className=" right-3 pt-10 flex transform transition duration-1000 -translate-y-1/2 px-2 w-12 h-12 font-bolder text-xl  text-indigo-300 rounded-full hover:text-indigo-600"
-            >
-              <FontAwesomeIcon icon={faSearch} />
-            </button>
+            <div className="flex border-2 w-full md:w-[80%]  border-slate-100 rounded-lg ">
+              <input
+                ref={searchInputRef}
+                type="text"
+                id="ticket_id"
+                className=" px-5  outline-1 w-[90%] outline-none mx-auto   rounded-3xl  flex-none"
+                placeholder="Search with ticket number"
+                value={searchValue}
+                onChange={handleSearchChange}
+              />
+              <button
+                onClick={handleSearch}
+                className=" right-3 w-[10%] pt-6 flex transform transition duration-1000 -translate-y-1/2 px-2 w-8 h-8 font-bolder text-xl  text-green-300 rounded-full hover:text-green-600"
+              >
+                <FontAwesomeIcon icon={faSearch} />
+              </button>
+            </div>
           </div>
 
           <div className="h-2/4">

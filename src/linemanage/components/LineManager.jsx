@@ -4,7 +4,7 @@
 import { useEffect, useRef, useState } from "react";
 //import { BsThreeDotsVertical } from "react-icons/bs";
 
-import CreateComponent from "./CreateComponent";
+//import CreateComponent from "./CreateComponent";
 
 import { useDispatch, useSelector } from "react-redux";
 import { fetchLineManagersData } from "../Redux/lineManager";
@@ -24,9 +24,9 @@ function LineManager() {
   const dispatch = useDispatch();
   const ticketInfo = useSelector((state) => state.tickets.ticketInfo);
   //const [isOpen, setIsOpen] = useState(false);
-  const [option, setOption] = useState("");
+  //const [option, setOption] = useState("");
   const [loading, setLoading] = useState(true);
-  const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
+  // const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
   const [waitingTime, setWaitingTime] = useState(0);
   const [allTickets, setAllTickets] = useState([]);
   //const [ownerType, setOwnerType] = useState("");
@@ -223,73 +223,79 @@ function LineManager() {
   }, []);
 
   //const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
-  const openSearchModal = (Option) => {
+  /*const openSearchModal = (Option) => {
     setOption(Option);
     setIsSearchModalOpen(true);
-  };
+  };*/
 
-  const closeSearchModal = () => {
-    setIsSearchModalOpen(false);
-  };
-  const options = [
-    { label: "Create Line Manager", value: "createLineManager" },
-    // { label: "Chat Line Manager", value: "chatLineManager" },
-    { label: "Create Topic", value: "createTopic" },
-    { label: "Generate Link", value: "generateLink" },
-  ];
+  // const closeSearchModal = () => {
+  //   setIsSearchModalOpen(false);
+  // };
+  // const options = [
+  //   { label: "Create Line Manager", value: "createLineManager" },
+  //   // { label: "Chat Line Manager", value: "chatLineManager" },
+  //   { label: "Create Topic", value: "createTopic" },
+  //   { label: "Generate Link", value: "generateLink" },
+  // ];
 
-  const handleSelect = (option) => {
+  // const handleSelect = (option) => {
+  //   // setSelectedOption(option);'
+  //   // setIsOpen(false);
+  //   openSearchModal(option.value);
+  //   //  createTopic("login error", "1353343");
+  // };
+
+  /*const handleSelect = (option) => {
     // setSelectedOption(option);'
     // setIsOpen(false);
     openSearchModal(option.value);
     //  createTopic("login error", "1353343");
-  };
+  };*/
   // const handleTicketClick = (data) => {
   //   dispatch(fetchSelectedTicket(data));
   // };
   return (
     // <div className="font-sans flex justify-between h-auto sm:flex-col sm:pr-2 sm:w-full md:w-[95vw] md:flex-row  flex-wrap lg:flex-nowrap   lg:items-stretch  border-b-2 border-t-2 m-5 ">
-    <>
-      {isSearchModalOpen && (
+    <section>
+      {/* {isSearchModalOpen && (
         <CreateComponent closeSearchModal={closeSearchModal} option={option} />
-      )}
-      <div className="bg-white w-full flex-2 shadow-md my-4 mt-12 ml-2 md:min-w-[500px]  rounded-lg  border-2 border-gray-200">
-        <table className="sm:h-[450px] md:h-[450px] overflow-y-scroll w-full">
+      )} */}
+      <div className="bg-g w-[99%] flex-2 border  border-[#7E7E7E] shadow-md my-4 mt-16 ml-2 md:min-w-[500px]  rounded-md md:h-[660px] ">
+        <table className="sm:h-[450px]  md:h-[450px]     overflow-y-scroll w-full">
           <thead>
-            <tr className="bg-[#22694de1] text-white uppercase text-sm leading-normal flex flex-wrap ">
-              <th className=" sm:p-auto sm:w-12 flex justify-center items-center text-center md:18  md:py-3 md:px-3  border-r-2 border-r-[#1a543ee1]">
+            <tr className="bg-[#22C55E] border  border-[#7E7E7E] text-white uppercase rounded-t-md text-sm leading-normal flex flex-wrap ">
+              <th className=" sm:p-auto sm:w-8 flex justify-center items-center text-center md:18  md:py-3 md:px-3  border-r border-r-[#7E7E7E]">
                 SN
               </th>
-              <th className="py-3  px-1  text-left flex-1 border-r-2 border-r-[#1a543ee1]">
+              <th className="py-3 sm:max-w-[18%]   px-1  text-center  border-r  border-r-[#7E7E7E]">
                 Line/Service Desk Name
               </th>
-              <th className="sm:p-auto flex  flex-1 justify-center items-center text-center md:py-3 px-1  border-r-2 border-r-[#1a543ee1]">
+              <th className=" flex sm:max-w-[15%]  px-1  justify-center items-center text-center md:py-3  border-r border-r-[#7E7E7E]">
                 Service Manager
               </th>
-              <th className="sm:p-auto flex flex-1 justify-center items-center md:py-3 px-20 text-left">
+              <th className=" flex flex-1 justify-center items-center md:py-3 ">
                 Tickets in waiting
               </th>
             </tr>
           </thead>
           <tbody className="text-gray-600 text-sm  h-[350px] overflow-y-scroll font-light w-full flex flex-wrap">
-            {/* {console.log("line managers data from dispatch", lineManagersData)} */}
             {lineManagersData.length > 0 &&
               lineManagersData?.map((data1, index) => (
                 <tr
                   key={data1._id}
-                  className="border-b border-gray-200 hover:bg-gray-100 sm:h-[60%] flex-1 "
+                  className="border-b border-[#7E7E7E] hover:bg-gray-100 sm:h-[100%] flex-1  "
                 >
-                  <td className="py-3 sm:w-12  px-3 text-left sm:w-13 md:15 ">
+                  <td className="py-3 sm:w-8 border-r border-[#7E7E7E]   text-left sm:w-13  ">
                     {index + 1}
                   </td>
-                  <td className="py-3 w-[22%]   px-3  text-left flex-1   flex-wrap">
+                  <td className="py-3 sm:max-w-[18%]    font-bold border-r border-[#7E7E7E] text-left">
                     <input
                       type="checkbox"
-                      className="form-checkbox md:h-4 md:w-4 md:mr-2 sm:h-3 sm:w-3 sm:mr-1 text-indigo-600 transition duration-150 ease-in-out"
+                      className="form-checkbox md:h-4   text-indigo-600 transition duration-150 ease-in-out"
                     />
                     Till-1 common
                   </td>
-                  <td className="py-3 px-3 w-[23%]   text-left  sm:w-15">
+                  <td className="py-3  sm:max-w-[15%] border-r border-[#7E7E7E]   text-left   ">
                     {data1.user_id}
                   </td>
                   <td className="text-end w-[55%] flex-1  flex-wrap mx-auto   min-h-[350px]">
@@ -304,26 +310,36 @@ function LineManager() {
                       />
                     </div>
 
-                    <div className="flex  flex-col align-middle justify-start pt-1   h-auto w-full  gap-x-2">
-                      <span className="text-md text-sm ">
-                        <span className="font-bold gap-2 flex justify-center items-center w-full text-center text-md">
-                          {waitingTime} Waiting Time
-                          {/* {waitingTime} Waiting Time, */}
+                    <div className="flex  flex-col align-start justify-end pt-1 pl-8    h-auto w-full  ">
+                      <div className="flex  flex-col align-middle justify-start pt-1   h-auto w-full  gap-x-2">
+                        <span className="text-md text-sm ">
+                          <span className="font-bold gap-2 flex justify-center items-center w-full text-center text-md">
+                            {waitingTime} Waiting Time
+                            {/* {waitingTime} Waiting Time, */}
+                          </span>
                         </span>
-                      </span>
-                      {/* <span className="text-md">
+                        {/* <span className="text-md">
                         Service time &lt; {data1.average_serving_time}
                       </span> */}
-                      <div className="flex justify-between items-center ">
-                        {" "}
-                        <p className="text-green-500 text-sm">
-                          blue ticket-active
-                        </p>
-                        <p className="text-red-400 text-sm ">
-                          red ticket-closed
-                        </p>
+                        <div className="flex justify-between gap-5 items-end  min-h-10 ">
+                          <p className="text-md text-sm  ">
+                            <span className="font-bold gap-2 flex justify-center items-center w-full text-center text-md">
+                              {data1.ticket_count} Waiting,
+                            </span>
+                          </p>
+                          <div className="flex justify-end gap-5 items-end  min-h-10">
+                            <div className="flex justify-center items-center gap-2 ">
+                              <div className="w-3 h-3 rounded-sm bg-blue-400"></div>
+                              <p className="text-blue-400 font-bold">Open</p>
+                            </div>
+                            <div className="flex justify-center items-center gap-2 ">
+                              <div className="w-3 h-3 rounded-sm bg-red-400"></div>
+                              <p className="text-red-400 font-bold">Closed</p>
+                            </div>
+                          </div>
+                        </div>
+                        {/* <span className="text-md">]</span> */}
                       </div>
-                      {/* <span className="text-md">]</span> */}
                     </div>
                   </td>
                 </tr>
@@ -443,7 +459,7 @@ function LineManager() {
               className="absolute z-10 mt-1 ml-4 w-56 bg-white rounded-md shadow-lg "
               style={{ transform: "translateY(-100%)" }}
             > */}
-            {lineManagerCredentials.ownerType === false &&
+            {/* {lineManagerCredentials.ownerType === false &&
               options
                 .filter(
                   (option) =>
@@ -458,8 +474,8 @@ function LineManager() {
                   >
                     {option.label}
                   </button>
-                ))}
-            {lineManagerCredentials.ownerType === true &&
+                ))} */}
+            {/* {lineManagerCredentials.ownerType === true &&
               options.map((option) => (
                 <button
                   key={option.value}
@@ -468,7 +484,7 @@ function LineManager() {
                 >
                   {option.label}
                 </button>
-              ))}
+              ))} */}
           </div>
           <div className="flex gap-1 w-[80%] h-auto mt-3 mx-auto">
             <input
@@ -501,7 +517,7 @@ function LineManager() {
 
       {/* <TicketDetail /> */}
       {/* </div> */}
-    </>
+    </section>
   );
 }
 

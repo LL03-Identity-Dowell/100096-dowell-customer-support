@@ -34,7 +34,7 @@ const TicketMainContent = () => {
   });
 
   const [ticketDetail, setTicketDetail] = useState({});
-  const [darkMode, setDarkMode] = useState(true);
+  const [darkMode, setDarkMode] = useState(false);
 
   // useEffect(() => {
   //   setLoading(true);
@@ -323,7 +323,12 @@ const TicketMainContent = () => {
                     Ticket number
                   </h2>
                   <h2 className="text-[26px] font-bold text-green-600">
-                    {ticketNumber}
+                    {/* {console.log(typeof ticketNumber)} {Number(ticketNumber)} */}
+
+                    {
+                      JSON.parse(localStorage.getItem("create_ticket_detail"))
+                        ?._id
+                    }
                   </h2>
                   <div className="my-4">
                     <label htmlFor="noIdentity" className="radio_style">

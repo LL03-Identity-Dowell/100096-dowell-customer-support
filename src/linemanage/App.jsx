@@ -172,7 +172,7 @@ function App() {
   }, [session_id, apiKey, userInfo]);
 
   return (
-    <>
+    <section>
       <Provider store={store}>
         <ToastContainer
           position="top-right"
@@ -193,7 +193,7 @@ function App() {
           session_id,
           "api key",
           lineManagerCredentials.api_key
-        )}
+        )} 
         {loadingFetchUserInfo ? (
           <Loader />
         ) : lineManagerCredentials.workspace_id &&
@@ -206,7 +206,7 @@ function App() {
           ""
         )}
       </Provider>
-    </>
+    </section>
   );
 }
 
