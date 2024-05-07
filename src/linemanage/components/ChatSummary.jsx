@@ -199,7 +199,7 @@ const Chat = () => {
   };
   return (
     <div
-      className={` flex flex-col max-md:mx-2  px-2 py-2 rounded-[14.35px] border border-[#5B5B5B] shadow-md h-svh mr-2`}
+      className={`md:h-[600px] flex flex-col max-md:mx-2  px-2 py-2 rounded-[14.35px] border border-[#5B5B5B] shadow-md h-svh mr-2`}
     >
       <div className="flex justify-between  bg-white border border-[#22C55E] py-4 text-[#22C55E]  border-b  px-4 rounded-t-md rounded-b-sm w-full">
         <h2 className=" sm:text-sm mb-5 md:text-[16px]  text-[#22C55E] font-[700]  uppercase">

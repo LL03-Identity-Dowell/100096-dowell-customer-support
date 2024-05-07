@@ -401,11 +401,11 @@ function CreateComponent({ closeSearchModal, option }) {
 
   return (
     <div
-      className={`relative b md:h-[600px] inset-0 z-50 flex items-center justify-center  bg-opacity-50 `}
+      className={`relative b h-full md:h-[600px] inset-0 z-50 flex items-center justify-center  bg-opacity-50 `}
       onClick={closeModal}
     >
       <div
-        className={` h-[90%] bg-white shadow-2xl  border-2 border-gray-100 overflow-auto mt-[80px] relative p-4 md:p-6 rounded-lg w-full md:max-w-[50%] `}
+        className={`h-[400px] md:h-[80%] bg-white shadow-2xl border-2 border-gray-100 overflow-auto mt-[80px] relative p-4 md:p-6 rounded-lg w-[90%] md:max-w-[60%] `}
       >
         {/* <div className="flex justify-between w-full relative mb-7 ">
           <button
@@ -465,8 +465,8 @@ function CreateComponent({ closeSearchModal, option }) {
           // eslint-disable-next-line
           option === "generateLink" && (
             <>
-              <div className="max-w-[400px]   mx-auto ">
-                <h3 className="mb-10 w-full text-center text-xl font-bold">
+              <div className="max-w-[400px]  md:mb-10 mx-auto ">
+                <h3 className=" w-full text-center text-xl font-bold">
                   Fill Link Information
                 </h3>
                 {masterLink && (
@@ -484,7 +484,7 @@ function CreateComponent({ closeSearchModal, option }) {
                 )}
                 <form
                   onSubmit={handleLinkSubmit}
-                  className="bg-white  rounded px-4 pt-6  h-full mb-4 sm:h-[150px] md:h-full overflow-y-scroll"
+                  className="bg-white  rounded px-4 pt-6  h-full mb-4  md:h-full overflow-y-scroll"
                 >
                   {/*  
                   <div className="mb-4 flex sm:flex-col md:flex-row sm:gap-5 md:gap-10 sm:w-max-[300px] md:w-[400px] ">
@@ -527,7 +527,7 @@ function CreateComponent({ closeSearchModal, option }) {
                     topicData?.map((data) => {
                       return (
                         <div
-                          className="mb-4 flex sm:flex-col  sm:gap-2  sm:md:w-max-[300px] md:w-[400px]"
+                          className="mb-4 flex sm:flex-col   sm:gap-2  sm:md:w-max-[300px] md:w-[400px]"
                           key={data._id}
                         >
                           <label

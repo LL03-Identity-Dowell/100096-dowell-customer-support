@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Profile } from "../../assets";
+import { Profile, logo } from "../../assets";
 import { useEffect, useState } from "react";
 import queryString from "query-string";
 import { FaUser } from "react-icons/fa";
@@ -34,7 +34,7 @@ export default function NavItem({ component }) {
   };
 
   return (
-    <div className="flex w-full px-2 md:px-5 top-0 py-2  fixed  justify-start z-50 h-16 bg-[#e9fdf1] items-center text-center">
+    <div className="flex w-full px-2 md:px-5 top-0   fixed  justify-start z-50 border-b-2  h-16 bg-[#e9fdf1] items-center text-center">
       <div className="flex justify-start  w-full flex-2">
         <Link
           to={`/linemanage/?${queryParams}`}
@@ -42,13 +42,14 @@ export default function NavItem({ component }) {
         >
           <a className="flex justify-start text-center items-center  md:mr-2 h-14">
             <img
-              src="https://psp-logos.uptimerobot.com/logos/2021049-1676548510.png"
+              src={logo}
               className="w-14 h-14  text-center   rounded-md border-none"
               alt="Dowell"
             />
           </a>
-          <h2 className="text-lg font-bold text-center max-md:hidden text-[#22C55E] flex justify-center items-center  ">
-            Customer Support | Line Manager
+          <h2 className="text-lg font-bold text-center  text-[#22C55E] flex justify-center items-center  ">
+            <span className="max-md:hidden">Customer Support | </span> Line
+            Manager
           </h2>
           {/* <hr className="border-b-1 bg-slate-500 mx-auto w-[90%]" /> */}
         </Link>
@@ -74,7 +75,7 @@ export default function NavItem({ component }) {
         </div>
         <div
           onMouseEnter={() => setIsHovered(true)}
-          className={`absolute z-50 min-w-28 -left-24 md:-left-16   pt-2  p-4  bg-white border border-gray-300 rounded shadow ${
+          className={`absolute z-50 min-w-28 -left-24 md:-left-20  pt-2  p-4  bg-white border border-gray-300 rounded shadow ${
             isHovered ? "block" : "hidden"
           }`}
         >

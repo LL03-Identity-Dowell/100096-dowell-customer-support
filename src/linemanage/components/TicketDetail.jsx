@@ -23,7 +23,7 @@ function TicketDetail() {
     setLoading(false);
   }, [ticketMessages]);
   return (
-    <div className="flex-1 md:w-full  sm:mx-3 md:mx-0 my-3 px-1    border border-[#5B5B5B] md:min-w-[300px] h-svh rounded-lg shadow-lg">
+    <div className="flex-1 md:w-full  sm:mx-3 md:mx-0 my-3 px-1    border border-[#5B5B5B] md:min-w-[300px] h-svh rounded-lg shadow-lg md:h-[600px]">
       <div className="w-[100%] flex flex-col  text-center ">
         <div className="w-full bg-[#22C55E] text-white border-2 rounded-t-lg py-3 sm:text-sm md:text-[16px] font-sans">
           <h3 className="uppercase">Ticket ID </h3>

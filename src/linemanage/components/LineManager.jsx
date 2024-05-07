@@ -255,20 +255,17 @@ function LineManager() {
   return (
     // <div className="font-sans flex justify-between h-auto sm:flex-col sm:pr-2 sm:w-full md:w-[95vw] md:flex-row  flex-wrap lg:flex-nowrap   lg:items-stretch  border-b-2 border-t-2 m-5 ">
     <section>
-      {/* {isSearchModalOpen && (
-        <CreateComponent closeSearchModal={closeSearchModal} option={option} />
-      )} */}
-      <div className=" w-[99%] flex-2 border  border-[#7E7E7E] shadow-md my-4  mt-16 mx-1 md:w-[99%]   rounded-md md:h-[660px] ">
+      <div className=" w-[99%] flex-2 border  border-[#7E7E7E] shadow-md my-4  mt-16 mx-1 md:w-[99%]   rounded-md md:h-[600px] ">
         <table className="sm:h-[450px]  md:h-[450px]     overflow-y-scroll w-full">
           <thead className="">
-            <tr className="bg-[#22C55E] h-[85px] border-b  border-[#7E7E7E] text-white uppercase rounded-t-md text-sm leading-normal flex flex-wrap ">
-              <th className="px-1 md:w-[33px] flex justify-center items-center text-center md:18  md:py-5   border-r border-r-[#7E7E7E]">
+            <tr className="bg-[#22C55E] h-full border-b  border-[#7E7E7E] text-white uppercase rounded-t-md text-sm leading-normal flex flex-wrap ">
+              <th className="px-1 md:w-[33px] flex justify-center items-center text-center   md:py-5   border-r border-r-[#7E7E7E]">
                 SN
               </th>
-              <th className="py-3 w-[100px] md:w-[150px]     text-center  border-r  border-r-[#7E7E7E]">
+              <th className="py-3 w-[100px] md:w-[120px]     text-center  border-r  border-r-[#7E7E7E]">
                 Line/Service Desk Name
               </th>
-              <th className=" flex w-[120px] md:w-[150px]   justify-center items-center text-center md:py-3  border-r border-r-[#7E7E7E]">
+              <th className=" flex w-[100px] md:w-[120px]   justify-center items-center text-center md:py-3  border-r border-r-[#7E7E7E]">
                 Service Manager
               </th>
               <th className=" flex flex-1 justify-center items-center md:py-3 ">
@@ -284,17 +281,17 @@ function LineManager() {
                   key={data1._id}
                   className="border-b  hover:bg-gray-100 sm:h-[100%] flex-1 "
                 >
-                  <td className="py-3  text-center px-2 md:w-[31px] border-r sm:max-w-[20%] border-[#7E7E7E] sm:w-13  ">
+                  <td className="py-3  text-center px-3 md:w-[33px] border-r sm:max-w-[20%] border-[#7E7E7E] sm:w-13  ">
                     {index + 1}
                   </td>
-                  <td className="py-3 w-[150px]    font-bold border-r border-[#7E7E7E]     text-left    ">
+                  <td className="py-3  w-[100px] md:w-[120px]    font-bold border-r border-[#7E7E7E]     text-left    ">
                     <input
                       type="checkbox"
                       className="form-checkbox md:h-4    text-indigo-600 transition duration-150 ease-in-out"
                     />{" "}
                     Till-1 common
                   </td>
-                  <td className="py-3 pl-2 font-bold text-[#7E7E7E]  w-[150px] border-r border-[#7E7E7E]   text-left   ">
+                  <td className="py-3 pl-2 font-bold text-[#7E7E7E] mx-auto w-[100px]  md:w-[120px] border-r border-[#7E7E7E]   text-left   ">
                     {data1.user_id}
                   </td>
                   <td className="text-center  flex-1  flex-wrap   min-h-[350px]">
@@ -341,7 +338,7 @@ function LineManager() {
                   </td>
                 </tr>
               ))}
-            {loading ? (
+            {loading && lineManagersData.length <= 0 ? (
               <div className="d-flex  gap-y-2 font-bold flex flex-col justify-center items-center mx-auto">
                 <ClipLoader
                   color={"#22694de1"}
