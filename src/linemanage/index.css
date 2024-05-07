@@ -1,11 +1,27 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
 .green-spinner {
   color: #005734;
 }
 input[type="checkbox"] {
   cursor: pointer;
+}
+body {
+  padding: 0;
+  overflow: scroll;
+}
+body::-webkit-scrollbar {
+  width: 0;
+}
+
+.table-body {
+  padding: 0;
+  overflow: scroll;
+}
+.table-body::-webkit-scrollbar {
+  width: 0;
 }
 
 input[type="checkbox"]:after {
@@ -25,21 +41,19 @@ input[type="checkbox"]:checked:after {
   color: white;
   border-radius: 10%;
 }
+
 ::-webkit-scrollbar {
-  width: 5px; /* Adjust the width as needed */
+  width: 0;
 }
 
-/* Track */
 ::-webkit-scrollbar-track {
-  background: #f1f1f1; /* Color of the track */
+  background: transparent;
 }
 
-/* Handle */
 ::-webkit-scrollbar-thumb {
-  background: #888; /* Color of the scrollbar handle */
+  background: transparent;
 }
 
-/* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-  background: #555; /* Color on hover */
+  background: transparent;
 }

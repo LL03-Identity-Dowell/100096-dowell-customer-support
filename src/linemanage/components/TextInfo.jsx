@@ -18,8 +18,8 @@ const TextInfo = ({
     dispatch(fetchSelectedTicket(data));
   };
   return (
-    <div className="h-full">
-      <ul className="w-full  text-end ">
+    <div className="h-full max-w-full">
+      <ul className="min-h-[270px]  text-end ">
         {ticketInfo
           //eslint-disable-next-line
           .slice(startIndex, startIndex + 15)
@@ -41,8 +41,8 @@ const TextInfo = ({
                     data.is_closed
                       ? "bg-red-300 hover:bg-red-500 hover:text-white  hover:font-bold duration-500"
                       : "bg-blue-300 hover:bg-blue-500 hover:text-white  hover:font-bold duration-500"
-                  } rounded-sm  h-8  w-[16%] m-1  ${
-                    startIndex == 0 ? "w-[16.2%] px-1" : "w-[16%]"
+                  } rounded-sm  h-8  w-[16%]  max-w-12 m-1  ${
+                    startIndex == 0 ? "w-[16.2%] max-w-12 px-1" : "w-[16%]"
                   }`}
                   onClick={() => handleTicketClick(data)}
                 >

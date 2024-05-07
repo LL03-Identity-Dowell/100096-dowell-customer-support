@@ -9,10 +9,10 @@ function Dashboards() {
       <LineManager />
       <div className="w-full h-auto flex-1 flex flex-col">
         <div className="flex justify-between gap-2 px-2 pt-4">
-          <div className="flex-1">
+          <div className="w-1/2">
             <Dropdowns search={"Search Ticket Number"} type={"topic"} />
           </div>
-          <div className="flex-2">
+          <div className="flex-1">
             <Dropdowns search={"Search Ticket Number"} type={"ticket"} />
           </div>
         </div>

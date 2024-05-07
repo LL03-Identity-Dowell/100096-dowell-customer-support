@@ -199,7 +199,7 @@ const Chat = () => {
   };
   return (
     <div
-      className={` flex flex-col  px-2 py-2 rounded-[14.35px] border border-[#5B5B5B] shadow-md h-svh mr-2`}
+      className={` flex flex-col max-md:mx-2  px-2 py-2 rounded-[14.35px] border border-[#5B5B5B] shadow-md h-svh mr-2`}
     >
       <div className="flex justify-between  bg-white border border-[#22C55E] py-4 text-[#22C55E]  border-b  px-4 rounded-t-md rounded-b-sm w-full">
         <h2 className=" sm:text-sm mb-5 md:text-[16px]  text-[#22C55E] font-[700]  uppercase">
@@ -283,24 +283,25 @@ const Chat = () => {
           <button className="hover:bg-gray-350 w-6 h-6 text-[#22C55E] bg-white border border-[#22C55E] rounded-full">
             8
           </button>
-          <button className="hover:bg-gray-350 w-6 h-6 text-[#22C55E] bg-white border border-[#22C55E] rounded-full">
-            9
-          </button>
         </div>
         <hr className="bg-slate-500 mt-3 w-full" />
         {/* Chat content goes here */}
 
         {/* Render chat messages */}
 
-        <div className="bg-green-500 rounded-t-md rounded-b-sm py-3">
+        <div
+          className={`bg-green-500 rounded-t-md rounded-b-sm py-3  ${
+            selectedTicket?._id ? "block" : "hidden"
+          }`}
+        >
           <p className="text-white w-full sm:px-5">{selectedTicket._id}</p>
         </div>
         {console.log(messageToDispaly)}
         <div
-          className="space-y-4   py-3 sm:h-[100px]  md:h-[250px] overflow-y-scroll"
+          className="space-y-3   py-3 h-[250px] overflow-y-scroll"
           id="scroller"
         >
-          {Object.keys(messageToDispaly).length > 0 &&
+          {Object.keys(messageToDispaly).length > 0 ? (
             messageToDispaly?.map((message) => (
               <div
                 key={message.created_at}
@@ -343,21 +344,24 @@ const Chat = () => {
                   </div>
                 )}
               </div>
-            ))}
+            ))
+          ) : (
+            <p className="border-none w-full text-sm text-center text-gray-600  flex justify-center  h-full">
+              No previous messages
+            </p>
+          )}
           {Object.keys(messageToDispaly).length <= 0 && ""}
           {Object.keys(selectedTicket).length > 0 && loading ? (
-            <div className="d-flex mt-3  justify-center align-items-center mx-auto">
+            <div className=" flex flex-col w-full justify-center items-center -mt-20 mx-auto h-full gap-y-2 text-gray-600 font-bold ">
               <ClipLoader
                 color={"#22694de1"}
                 css={{
                   display: "block",
-                  margin: "0 auto",
-                  width: "50px",
-                  height: "50px",
+                  margin: "auto auto",
                 }}
                 size={40}
-              />{" "}
-              <small className="text-xs">Loading ticket chat... </small>
+              />
+              <small className="text-sm">Loading Messages... </small>
             </div>
           ) : (
             ""

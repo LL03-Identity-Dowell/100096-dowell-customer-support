@@ -219,17 +219,17 @@ function LineManager() {
       {/* {isSearchModalOpen && (
         <CreateComponent closeSearchModal={closeSearchModal} option={option} />
       )} */}
-      <div className="bg-g w-[99%] flex-2 border  border-[#7E7E7E] shadow-md my-4 mt-16 ml-2 md:min-w-[500px]  rounded-md md:h-[660px] ">
+      <div className="bg-g w-[99%] flex-2 border  border-[#7E7E7E] shadow-md my-4 mt-16 mx-1 md:ml-2 md:w-full   rounded-md md:h-[660px] ">
         <table className="sm:h-[450px]  md:h-[450px]     overflow-y-scroll w-full">
-          <thead>
-            <tr className="bg-[#22C55E] border  border-[#7E7E7E] text-white uppercase rounded-t-md text-sm leading-normal flex flex-wrap ">
-              <th className=" sm:p-auto sm:w-8 flex justify-center items-center text-center md:18  md:py-3 md:px-3  border-r border-r-[#7E7E7E]">
+          <thead className="">
+            <tr className="bg-[#22C55E] h-[85px] border-b  border-[#7E7E7E] text-white uppercase rounded-t-md text-sm leading-normal flex flex-wrap ">
+              <th className="px-1 md:w-[33px] flex justify-center items-center text-center md:18  md:py-5   border-r border-r-[#7E7E7E]">
                 SN
               </th>
-              <th className="py-3 sm:max-w-[18%]   px-1  text-center  border-r  border-r-[#7E7E7E]">
+              <th className="py-3 w-[100px] md:w-[150px]     text-center  border-r  border-r-[#7E7E7E]">
                 Line/Service Desk Name
               </th>
-              <th className=" flex sm:max-w-[15%]  px-1  justify-center items-center text-center md:py-3  border-r border-r-[#7E7E7E]">
+              <th className=" flex w-[120px] md:w-[150px]   justify-center items-center text-center md:py-3  border-r border-r-[#7E7E7E]">
                 Service Manager
               </th>
               <th className=" flex flex-1 justify-center items-center md:py-3 ">
@@ -237,29 +237,29 @@ function LineManager() {
               </th>
             </tr>
           </thead>
-          <tbody className="text-gray-600 text-sm border border-t-0   border-[#7E7E7E]  h-[350px] overflow-y-scroll font-light w-full flex flex-wrap">
+          <tbody className="text-gray-600 divide-y divide-gray-200 text-sm border border-t-0  right-0   border-[#7E7E7E]  h-[350px] overflow-y-scroll  font-light w-full flex flex-wrap">
             {console.log("line managers data  from dispatch", lineManagersData)}
             {lineManagersData.length > 0 &&
               lineManagersData?.map((data1, index) => (
                 <tr
                   key={data1._id}
-                  className="border-b  hover:bg-gray-100 sm:h-[100%] flex-1 "
+                  className="border-b table-body hover:bg-gray-100 sm:h-[100%] w-[100%] "
                 >
-                  <td className="py-3 sm:w-8 border-r border-[#7E7E7E]   text-left sm:w-13  ">
+                  <td className="py-3  text-center px-2 md:w-[32px] border-r sm:max-w-[20%] border-[#7E7E7E] sm:w-13  ">
                     {index + 1}
                   </td>
-                  <td className="py-3 sm:max-w-[18%]    font-bold border-r border-[#7E7E7E]     text-left    ">
+                  <td className="py-3 w-[150px] pl-1  text-[#7E7E7E]   font-bold border-r border-[#251111]     text-left    ">
                     <input
                       type="checkbox"
-                      className="form-checkbox md:h-4   text-indigo-600 transition duration-150 ease-in-out"
-                    />
+                      className="form-checkbox md:h-4    text-indigo-600 transition duration-150 ease-in-out"
+                    />{" "}
                     Till-1 common
                   </td>
-                  <td className="py-3  sm:max-w-[15%] border-r border-[#7E7E7E]   text-left   ">
+                  <td className="py-3 pl-2 font-bold text-[#7E7E7E]  w-[150px] border-r border-[#7E7E7E]   text-left   ">
                     {data1.user_id}
                   </td>
-                  <td className="text-center  flex-1  flex-wrap   min-h-[350px]">
-                    <div className="flex justify-center flex-1  items-start flex-wrap gap-1 mx-auto text-center ">
+                  <td className="text-center   flex-wrap flex-grow  flex-1 ">
+                    <div className="flex justify-center   items-start flex-wrap w-full px-auto text-center ">
                       <TextInfo
                         ticketInfo={ticketInfo}
                         data1={data1}
@@ -269,7 +269,7 @@ function LineManager() {
                       />
                     </div>
 
-                    <div className="flex  flex-col align-start justify-end pt-1 pl-8    h-auto w-full  ">
+                    <div className="flex  flex-col align-start justify-end  pl-3 w-full flex-1  ">
                       <div className="flex  flex-col align-middle justify-start pt-1   h-auto w-full  gap-x-2">
                         <span className="text-md text-sm ">
                           <span className="font-bold gap-2 flex justify-center items-center w-full text-center text-md">
@@ -297,14 +297,13 @@ function LineManager() {
                             </div>
                           </div>
                         </div>
-                        {/* <span className="text-md">]</span> */}
                       </div>
                     </div>
                   </td>
                 </tr>
               ))}
             {loading ? (
-              <div className="d-flex mt-3 justify-center align-items-center mx-auto">
+              <div className="d-flex  gap-y-2 font-bold flex flex-col justify-center items-center mx-auto">
                 <ClipLoader
                   color={"#22694de1"}
                   css={{
@@ -315,7 +314,7 @@ function LineManager() {
                   }}
                   size={30}
                 />{" "}
-                Loading
+                Loading..
               </div>
             ) : (
               ""
@@ -379,7 +378,7 @@ function LineManager() {
           <NavLink className="px-3 py-1 bg-gray-200 rounded-md">&gt;</NavLink>{" "}
         </div> */}
         <div className="flex flex-col justify-center gap-4 mb-7 w-full mt-8 pr-3">
-          {console.log("owner type", lineManagerCredentials.ownerType)}
+          {/* {console.log("owner type", lineManagerCredentials.ownerType)}
           {lineManagerCredentials.ownerType === true ? (
             <h3 className="w-[80%] text-center mx-auto items-center ">
               Setting for your customers!
@@ -390,7 +389,7 @@ function LineManager() {
             </h3>
           ) : (
             ""
-          )}
+          )} */}
 
           <hr className="w-[80%] text-center mx-auto items-center " />
           <div className="mr-auto w-full flex justify-center gap-5">

@@ -199,16 +199,16 @@ function Dropdowns({
                     key={data.id}
                     className="option"
                     onClick={() => {
-                      handleOptionClick(index + 1, data);
+                      handleOptionClick(data._id, data);
                     }}
                   >
-                    {index + 1}
+                    {data._id}
                   </div>
                 );
               })}
           {type === "ticket" && ticketInfo ? (
             loading ? (
-              <div className="d-flex mt-3 justify-center align-items-center mx-auto">
+              <div className="gap-x-2 flex mt-3 justify-center items-center mx-auto">
                 <ClipLoader
                   color={"#22694de1"}
                   css={{
@@ -219,7 +219,7 @@ function Dropdowns({
                   }}
                   size={20}
                 />{" "}
-                Loading
+                Loading...
               </div>
             ) : (
               ""
