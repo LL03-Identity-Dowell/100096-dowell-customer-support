@@ -201,8 +201,6 @@ function LineManager() {
       console.log(error.data);
       toast.warning(error.data);
     }
-
-    // Add event listener for window resize
   };
 
   useEffect(() => {
