@@ -34,7 +34,7 @@ export default function NavItem({ component }) {
   };
 
   return (
-    <div className="flex w-full px-2 md:px-5  fixed  justify-start z-50 h-16 bg-[#e9fdf1] items-center text-center">
+    <div className="flex w-full px-2 md:px-5 top-0 py-2  fixed  justify-start z-50 h-16 bg-[#e9fdf1] items-center text-center">
       <div className="flex justify-start  w-full flex-2">
         <Link
           to={`/linemanage/?${queryParams}`}
@@ -100,7 +100,7 @@ export default function NavItem({ component }) {
                 className="hover:text-[#22C55E] flex justify-center items-center gap-2"
                 onClick={handleLogout}
               >
-                <FiLogOut className="text-[#22C55E]" />
+                <FiLogOut className="text-[#22C55E] font-bold" /> Logout
               </Link>
             </li>
           </ul>

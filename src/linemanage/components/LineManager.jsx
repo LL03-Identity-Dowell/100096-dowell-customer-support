@@ -260,7 +260,7 @@ function LineManager() {
       {/* {isSearchModalOpen && (
         <CreateComponent closeSearchModal={closeSearchModal} option={option} />
       )} */}
-      <div className="bg-g w-[99%] flex-2 border  border-[#7E7E7E] shadow-md my-4 mt-16 mx-1 md:ml-2 md:w-full   rounded-md md:h-[660px] ">
+      <div className=" w-[99%] flex-2 border  border-[#7E7E7E] shadow-md my-4  mt-16 mx-1 md:w-[99%]   rounded-md md:h-[660px] ">
         <table className="sm:h-[450px]  md:h-[450px]     overflow-y-scroll w-full">
           <thead className="">
             <tr className="bg-[#22C55E] h-[85px] border-b  border-[#7E7E7E] text-white uppercase rounded-t-md text-sm leading-normal flex flex-wrap ">
@@ -278,7 +278,7 @@ function LineManager() {
               </th>
             </tr>
           </thead>
-          <tbody className="text-gray-600 text-sm border border-t-0   border-[#7E7E7E]  h-[350px] overflow-y-scroll font-light w-full flex flex-wrap">
+          <tbody className="text-gray-600 text-sm border border-t-0 border-l-0 border-r-0  border-[#7E7E7E]  h-[350px] overflow-y-scroll font-light w-full flex flex-wrap">
             {console.log("line managers data  from dispatch", lineManagersData)}
             {lineManagersData.length > 0 &&
               lineManagersData?.map((data1, index) => (
@@ -286,10 +286,10 @@ function LineManager() {
                   key={data1._id}
                   className="border-b  hover:bg-gray-100 sm:h-[100%] flex-1 "
                 >
-                  <td className="py-3  text-center px-2 md:w-[32px] border-r sm:max-w-[20%] border-[#7E7E7E] sm:w-13  ">
+                  <td className="py-3  text-center px-2 md:w-[31px] border-r sm:max-w-[20%] border-[#7E7E7E] sm:w-13  ">
                     {index + 1}
                   </td>
-                  <td className="py-3 sm:max-w-[18%]    font-bold border-r border-[#7E7E7E]     text-left    ">
+                  <td className="py-3 w-[150px]    font-bold border-r border-[#7E7E7E]     text-left    ">
                     <input
                       type="checkbox"
                       className="form-checkbox md:h-4    text-indigo-600 transition duration-150 ease-in-out"
@@ -419,7 +419,7 @@ function LineManager() {
           <NavLink className="px-3 py-1 bg-gray-200 rounded-md">&gt;</NavLink>{" "}
         </div> */}
         <div className="flex flex-col justify-center gap-4 mb-7 w-full mt-8 pr-3">
-          {console.log("owner type", lineManagerCredentials.ownerType)}
+          {/* {console.log("owner type", lineManagerCredentials.ownerType)}
           {lineManagerCredentials.ownerType === true ? (
             <h3 className="w-[80%] text-center mx-auto items-center ">
               Setting for your customers!
@@ -430,7 +430,7 @@ function LineManager() {
             </h3>
           ) : (
             ""
-          )}
+          )} */}
 
           <hr className="w-[80%] text-center mx-auto items-center " />
           <div className="mr-auto w-full flex justify-center gap-5">

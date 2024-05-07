@@ -196,7 +196,7 @@ function Dropdowns({
                 return dateB - dateA;
               })
 
-              .map((data, index) => {
+              .map((data) => {
                 return (
                   <div
                     key={data.id}
