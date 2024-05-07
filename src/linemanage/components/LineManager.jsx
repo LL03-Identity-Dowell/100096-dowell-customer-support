@@ -4,7 +4,7 @@
 import { useEffect, useRef, useState } from "react";
 //import { BsThreeDotsVertical } from "react-icons/bs";
 
-import CreateComponent from "./CreateComponent";
+//import CreateComponent from "./CreateComponent";
 
 import { useDispatch, useSelector } from "react-redux";
 import { fetchLineManagersData } from "../Redux/lineManager";
@@ -15,6 +15,7 @@ import { ClipLoader } from "react-spinners";
 import io from "socket.io-client";
 //import { fetchSelectedTicket } from "../Redux/ticketDetailSlice";
 import TextInfo from "./TextInfo";
+import { fetchTicketInfo } from "../Redux/ticketDetailSlice";
 //import axios from "axios";
 const socket = io.connect("https://www.dowellchat.uxlivinglab.online/");
 function LineManager() {
@@ -23,10 +24,11 @@ function LineManager() {
   const dispatch = useDispatch();
   const ticketInfo = useSelector((state) => state.tickets.ticketInfo);
   //const [isOpen, setIsOpen] = useState(false);
-  const [option, setOption] = useState("");
+  //const [option, setOption] = useState("");
   const [loading, setLoading] = useState(true);
-  const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
+  // const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
   const [waitingTime, setWaitingTime] = useState(0);
+  const [allTickets, setAllTickets] = useState([]);
   //const [ownerType, setOwnerType] = useState("");
   const ref = useRef();
   const lineManagerCredentials = useSelector(
@@ -36,7 +38,7 @@ function LineManager() {
     (state) => state.lineManagers.lineManagersData
   );
   async function addWaitingTime() {
-    console.log("waiting time", waitingTime);
+    //    console.log("waiting time", waitingTime);
     if (!ref.current.value || ref.current.value.waitingTime <= 0) {
       return;
     }
@@ -54,14 +56,6 @@ function LineManager() {
     }
     createMetaSetting();
     getMetaSetting();
-    // await socket.on("setting_response", (data) => {
-    //   console.log("datas", data);
-    //   // Handle response for the event
-    //   // console.log("data", data?.data[0].waiting_time);
-    //   if (data.operation === "get_meta_setting") {
-    //     setWaitingTime(data?.data[0]?.waiting_time);
-    //   }
-    // });
   }
   async function getMetaSetting() {
     await socket.emit("get_meta_setting", {
@@ -76,7 +70,7 @@ function LineManager() {
     // console.log("data", data?.data[0].waiting_time);
     if (data.operation === "get_meta_setting") {
       setWaitingTime(data?.data[0]?.waiting_time);
-      console.log("data", data);
+      //    console.log("data", data);
     }
   });
   // const [navIndex, setNavIndex] = useState(0);
@@ -106,86 +100,133 @@ function LineManager() {
     }
   };
 
-  useEffect(() => {
-    getMetaSetting();
-    const getAllLineManager = async () => {
-      //workSpaceID = "646ba835ce27ae02d024a902";
-      //api_key = "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f";
-      console.log(
-        "space id from dispatch",
-        lineManagerCredentials.workspace_id,
-        "api key from dispatch",
-        lineManagerCredentials.api_key
-      );
+  const findTicket = async (names) => {
+    try {
+      await socket.emit("get_tickets", {
+        product: names,
+        workspace_id: lineManagerCredentials.workspace_id,
+        api_key: lineManagerCredentials.api_key,
+      });
+      await socket.on("ticket_response", (data) => {
+        //    console.log("ticket response", data?.data);
+        // Handle response for the event
 
-      try {
-        /*let response = await axios.post(
-          "https://100093.pythonanywhere.com/api/userinfo/",
-          {
-            session_id: lineManagerCredentials.session_id, //"okms05yhlfj6xl7jug9b6f6lyk8okb8o",
-          }
-        );
-        console.log("data =", response.data);
-        /* let responseData = await response?.data?.portfolio_info?.findIndex(
-          (item) =>
-            item.member_type === "owner" &&
-            item.product === "Dowell Customer Support Centre"
-        );
+        // console.log("ticket response", data["data"]);
 
-        if (responseData === -1) {
-          setOwnerType(false);
+        if (data?.status === "success" && data.operation === "get_ticket") {
+          let datass = data?.data;
+          setAllTickets([...allTickets, ...datass]);
+          dispatch(fetchTicketInfo([...allTickets, ...datass]));
         } else {
-          setOwnerType(true);
-        }*/
-        //console.log
+          throw new Error("No ticket exist for the product yet");
+        }
+        //      console.log(ticketData);
+      });
+    } catch (error) {
+      toast.warning(error.message);
+    }
+  };
 
-        await socket.emit("get_all_line_managers", {
-          workspace_id: lineManagerCredentials.workspace_id,
-          api_key: lineManagerCredentials.api_key,
-        });
+  const findTopic = async () => {
+    //workSpaceID = "646ba835ce27ae02d024a902";
+    // api_key = "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f";
+    try {
+      // console.log(workSpaceID);
+      await socket.emit("get_all_topics", {
+        workspace_id: lineManagerCredentials.workspace_id,
+        api_key: lineManagerCredentials.api_key,
+      });
 
-        await socket.on("setting_response", (data) => {
-          if (data.operation === "get_all_line_managers") {
-            console.log("workspace_id", lineManagerCredentials.workspace_id);
-            console.log("api_key", lineManagerCredentials.api_key);
-            console.log("line managers data", data);
-            // Handle response for the event
-            setLoading(false);
-            if (Array.isArray(data?.data)) {
-              dispatch(fetchLineManagersData(data.data));
-            }
-            //console.log("all line manager data", data);
-            if (data?.status === "failure") {
-              toast.warning("Line manager in this workspace is not found", {
-                toastId: "success1",
-              });
-            }
+      await socket.on("setting_response", async (data) => {
+        //  console.log("data to be shown", data);
+        if (data.status === "success" && data.operation === "get_all_topics") {
+          // console.log("topic data in useeffect", data?.data);
+          // dispatch(fetchTopicData(data?.data));
+          let datafound = await data?.data;
+
+          for (var i = 0; i < datafound.length; i++) {
+            // console.log("data found", datafound[i]);
+            // console.log("data name", datafound[i].name);
+            findTicket(datafound[i].name);
           }
-        });
-      } catch (error) {
-        console.log(error.data);
-        toast.warning(error.data);
-      }
-    };
+
+          //console.log("all ticket", allTickets);
+
+          // setTopic(data?.data);
+        }
+      });
+    } catch (error) {
+      toast.error("Some thing went wrong.we will fix soon");
+      console.error(error);
+    }
+  };
+
+  const getAllLineManager = async () => {
+    //workSpaceID = "646ba835ce27ae02d024a902";
+    //api_key = "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f";
+    console.log("test id ===", lineManagerCredentials.workspace_id);
+    getMetaSetting();
+    /*console.log(
+      "space id from dispatch",
+      lineManagerCredentials.workspace_id,
+      "api key from dispatch",
+      lineManagerCredentials.api_key
+    );*/
 
     try {
-      getAllLineManager();
+      await socket.emit("get_all_line_managers", {
+        workspace_id: lineManagerCredentials.workspace_id,
+        api_key: lineManagerCredentials.api_key,
+      });
+
+      await socket.on("setting_response", (data) => {
+        if (data.operation === "get_all_line_managers") {
+          // console.log("workspace_id", lineManagerCredentials.workspace_id);
+          // console.log("api_key", lineManagerCredentials.api_key);
+          // console.log("line managers data", data);
+          // Handle response for the event
+          setLoading(false);
+          if (Array.isArray(data?.data)) {
+            dispatch(fetchLineManagersData(data?.data));
+          }
+          //console.log("all line manager data", data);
+          if (data?.status === "failure") {
+            toast.warning("Line manager in this workspace is not found", {
+              toastId: "success1",
+            });
+          }
+        }
+      });
     } catch (error) {
-      console.log(error);
+      console.log(error.data);
+      toast.warning(error.data);
     }
 
     // Add event listener for window resize
+  };
+
+  useEffect(() => {
+    if (lineManagerCredentials.workspace_id && lineManagerCredentials.api_key) {
+      getAllLineManager();
+    }
   }, []);
 
-  // useEffect(() => {
-
-  // }, []);
+  useEffect(() => {
+    /* console.log(
+      "line managers===",
+      lineManagerCredentials.workspace_id,
+      lineManagerCredentials.api_key
+    );*/
+    if (lineManagerCredentials.workspace_id && lineManagerCredentials.api_key) {
+      findTopic();
+    }
+  }, []);
 
   //const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
-  const openSearchModal = (Option) => {
+  /*const openSearchModal = (Option) => {
     setOption(Option);
     setIsSearchModalOpen(true);
-  };
+  };*/
 
   // const closeSearchModal = () => {
   //   setIsSearchModalOpen(false);
@@ -204,12 +245,12 @@ function LineManager() {
   //   //  createTopic("login error", "1353343");
   // };
 
-  const handleSelect = (option) => {
+  /*const handleSelect = (option) => {
     // setSelectedOption(option);'
     // setIsOpen(false);
     openSearchModal(option.value);
     //  createTopic("login error", "1353343");
-  };
+  };*/
   // const handleTicketClick = (data) => {
   //   dispatch(fetchSelectedTicket(data));
   // };
@@ -237,18 +278,18 @@ function LineManager() {
               </th>
             </tr>
           </thead>
-          <tbody className="text-gray-600 divide-y divide-gray-200 text-sm border border-t-0  right-0   border-[#7E7E7E]  h-[350px] overflow-y-scroll  font-light w-full flex flex-wrap">
+          <tbody className="text-gray-600 text-sm border border-t-0   border-[#7E7E7E]  h-[350px] overflow-y-scroll font-light w-full flex flex-wrap">
             {console.log("line managers data  from dispatch", lineManagersData)}
             {lineManagersData.length > 0 &&
               lineManagersData?.map((data1, index) => (
                 <tr
                   key={data1._id}
-                  className="border-b table-body hover:bg-gray-100 sm:h-[100%] w-[100%] "
+                  className="border-b  hover:bg-gray-100 sm:h-[100%] flex-1 "
                 >
                   <td className="py-3  text-center px-2 md:w-[32px] border-r sm:max-w-[20%] border-[#7E7E7E] sm:w-13  ">
                     {index + 1}
                   </td>
-                  <td className="py-3 w-[150px] pl-1  text-[#7E7E7E]   font-bold border-r border-[#251111]     text-left    ">
+                  <td className="py-3 sm:max-w-[18%]    font-bold border-r border-[#7E7E7E]     text-left    ">
                     <input
                       type="checkbox"
                       className="form-checkbox md:h-4    text-indigo-600 transition duration-150 ease-in-out"
@@ -258,8 +299,8 @@ function LineManager() {
                   <td className="py-3 pl-2 font-bold text-[#7E7E7E]  w-[150px] border-r border-[#7E7E7E]   text-left   ">
                     {data1.user_id}
                   </td>
-                  <td className="text-center   flex-wrap flex-grow  flex-1 ">
-                    <div className="flex justify-center   items-start flex-wrap w-full px-auto text-center ">
+                  <td className="text-center  flex-1  flex-wrap   min-h-[350px]">
+                    <div className="flex justify-center flex-1  items-start flex-wrap gap-1 mx-auto text-center ">
                       <TextInfo
                         ticketInfo={ticketInfo}
                         data1={data1}
@@ -378,7 +419,7 @@ function LineManager() {
           <NavLink className="px-3 py-1 bg-gray-200 rounded-md">&gt;</NavLink>{" "}
         </div> */}
         <div className="flex flex-col justify-center gap-4 mb-7 w-full mt-8 pr-3">
-          {/* {console.log("owner type", lineManagerCredentials.ownerType)}
+          {console.log("owner type", lineManagerCredentials.ownerType)}
           {lineManagerCredentials.ownerType === true ? (
             <h3 className="w-[80%] text-center mx-auto items-center ">
               Setting for your customers!
@@ -389,7 +430,7 @@ function LineManager() {
             </h3>
           ) : (
             ""
-          )} */}
+          )}
 
           <hr className="w-[80%] text-center mx-auto items-center " />
           <div className="mr-auto w-full flex justify-center gap-5">

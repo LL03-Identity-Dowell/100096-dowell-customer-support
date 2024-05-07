@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { CiSearch } from "react-icons/ci";
 
 import "../dropdown.css"; // Import CSS for styling (create a Dropdown.css file)
@@ -32,7 +32,7 @@ function Dropdowns({
   const dispatch = useDispatch();
   const topicData = useSelector((state) => state.tickets.topicData);
   const selectedTopic = useSelector((state) => state.tickets.selectedTopic);
-  const selectedTicket = useSelector((state) => state.tickets.selectedTicket);
+  //const selectedTicket = useSelector((state) => state.tickets.selectedTicket);
   const [loading, setLoading] = useState(true);
   const ticketInfo = useSelector((state) => state.tickets.ticketInfo);
   // let ticketInfoToShow = [...ticketInfo];
@@ -41,9 +41,33 @@ function Dropdowns({
   const lineManagerCredentials = useSelector(
     (state) => state.lineManagers.lineManagerCredentials
   );
+  const findTopic = useCallback(async () => {
+    //workSpaceID = "646ba835ce27ae02d024a902";
+    // api_key = "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f";
+    try {
+      // console.log(workSpaceID);
+      await socket.emit("get_all_topics", {
+        workspace_id: lineManagerCredentials.workspace_id,
+        api_key: lineManagerCredentials.api_key,
+      });
+      await socket.on("setting_response", (data) => {
+        if (data.status === "success") {
+          // console.log("topic data in useeffect", data?.data);
+          dispatch(fetchTopicData(data?.data));
+          // setTopic(data?.data);
+        } else {
+          throw new Error();
+        }
+      });
+    } catch (error) {
+      toast.error("Some thing went wrong.we will fix soon");
+      console.error(error);
+    }
+  }, [lineManagerCredentials.workspace_id, lineManagerCredentials.api_key]);
+
   useEffect(() => {
-    console.log("topic data", topicData);
-    console.log("selected ticket data", selectedTicket);
+    // console.log("topic data", topicData);
+    // console.log("selected ticket data", selectedTicket);
     const findTicket = async (product) => {
       const { name } = product;
       console.log("product=", product, "NAME=", name);
@@ -73,29 +97,6 @@ function Dropdowns({
       }
     };
 
-    const findTopic = async () => {
-      //workSpaceID = "646ba835ce27ae02d024a902";
-      // api_key = "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f";
-      try {
-        // console.log(workSpaceID);
-        await socket.emit("get_all_topics", {
-          workspace_id: lineManagerCredentials.workspace_id,
-          api_key: lineManagerCredentials.api_key,
-        });
-        await socket.on("setting_response", (data) => {
-          if (data.status === "success") {
-            // console.log("topic data in useeffect", data?.data);
-            dispatch(fetchTopicData(data?.data));
-            // setTopic(data?.data);
-          } else {
-            throw new Error();
-          }
-        });
-      } catch (error) {
-        toast.error("Some thing went wrong.we will fix soon");
-        console.error(error);
-      }
-    };
     //  let workSpaceID = "646ba835ce27ae02d024a902";
     //  let api_key = "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f";
     if (type === "topic") {
@@ -103,6 +104,8 @@ function Dropdowns({
     } else if (type === "ticket") {
       console.log("Ticket started", selectedTopic);
       if (Object.keys(selectedTopic).length > 0) {
+        // console.log("topic data", topicData);
+        // console.log("selected ticket data", selectedTicket);
         findTicket(selectedTopic);
       }
     } else {

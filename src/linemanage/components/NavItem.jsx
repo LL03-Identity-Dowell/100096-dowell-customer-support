@@ -80,12 +80,12 @@ export default function NavItem({ component }) {
         >
           <ul className="w-full flex flex-col justify-start items-start gap-y-3 text-start">
             <li>
-              <a
+              <Link
                 className="hover:text-[#22C55E] flex justify-center items-center gap-2"
                 href="#"
               >
                 <FaUser className="text-[#22C55E]" /> Profile
-              </a>
+              </Link>
             </li>
             <li>
               <Link
@@ -96,12 +96,12 @@ export default function NavItem({ component }) {
               </Link>
             </li>
             <li>
-              <a
+              <Link
                 className="hover:text-[#22C55E] flex justify-center items-center gap-2"
-                href="#"
+                onClick={handleLogout}
               >
-                <FiLogOut className="text-[#22C55E]" /> Logrout
-              </a>
+                <FiLogOut className="text-[#22C55E]" />
+              </Link>
             </li>
           </ul>
         </div>

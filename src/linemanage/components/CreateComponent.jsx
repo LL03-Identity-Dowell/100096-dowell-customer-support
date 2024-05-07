@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 //import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import { ClipLoader } from "react-spinners";
-import NavItem from "./NavItem";
+
 import { useSelector } from "react-redux";
 import axios from "axios";
 import io from "socket.io-client";

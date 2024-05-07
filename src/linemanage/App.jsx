@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 //import Dashboard from "./components/Dashboard";
 import { ToastContainer } from "react-toastify";
@@ -19,11 +19,13 @@ function App() {
   const [searchParams] = useSearchParams();
   let session_id = searchParams.get("session_id");
   const id = searchParams.get("id");
+  //const [dataFetched, setDataFetched] = useState(false);
   const [loadingFetchUserInfo, setLoadingFetchUserInfo] = useState(false);
   const [authenticationError, setAuthenticationError] = useState(false);
   const lineManagerCredentials = useSelector(
     (state) => state.lineManagers.lineManagerCredentials
   );
+  const Dashboard = React.memo(Dashboards);
   const [ownerType, setOwnerType] = useState(() => {
     const savedOwnerType = localStorage.getItem("ownerType");
     return savedOwnerType && savedOwnerType !== "undefined"
@@ -41,7 +43,7 @@ function App() {
 
   const [apiKey, setApiKey] = useState(() => {
     const savedApiKey = localStorage.getItem("apiKey");
-    console.log("saved api key", typeof savedApiKey);
+    //  console.log("saved api key", typeof savedApiKey);
     return savedApiKey && savedApiKey !== "undefined"
       ? JSON.parse(savedApiKey)
       : null;
@@ -50,7 +52,7 @@ function App() {
   const [userInfo, setUserInfo] = useState(() => {
     const savedUserInfo = localStorage.getItem("userInfo");
 
-    console.log("user info detail", JSON.parse(savedUserInfo)?.userinfo);
+    // console.log("user info detail", JSON.parse(savedUserInfo)?.userinfo);
     return savedUserInfo && savedUserInfo !== "undefined"
       ? JSON.parse(savedUserInfo)?.userinfo
       : null;
@@ -66,7 +68,7 @@ function App() {
   }
   const getUserInfo = async (url, type) => {
     setLoadingFetchUserInfo(true);
-    console.log("url", url);
+    // console.log("url", url);
     //const session_id = searchParams.get("session_id");
     //console.log("session_id==", session_id);
     await axios
@@ -93,7 +95,7 @@ function App() {
         }
         setUserInfo(response?.data?.userinfo);
         //setPortfolioCode(response?.data?.portfolio_info?.find())
-        console.log("response data user detail", response?.data);
+        //  console.log("response data user detail", response?.data);
         localStorage.setItem("userInfo", JSON.stringify(response?.data));
         // setSession(session_id);
         localStorage.setItem("session", JSON.stringify(session_id));
@@ -117,7 +119,7 @@ function App() {
         "apiKey",
         JSON.stringify(responseData?.data?.api_key)
       );
-      console.log("api key data", responseData?.data?.api_key);
+      //console.log("api key data", responseData?.data?.api_key);
       setApiKey(responseData?.data?.api_key);
     } catch (error) {
       console.error("Fetch Api Key Error", error.message);
@@ -139,13 +141,21 @@ function App() {
         getUserInfo("https://100093.pythonanywhere.com/api/userinfo/", "other");
       }
     }
-    console.log("api key", !apiKey, "value", apiKey);
     if (userInfo && !apiKey) {
       fetchApiKey();
     }
-
-    if (userInfo && apiKey) {
+    console.log("outer if");
+    if (userInfo && apiKey && session_id) {
+      console.log(
+        "api key",
+        apiKey,
+        "user info in to dispatch in if",
+        userInfo?.client_admin_id,
+        "session info in pp",
+        session_id
+      );
       // const ownerType = localStorage.getItem("ownerType");
+
       dispatch(
         fetchLineManagersCredentails({
           api_key: apiKey,
@@ -157,7 +167,7 @@ function App() {
         })
       );
     }
-    console.log("api", apiKey, "user info", userInfo?.client_admin_id);
+    // console.log("api", apiKey, "user info", userInfo?.client_admin_id);
     //}
   }, [session_id, apiKey, userInfo]);
 
@@ -176,20 +186,20 @@ function App() {
           pauseOnHover
         />
         <NavItem />
-        {/* {console.log(
-          "in jsx",
+        {console.log(
+          "in jsx workspace id",
           lineManagerCredentials.workspace_id,
-          "session",
+          "session id",
           session_id,
           "api key",
           lineManagerCredentials.api_key
-        )} */}
+        )} 
         {loadingFetchUserInfo ? (
           <Loader />
         ) : lineManagerCredentials.workspace_id &&
           lineManagerCredentials.api_key &&
           lineManagerCredentials.session_id ? (
-          <Dashboards />
+          <Dashboard />
         ) : authenticationError ? (
           "Authentication Failed"
         ) : (
