@@ -15,7 +15,8 @@ import { ClipLoader } from "react-spinners";
 import io from "socket.io-client";
 //import { fetchSelectedTicket } from "../Redux/ticketDetailSlice";
 import TextInfo from "./TextInfo";
-import { fetchTicketInfo } from "../Redux/ticketDetailSlice";
+import useTicket from "./useTickets";
+import { fetchTicketInfo, fetchTopicData } from "../Redux/ticketDetailSlice";
 //import axios from "axios";
 const socket = io.connect("https://www.dowellchat.uxlivinglab.online/");
 function LineManager() {
@@ -23,12 +24,18 @@ function LineManager() {
   const [startIndex, setStartIndex] = useState(0);
   const dispatch = useDispatch();
   const ticketInfo = useSelector((state) => state.tickets.ticketInfo);
+  const selectedTopic = useSelector((state) => state.tickets.selectedTopic);
   //const [isOpen, setIsOpen] = useState(false);
   //const [option, setOption] = useState("");
+  console.log("ticket info.....", ticketInfo["George_Kibetest_product"]);
   const [loading, setLoading] = useState(true);
+  const { ticketData } = useTicket();
+
+  //console.log("ticket datass", ticketData["George_Kibetest_product"]);
   // const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
   const [waitingTime, setWaitingTime] = useState(0);
-  const [allTickets, setAllTickets] = useState([]);
+
+  //const [allTickets, setAllTickets] = useState([]);
   //const [ownerType, setOwnerType] = useState("");
   const ref = useRef();
   const lineManagerCredentials = useSelector(
@@ -94,12 +101,12 @@ function LineManager() {
       setStartIndex(startIndex - 15);
     }
   };
-  const handleNextClick = () => {
-    if (startIndex + 15 < ticketInfo.length) {
+  const handleNextClick = (datas) => {
+    if (startIndex + 15 < datas.length) {
       setStartIndex(startIndex + 15);
     }
   };
-
+  /*
   const findTicket = async (names) => {
     try {
       await socket.emit("get_tickets", {
@@ -126,7 +133,7 @@ function LineManager() {
       toast.warning(error.message);
     }
   };
-
+*/
   const findTopic = async () => {
     //workSpaceID = "646ba835ce27ae02d024a902";
     // api_key = "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f";
@@ -142,16 +149,16 @@ function LineManager() {
         if (data.status === "success" && data.operation === "get_all_topics") {
           // console.log("topic data in useeffect", data?.data);
           // dispatch(fetchTopicData(data?.data));
-          let datafound = await data?.data;
-
-          for (var i = 0; i < datafound.length; i++) {
+          //  let datafound = await data?.data;
+          /* for (var i = 0; i < datafound.length; i++) {
             // console.log("data found", datafound[i]);
             // console.log("data name", datafound[i].name);
-            findTicket(datafound[i].name);
+            // findTicket(datafound[i].name);
+            setProduct(datafound[i].name);
           }
-
+*/
+          dispatch(fetchTopicData(data?.data));
           //console.log("all ticket", allTickets);
-
           // setTopic(data?.data);
         }
       });
@@ -254,6 +261,8 @@ function LineManager() {
   // const handleTicketClick = (data) => {
   //   dispatch(fetchSelectedTicket(data));
   // };
+  //function getTicketsByDate() {}
+
   return (
     // <div className="font-sans flex justify-between h-auto sm:flex-col sm:pr-2 sm:w-full md:w-[95vw] md:flex-row  flex-wrap lg:flex-nowrap   lg:items-stretch  border-b-2 border-t-2 m-5 ">
     <section>
@@ -297,14 +306,45 @@ function LineManager() {
                   </td>
                   <td className="py-3  sm:max-w-[15%] border-r border-[#7E7E7E]   text-left   ">
                     {data1.user_id}
+                    {console.log("user id ", data1.user_id)}
                   </td>
                   <td className="text-end w-[55%] flex-1  flex-wrap mx-auto   min-h-[350px]">
-                    {/* {console.log(ticketInfo)} */}
+                    {console.log(
+                      "ticketts",
+                      fetchTicketInfo[
+                        data1.user_id + selectedTopic.name
+                          ? selectedTopic.name
+                          : ""
+                      ],
+                      "product ticket",
+                      `${
+                        data1.user_id +
+                        (selectedTopic.name ? selectedTopic.name : "")
+                      }`
+                    )}
                     <div className="flex justify-center w-full  items-start flex-wrap gap-1 mx-auto text-center ">
                       <TextInfo
-                        ticketInfo={ticketInfo}
+                        ticketInfo={
+                          ticketInfo[
+                            `${
+                              data1.user_id +
+                              (selectedTopic.name ? selectedTopic.name : "")
+                            }`
+                          ]
+                        }
                         data1={data1}
-                        handleNextClick={handleNextClick}
+                        handleNextClick={() =>
+                          handleNextClick(
+                            ticketInfo[
+                              `${
+                                data1.user_id +
+                                (selectedTopic.name !== undefined
+                                  ? selectedTopic.name
+                                  : "")
+                              }`
+                            ]
+                          )
+                        }
                         handlePrevClick={handlePrevClick}
                         startIndex={startIndex}
                       />
@@ -314,7 +354,20 @@ function LineManager() {
                       <div className="flex  flex-col align-middle justify-start pt-1   h-auto w-full  gap-x-2">
                         <span className="text-md text-sm ">
                           <span className="font-bold gap-2 flex justify-center items-center w-full text-center text-md">
-                            {waitingTime} Waiting Time
+                            {waitingTime *
+                              (ticketData[
+                                `${data1.user_id}${selectedTopic.name ?? ""}`
+                              ]?.filter((ticket) => !ticket?.is_closed).length -
+                                1 >=
+                              0
+                                ? ticketData[
+                                    `${data1.user_id}${
+                                      selectedTopic.name ?? ""
+                                    }`
+                                  ]?.filter((ticket) => !ticket?.is_closed)
+                                    .length - 1
+                                : 0)}{" "}
+                            Waiting Time
                             {/* {waitingTime} Waiting Time, */}
                           </span>
                         </span>
@@ -324,7 +377,7 @@ function LineManager() {
                         <div className="flex justify-between gap-5 items-end  min-h-10 ">
                           <p className="text-md text-sm  ">
                             <span className="font-bold gap-2 flex justify-center items-center w-full text-center text-md">
-                              {data1.ticket_count} Waiting,
+                              {/* {data1.ticket_count} Waiting, */}
                             </span>
                           </p>
                           <div className="flex justify-end gap-5 items-end  min-h-10">

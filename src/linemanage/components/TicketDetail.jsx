@@ -1,27 +1,14 @@
-import { useEffect, useState } from "react";
+//import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-//import { toast } from "react-toastify";
-// import {
-//   fetchSingleMessage,
-//   fetchTicketMessage,
-// } from "../Redux/ticketDetailSlice";
+
 import formatCreatedAt from "../utils/datefromat";
-//import { socket } from "../utils/Connection";
-import { ClipLoader } from "react-spinners";
 
 function TicketDetail() {
-  //const dispatch = useDispatch();
-  const [loading, setLoading] = useState(true);
   const selectedTicket = useSelector((state) => state.tickets.selectedTicket);
   const ticketMessages = useSelector((state) => state.tickets.ticketMessage);
 
   const messageShow = ticketMessages.length > 0 ? ticketMessages.slice(-3) : [];
-  useEffect(() => {
-    setLoading(true);
-  }, [selectedTicket]);
-  useEffect(() => {
-    setLoading(false);
-  }, [ticketMessages]);
+
   return (
     <div className="flex-1 w-full  mx-1 my-3 px-1    border border-[#5B5B5B] md:min-w-[300px] h-svh rounded-lg shadow-lg">
       <div className="w-[100%] flex flex-col  text-center ">
@@ -74,7 +61,7 @@ function TicketDetail() {
               </p>
             )}
 
-            {Object.keys(selectedTicket).length > 0 && loading ? (
+            {/* {Object.keys(selectedTicket).length > 0 && loading ? (
               <div className="d-flex mt-3  justify-center align-items-center mx-auto">
                 <ClipLoader
                   color={"#22694de1"}
@@ -90,7 +77,7 @@ function TicketDetail() {
               </div>
             ) : (
               ""
-            )}
+            )} */}
           </tbody>
         </table>
       </div>

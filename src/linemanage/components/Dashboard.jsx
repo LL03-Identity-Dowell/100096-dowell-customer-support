@@ -13,7 +13,7 @@ const Dashboards = React.memo(() => {
       <div className="w-full h-auto flex-1 flex flex-col">
         <div className="flex justify-between gap-2 px-2 pt-4">
           <div className="flex-1">
-            <Dropdowns search={"Search Ticket Number"} type={"topic"} />
+            <Dropdowns search={"Search topic"} type={"topic"} />
           </div>
           <div className="flex-2">
             <Dropdowns search={"Search Ticket Number"} type={"ticket"} />

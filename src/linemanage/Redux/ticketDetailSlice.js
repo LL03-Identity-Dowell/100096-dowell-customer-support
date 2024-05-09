@@ -5,7 +5,7 @@ const ticketsSlice = createSlice({
   name: 'tickets',
   initialState: {
     topicData: [],
-    ticketInfo: [],
+    ticketInfo: {},
     ticketMessage: [],
     selectedTopic:{},
     selectedTicket:{},

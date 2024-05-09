@@ -1,4 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
+import formatDate from '../utils/formatDate';
 
 const lineManagerSlice = createSlice({
   name: 'lineManager',
@@ -7,6 +8,7 @@ const lineManagerSlice = createSlice({
     lineManagerCredentials:{},
     loading: false,
     error: null,
+    lineManageTime:formatDate(new Date())
   },
   reducers: {
     fetchLineManagersStart(state) {
@@ -21,8 +23,11 @@ const lineManagerSlice = createSlice({
         state.loading = false;
         state.lineManagerCredentials = action.payload;
       },
+      fetchLineManagersTime(state, action) {
+        state.lineManageTime = action.payload;
+      },
 
 
   }});
-  export const { fetchLineManagersStart,fetchLineManagersCredentails, fetchLineManagersData } = lineManagerSlice.actions;
+  export const { fetchLineManagersStart,fetchLineManagersTime,fetchLineManagersCredentails, fetchLineManagersData } = lineManagerSlice.actions;
   export default lineManagerSlice.reducer;

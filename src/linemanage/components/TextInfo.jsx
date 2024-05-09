@@ -22,8 +22,8 @@ const TextInfo = ({
       <ul className="w-full  text-end ">
         {ticketInfo
           //eslint-disable-next-line
-          .slice(startIndex, startIndex + 15)
-          .sort((a, b) => {
+          ?.slice(startIndex, startIndex + 15)
+          ?.sort((a, b) => {
             // Convert the created_at string to Date objects for comparison
             const dateA = new Date(a.created_at);
             const dateB = new Date(b.created_at);
@@ -67,7 +67,7 @@ const TextInfo = ({
           <div>
             {
               //eslint-disable-next-line
-              startIndex + 15 < ticketInfo.length > 0 && (
+              startIndex + 15 < ticketInfo?.length > 0 && (
                 <button
                   type="button"
                   className="bg-slate-200 px-5 py-1 rounded-sm cursor-pointer hover:bg-slate-300 duration-500"
