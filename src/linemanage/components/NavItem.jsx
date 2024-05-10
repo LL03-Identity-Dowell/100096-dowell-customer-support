@@ -54,16 +54,6 @@ export default function NavItem({ component }) {
           {/* <hr className="border-b-1 bg-slate-500 mx-auto w-[90%]" /> */}
         </Link>
       </div>
-      {/* {!component && (
-        <div className="flex-1 mr-3">
-          <button
-            onClick={handleLogout}
-            className="mt-4 md:mr-12 ml-2 font-sans text-sm bg-[#ba513be1] text-white py-2 px-4 rounded-lg shadow-md hover:bg-[#cf6954e1] focus:outline-none "
-          >
-            Logout
-          </button>
-        </div>
-      )} */}
 
       <div
         className="relative max-w-[50px] text-end"

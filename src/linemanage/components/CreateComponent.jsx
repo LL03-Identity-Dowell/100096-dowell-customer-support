@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from "react";
 import { ClipLoader } from "react-spinners";
 
 import { useSelector } from "react-redux";
-import { toast } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import axios from "axios";
 import io from "socket.io-client";
 const socket = io.connect("https://www.dowellchat.uxlivinglab.online/");
@@ -337,8 +337,8 @@ function CreateComponent({ closeSearchModal, option }) {
         }
         topicName && createTopic(topicName);
       } else if (option === "addwaitingtime") {
-        if (!waitingTime && parseInt(waitingTime) < 0) {
-          toast.warning("Please fill the topic name");
+        if (!waitingTime || parseInt(waitingTime) < 0) {
+          toast.warning("waiting time time must be greater than 0");
           return;
         }
         waitingTime && addWaitingTime(waitingTime);
@@ -360,14 +360,16 @@ function CreateComponent({ closeSearchModal, option }) {
   // Calculate the height of the modal dynamically based on the window height
 
   return (
-    <div
-      className={`relative b h-full md:h-[600px] inset-0 z-50 flex items-center justify-center  bg-opacity-50 `}
-      onClick={closeModal}
-    >
+    <>
+      <ToastContainer />
       <div
-        className={`h-[400px] md:h-[80%] bg-white shadow-2xl border-2 border-gray-100 overflow-auto mt-[80px] relative p-4 md:p-6 rounded-lg w-[90%] md:max-w-[60%] `}
+        className={`relative b h-full md:h-[600px] inset-0 z-50 flex items-center justify-center  bg-opacity-50 `}
+        onClick={closeModal}
       >
-        {/* <div className="flex justify-between w-full relative mb-7 ">
+        <div
+          className={`h-[400px] md:h-[80%] bg-white shadow-2xl border-2 border-gray-100 overflow-auto mt-[80px] relative p-4 md:p-6 rounded-lg w-[90%] md:max-w-[60%] `}
+        >
+          {/* <div className="flex justify-between w-full relative mb-7 ">
           <button
             onClick={closeSearchModal}
             className=" -top-5 w-10 h-10 font-bold text-2xl text-red-500  rounded-full p-2 hover:text-red-400 absolute right-0"
@@ -376,13 +378,54 @@ function CreateComponent({ closeSearchModal, option }) {
           </button>
         </div> */}
 
-        {
-          // eslint-disable-next-line
-          option === "createTopic" && (
+          {
+            // eslint-disable-next-line
+            option === "createTopic" && (
+              <>
+                <div className="max-w-[400px] mx-auto">
+                  <h3 className="mb-10 text-center font-bold text-xl w-full">
+                    Fill Topic Information
+                  </h3>
+                  <form
+                    onSubmit={handleSubmit}
+                    className="bg-white   rounded px-4 py-8 "
+                  >
+                    <div className="mb-4 gap-y-2">
+                      <label
+                        htmlFor="input1"
+                        className="block mb-4 text-black  font-bold  "
+                      >
+                        Topic Name
+                      </label>
+                      <input
+                        type="text"
+                        id="TopicName"
+                        name="TopicName"
+                        value={topicName}
+                        onChange={(e) => setTopicName(e.target.value)}
+                        className="shadow appearance-none border rounded w-full py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                      />
+                    </div>
+
+                    <div className="flex items-center w-full justify-center">
+                      <button
+                        type="submit"
+                        className="w-[80%] duration-500 font-sans text-sm mt-10 bg-[#22C55E] hover:bg-green-700 text-white font-bold py-2 px-2 md:w-27 rounded-md"
+                      >
+                        Create Topic
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </>
+            )
+          }
+
+          {option === "addwaitingtime" && (
             <>
               <div className="max-w-[400px] mx-auto">
                 <h3 className="mb-10 text-center font-bold text-xl w-full">
-                  Fill Topic Information
+                  Add Waiting Time
                 </h3>
                 <form
                   onSubmit={handleSubmit}
@@ -393,14 +436,14 @@ function CreateComponent({ closeSearchModal, option }) {
                       htmlFor="input1"
                       className="block mb-4 text-black  font-bold  "
                     >
-                      Topic Name
+                      Waiting Time
                     </label>
                     <input
-                      type="text"
-                      id="TopicName"
-                      name="TopicName"
-                      value={topicName}
-                      onChange={(e) => setTopicName(e.target.value)}
+                      type="number"
+                      id="waitingtime"
+                      name="waitingtime"
+                      value={waitingTime}
+                      onChange={(e) => setWaitingTime(e.target.value)}
                       className="shadow appearance-none border rounded w-full py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     />
                   </div>
@@ -410,242 +453,202 @@ function CreateComponent({ closeSearchModal, option }) {
                       type="submit"
                       className="w-[80%] duration-500 font-sans text-sm mt-10 bg-[#22C55E] hover:bg-green-700 text-white font-bold py-2 px-2 md:w-27 rounded-md"
                     >
-                      Create Topic
+                      Add
                     </button>
                   </div>
                 </form>
               </div>
             </>
-          )
-        }
-
-        {option === "addwaitingtime" && (
-          <>
-            <div className="max-w-[400px] mx-auto">
-              <h3 className="mb-10 text-center font-bold text-xl w-full">
-                Add Waiting Time
-              </h3>
-              <form
-                onSubmit={handleSubmit}
-                className="bg-white   rounded px-4 py-8 "
-              >
-                <div className="mb-4 gap-y-2">
-                  <label
-                    htmlFor="input1"
-                    className="block mb-4 text-black  font-bold  "
-                  >
-                    Waiting Time
-                  </label>
-                  <input
-                    type="number"
-                    id="waitingtime"
-                    name="waitingtime"
-                    value={waitingTime}
-                    onChange={(e) => setWaitingTime(e.target.value)}
-                    className="shadow appearance-none border rounded w-full py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                  />
-                </div>
-
-                <div className="flex items-center w-full justify-center">
-                  <button
-                    type="submit"
-                    className="w-[80%] duration-500 font-sans text-sm mt-10 bg-[#22C55E] hover:bg-green-700 text-white font-bold py-2 px-2 md:w-27 rounded-md"
-                  >
-                    Add
-                  </button>
-                </div>
-              </form>
-            </div>
-          </>
-        )}
-        {/* generati
+          )}
+          {/* generati
         ng a link */}
 
-        {
-          // eslint-disable-next-line
-          option === "generateLink" && (
-            <>
-              <div className="max-w-[400px]  md:mb-10 mx-auto ">
-                <h3 className=" w-full text-center text-xl font-bold">
-                  Fill Link Information
-                </h3>
-                {masterLink && (
-                  <div className="flex w-auto justify-center align-middle mx-auto  h-15 p-2  border border-r-8 gap-1">
-                    <input
-                      type="text"
-                      className=" border-none outline-none flex-5 w-full p-2 overflow-x-visible overflow-y-scroll h-20 bg-slate-200 text-[#22694de1] masterlink"
-                      value={masterLink}
-                      ref={inputRef}
-                    ></input>
-                    <button className="flex-1" onClick={handleLinkCopy}>
-                      {linkCopy && masterLink ? "copied" : "copy"}
-                    </button>
-                  </div>
-                )}
-                <form
-                  onSubmit={handleLinkSubmit}
-                  className="bg-white  rounded px-4 pt-6  h-full mb-4  md:h-full overflow-y-scroll"
-                >
-                  <div className="mb-4 flex sm:flex-col  sm:gap-2  sm:md:w-max-[380px] md:w-[400px]">
-                    <label
-                      htmlFor="input1"
-                      className="block text-black  font-bold sm:w-max-[70px] md:w-[100px] mb-2"
-                    >
-                      Link Number
-                    </label>
-                    <input
-                      type="number"
-                      id="link-number"
-                      name="linkNumber"
-                      value={linkNumber}
-                      onChange={(e) => setLinkNumber(e.target.value)}
-                      className="shadow  appearance-none border rounded w-[90%]  py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    />
-                  </div>
-                  {topicData &&
-                    //eslint-disable-next-line
-                    topicData?.map((data) => {
-                      return (
-                        <div
-                          className="mb-4 flex sm:flex-col   sm:gap-2  sm:md:w-max-[300px] md:w-[400px]"
-                          key={data._id}
-                        >
-                          <label
-                            htmlFor="input1"
-                            className="block text-gray-700  font-bold sm:w-max-[70px] md:w-[100px] mb-2"
-                          >
-                            {data.name}
-                          </label>
-                          <input
-                            type="number"
-                            id="topics"
-                            name={data.name}
-                            value={linkTopic[`${data.name}`]}
-                            onChange={handleTopic}
-                            className="shadow appearance-none border rounded w-[90%] py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                          />
-                        </div>
-                      );
-                    })}
-                  <div className="mb-4 flex sm:flex-col  gap-2   sm:w-max-[300px] md:w-[400px]">
-                    <label
-                      htmlFor="input1"
-                      className="block text-gray-700 font-bold sm:w-max-[70px] md:w-[100px] mb-2"
-                    >
-                      URL
-                    </label>
-                    <input
-                      type="text"
-                      id="uri"
-                      name="linkurl"
-                      value={url}
-                      onChange={(e) => setUrl(e.target.value)}
-                      className="shadow appearance-none border rounded w-[90%] py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                      readOnly
-                    />
-                  </div>
-
-                  <div className="flex items-center sm:justify-start md:justify-end w-full">
-                    <button
-                      type="submit"
-                      className="bg-[#22C55E] duration-500 mx-auto mt-5 font-sans text-sm hover:bg-green-700 text-white font-bold py-2 px-2 w-[80%] rounded-md"
-                      disabled={!activeLink}
-                    >
-                      Generate Link
-                    </button>
-                  </div>
-                </form>
-              </div>
-            </>
-          )
-        }
-
-        {
-          // eslint-disable-next-line
-          option === "createLineManager" && (
-            <>
-              <div className="max-w-md mx-auto ">
-                <h3 className="mb-10 w-full text-center text-xl font-[700]">
-                  Fill Line Manager Information
-                </h3>
-                <form
-                  onSubmit={handleSubmit}
-                  className="bg-white rounded md:px-8 pt-6 pb-8 mb-4"
-                >
-                  <div className="mb-4 gap-y-2 flex sm:flex-col ">
-                    <label
-                      htmlFor="input1"
-                      className="block   font-bold w-1/2 mb-2"
-                    >
-                      Manager Name
-                    </label>
-                    <select
-                      id="dropdown"
-                      value={managerName}
-                      onChange={handleAddManager}
-                      className="shadow-sm cursor-pointer appearance-none border rounded w-full
-                      py-1 px-2 text-gray-700 leading-tight focus:outline-none
-                      focus:shadow-outline overflow-y-scroll max-h-[100px]"
-                    >
-                      <option value="">Choose members</option>
-                      {members?.map((member, index) => {
+          {
+            // eslint-disable-next-line
+            option === "generateLink" && (
+              <>
+                <div className="max-w-[400px]  md:mb-10 mx-auto ">
+                  <h3 className=" w-full text-center text-xl font-bold">
+                    Fill Link Information
+                  </h3>
+                  {masterLink && (
+                    <div className="flex w-auto justify-center align-middle mx-auto  h-15 p-2  border border-r-8 gap-1">
+                      <input
+                        type="text"
+                        className=" border-none outline-none flex-5 w-full p-2 overflow-x-visible overflow-y-scroll h-20 bg-slate-200 text-[#22694de1] masterlink"
+                        value={masterLink}
+                        ref={inputRef}
+                      ></input>
+                      <button className="flex-1" onClick={handleLinkCopy}>
+                        {linkCopy && masterLink ? "copied" : "copy"}
+                      </button>
+                    </div>
+                  )}
+                  <form
+                    onSubmit={handleLinkSubmit}
+                    className="bg-white  rounded px-4 pt-6  h-full mb-4  md:h-full overflow-y-scroll"
+                  >
+                    <div className="mb-4 flex sm:flex-col  sm:gap-2  sm:md:w-max-[380px] md:w-[400px]">
+                      <label
+                        htmlFor="input1"
+                        className="block text-black  font-bold sm:w-max-[70px] md:w-[100px] mb-2"
+                      >
+                        Link Number
+                      </label>
+                      <input
+                        type="number"
+                        id="link-number"
+                        name="linkNumber"
+                        value={linkNumber}
+                        onChange={(e) => setLinkNumber(e.target.value)}
+                        className="shadow  appearance-none border rounded w-[90%]  py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                      />
+                    </div>
+                    {topicData &&
+                      //eslint-disable-next-line
+                      topicData?.map((data) => {
                         return (
-                          <option key={index} value={member}>
-                            {member}
-                          </option>
+                          <div
+                            className="mb-4 flex sm:flex-col   sm:gap-2  sm:md:w-max-[300px] md:w-[400px]"
+                            key={data._id}
+                          >
+                            <label
+                              htmlFor="input1"
+                              className="block text-gray-700  font-bold sm:w-max-[70px] md:w-[100px] mb-2"
+                            >
+                              {data.name}
+                            </label>
+                            <input
+                              type="number"
+                              id="topics"
+                              name={data.name}
+                              value={linkTopic[`${data.name}`]}
+                              onChange={handleTopic}
+                              className="shadow appearance-none border rounded w-[90%] py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            />
+                          </div>
                         );
                       })}
-                    </select>
-                  </div>
+                    <div className="mb-4 flex sm:flex-col  gap-2   sm:w-max-[300px] md:w-[400px]">
+                      <label
+                        htmlFor="input1"
+                        className="block text-gray-700 font-bold sm:w-max-[70px] md:w-[100px] mb-2"
+                      >
+                        URL
+                      </label>
+                      <input
+                        type="text"
+                        id="uri"
+                        name="linkurl"
+                        value={url}
+                        onChange={(e) => setUrl(e.target.value)}
+                        className="shadow appearance-none border rounded w-[90%] py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        readOnly
+                      />
+                    </div>
 
-                  <div className="flex items-center w-full mt-10 justify-center">
-                    <button
-                      type="submit"
-                      className="bg-[#22C55E]  w-[80%] mx-auto duration-500 font-sans text-sm hover:bg-green-700 text-white font-bold py-2 px-2 md:w-27 rounded-md"
-                    >
-                      Create Manager
-                    </button>
-                  </div>
-                </form>
-              </div>
+                    <div className="flex items-center sm:justify-start md:justify-end w-full">
+                      <button
+                        type="submit"
+                        className="bg-[#22C55E] duration-500 mx-auto mt-5 font-sans text-sm hover:bg-green-700 text-white font-bold py-2 px-2 w-[80%] rounded-md"
+                        disabled={!activeLink}
+                      >
+                        Generate Link
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </>
+            )
+          }
+
+          {
+            // eslint-disable-next-line
+            option === "createLineManager" && (
+              <>
+                <div className="max-w-md mx-auto ">
+                  <h3 className="mb-10 w-full text-center text-xl font-[700]">
+                    Fill Line Manager Information
+                  </h3>
+                  <form
+                    onSubmit={handleSubmit}
+                    className="bg-white rounded md:px-8 pt-6 pb-8 mb-4"
+                  >
+                    <div className="mb-4 gap-y-2 flex sm:flex-col ">
+                      <label
+                        htmlFor="input1"
+                        className="block   font-bold w-1/2 mb-2"
+                      >
+                        Manager Name
+                      </label>
+                      <select
+                        id="dropdown"
+                        value={managerName}
+                        onChange={handleAddManager}
+                        className="shadow-sm cursor-pointer appearance-none border rounded w-full
+                      py-1 px-2 text-gray-700 leading-tight focus:outline-none
+                      focus:shadow-outline overflow-y-scroll max-h-[100px]"
+                      >
+                        <option value="">Choose members</option>
+                        {members?.map((member, index) => {
+                          return (
+                            <option key={index} value={member}>
+                              {member}
+                            </option>
+                          );
+                        })}
+                      </select>
+                    </div>
+
+                    <div className="flex items-center w-full mt-10 justify-center">
+                      <button
+                        type="submit"
+                        className="bg-[#22C55E]  w-[80%] mx-auto duration-500 font-sans text-sm hover:bg-green-700 text-white font-bold py-2 px-2 md:w-27 rounded-md"
+                      >
+                        Create Manager
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </>
+            )
+          }
+          {loading && option === "createLineManager" && members?.length <= 0 ? (
+            <div className="d-flex mt-3 justify-content-center align-items-center">
+              <ClipLoader
+                color={"#22694de1"}
+                css={{
+                  display: "block",
+                  margin: "0 auto",
+                  width: "50px",
+                  height: "50px",
+                }}
+                size={30}
+              />{" "}
+              fetching members list...
+            </div>
+          ) : (
+            <>
+              {loading && (
+                <div className="d-flex mt-3 justify-content-center align-items-center">
+                  <ClipLoader
+                    color={"#22694de1"}
+                    css={{
+                      display: "block",
+                      margin: "0 auto",
+                      width: "50px",
+                      height: "50px",
+                    }}
+                    size={30}
+                  />{" "}
+                  Loading...
+                </div>
+              )}
             </>
-          )
-        }
-        {loading && option === "createLineManager" && members?.length <= 0 ? (
-          <div className="d-flex mt-3 justify-content-center align-items-center">
-            <ClipLoader
-              color={"#22694de1"}
-              css={{
-                display: "block",
-                margin: "0 auto",
-                width: "50px",
-                height: "50px",
-              }}
-              size={30}
-            />{" "}
-            fetching members list...
-          </div>
-        ) : (
-          <>
-            {loading && (
-              <div className="d-flex mt-3 justify-content-center align-items-center">
-                <ClipLoader
-                  color={"#22694de1"}
-                  css={{
-                    display: "block",
-                    margin: "0 auto",
-                    width: "50px",
-                    height: "50px",
-                  }}
-                  size={30}
-                />{" "}
-                Loading...
-              </div>
-            )}
-          </>
-        )}
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 
