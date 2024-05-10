@@ -3,10 +3,11 @@
 import { useEffect, useRef, useState } from "react";
 
 //import "react-toastify/dist/ReactToastify.css";
-import { toast } from "react-toastify";
+
 import { ClipLoader } from "react-spinners";
 
 import { useSelector } from "react-redux";
+import { toast } from "react-toastify";
 import axios from "axios";
 import io from "socket.io-client";
 const socket = io.connect("https://www.dowellchat.uxlivinglab.online/");
@@ -24,6 +25,9 @@ function CreateComponent({ closeSearchModal, option }) {
   // };
 
   const [topicName, setTopicName] = useState("");
+
+  const [waitingTime, setWaitingTime] = useState(0);
+
   const [managerName, setManagerName] = useState("");
   const topicData = useSelector((state) => state.tickets.topicData);
   const [linkTopic, setLinkTopic] = useState({});
@@ -57,46 +61,9 @@ function CreateComponent({ closeSearchModal, option }) {
         await getManagersList();
       }
     };
-    /*
-    const getUserNameCount = async () => {
-      if (option === "generateLink") {
-        setLoading(true);
 
-        try {
-          /*let response = await axios.post(
-          "https://100093.pythonanywhere.com/api/userinfo/",
-          {
-            session_id: lineManagerCredentials.session_id, //"okms05yhlfj6xl7jug9b6f6lyk8okb8o",
-          }
-        );
-          let response = localStorage.getItem("userInfo");
-          response = JSON.parse(response)?.selected_product;
-          // console.log("data =", response.data);
-          let responseData = await response?.userportfolio.filter(
-            (item) =>
-              item.member_type === "public" &&
-              item.product === "Dowell Customer Support Centre"
-          );
-          responseData = responseData.map((items) => items?.username);
-          responseData = await arrayWithMostElements(responseData);
+    //waiting time
 
-          if (!responseData) {
-            toast.warn("No usernames found!", {
-              toastId: "success1",
-            });
-            setLoading(false);
-            return;
-          }
-          console.log("responseData USER name count", responseData?.length);
-          setUserNameCount(responseData?.length);
-          //console.log(responseData);
-          setLoading(false);
-        } catch (e) {
-          console.log("error", e.message);
-        }
-      }
-    };
-*/
     getManagerMembers();
 
     //getUserNameCount();
@@ -114,6 +81,29 @@ function CreateComponent({ closeSearchModal, option }) {
     // Cleanup event listener
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  function addWaitingTime() {
+    //    console.log("waiting time", waitingTime);
+
+    function createMetaSetting() {
+      const lineData = {
+        waiting_time: parseInt(waitingTime),
+        operation_time: "12s",
+        workspace_id: lineManagerCredentials.workspace_id,
+        api_key: lineManagerCredentials.api_key,
+
+        created_at: new Date().toISOString(),
+      };
+
+      socket.emit("create_meta_setting", lineData);
+    }
+    createMetaSetting();
+
+    // getMetaSetting();
+    toast.success("waiting time updated", {
+      toastId: "success1",
+    });
+  }
 
   function generateRandomString(length) {
     let result = "";
@@ -260,42 +250,7 @@ function CreateComponent({ closeSearchModal, option }) {
       let response = localStorage.getItem("userInfo");
       // console.log("data response ", response);
       response = JSON.parse(response)?.selected_product;
-      /* let response = await axios.post(
-        "https://100093.pythonanywhere.com/api/userinfo/",
-        {
-          session_id: lineManagerCredentials.session_id, //"okms05yhlfj6xl7jug9b6f6lyk8okb8o",
-        }
-      );*/
-      // console.log("data =", response.data);
-      /*let responseData = await response.userportfolio.find(
-        (item) =>
-          item.member_type === "public" &&
-          item.product === "Dowell Customer Support Centre"
-      );*/
-      // response = JSON.parse(response)?.selected_product;
-      // console.log("data =", response.data);
-      /*  let responseData = await response?.userportfolio.filter(
-        (item) =>
-          item.member_type === "public" &&
-          item.product === "Dowell Customer Support Centre"
-      );
-      let responseUserNames = responseData.map((items) => items?.username);
-      responseUserNames = await arrayWithMostElements(responseUserNames);
 
-      if (!responseUserNames) {
-        toast.warn("Something went wrong, couldn't find your username");
-        setLoading(false);
-        return;
-      }
-      // setUserNameCount(responseData?.username.length);
-      if (linkNumber > responseUserNames?.length) {
-        toast.warning(
-          "Link number must be less than or equal to existing users"
-        );
-        setLoading(false);
-        return;
-      }
-      */
       let responseData = await response?.userportfolio.find(
         (item) =>
           item.member_type === "public" &&
@@ -381,6 +336,12 @@ function CreateComponent({ closeSearchModal, option }) {
           return;
         }
         topicName && createTopic(topicName);
+      } else if (option === "addwaitingtime") {
+        if (!waitingTime && parseInt(waitingTime) < 0) {
+          toast.warning("Please fill the topic name");
+          return;
+        }
+        waitingTime && addWaitingTime(waitingTime);
       } else if (option === "createLineManager") {
         // await getLineManagerMember();
         // getManagersList();
@@ -394,18 +355,17 @@ function CreateComponent({ closeSearchModal, option }) {
         toast.warning(error?.response?.data);
       }
     }
-    // Handle form submission here
-    // console.log("Form submitted with data:", inputs);
+    setLoading(false);
   };
   // Calculate the height of the modal dynamically based on the window height
 
   return (
     <div
-      className={`relative b md:h-[600px] inset-0 z-50 flex items-center justify-center  bg-opacity-50 `}
+      className={`relative b h-full md:h-[600px] inset-0 z-50 flex items-center justify-center  bg-opacity-50 `}
       onClick={closeModal}
     >
       <div
-        className={` h-[90%] bg-white shadow-2xl  border-2 border-gray-100 overflow-auto mt-[80px] relative p-4 md:p-6 rounded-lg w-full md:max-w-[50%] `}
+        className={`h-[400px] md:h-[80%] bg-white shadow-2xl border-2 border-gray-100 overflow-auto mt-[80px] relative p-4 md:p-6 rounded-lg w-[90%] md:max-w-[60%] `}
       >
         {/* <div className="flex justify-between w-full relative mb-7 ">
           <button
@@ -459,14 +419,54 @@ function CreateComponent({ closeSearchModal, option }) {
           )
         }
 
-        {/* generating a link */}
+        {option === "addwaitingtime" && (
+          <>
+            <div className="max-w-[400px] mx-auto">
+              <h3 className="mb-10 text-center font-bold text-xl w-full">
+                Add Waiting Time
+              </h3>
+              <form
+                onSubmit={handleSubmit}
+                className="bg-white   rounded px-4 py-8 "
+              >
+                <div className="mb-4 gap-y-2">
+                  <label
+                    htmlFor="input1"
+                    className="block mb-4 text-black  font-bold  "
+                  >
+                    Waiting Time
+                  </label>
+                  <input
+                    type="number"
+                    id="waitingtime"
+                    name="waitingtime"
+                    value={waitingTime}
+                    onChange={(e) => setWaitingTime(e.target.value)}
+                    className="shadow appearance-none border rounded w-full py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  />
+                </div>
+
+                <div className="flex items-center w-full justify-center">
+                  <button
+                    type="submit"
+                    className="w-[80%] duration-500 font-sans text-sm mt-10 bg-[#22C55E] hover:bg-green-700 text-white font-bold py-2 px-2 md:w-27 rounded-md"
+                  >
+                    Add
+                  </button>
+                </div>
+              </form>
+            </div>
+          </>
+        )}
+        {/* generati
+        ng a link */}
 
         {
           // eslint-disable-next-line
           option === "generateLink" && (
             <>
-              <div className="max-w-[400px]   mx-auto ">
-                <h3 className="mb-10 w-full text-center text-xl font-bold">
+              <div className="max-w-[400px]  md:mb-10 mx-auto ">
+                <h3 className=" w-full text-center text-xl font-bold">
                   Fill Link Information
                 </h3>
                 {masterLink && (
@@ -484,28 +484,8 @@ function CreateComponent({ closeSearchModal, option }) {
                 )}
                 <form
                   onSubmit={handleLinkSubmit}
-                  className="bg-white  rounded px-4 pt-6  h-full mb-4 sm:h-[150px] md:h-full overflow-y-scroll"
+                  className="bg-white  rounded px-4 pt-6  h-full mb-4  md:h-full overflow-y-scroll"
                 >
-                  {/*  
-                  <div className="mb-4 flex sm:flex-col md:flex-row sm:gap-5 md:gap-10 sm:w-max-[300px] md:w-[400px] ">
-                    <label
-                      htmlFor="usernamecount"
-                      className="block text-gray-700 text-sm font-bold sm:w-max-[70px] md:w-[100px] mb-2"
-                    >
-                      UserName Count:
-                    </label>
-                    <input
-                      type="number"
-                      id="usernamecount"
-                      name="usernamecount"
-                      value={userNameCount}
-                      //onChange={(e) => setUrl()}
-                      className="shadow appearance-none border rounded sm:w-max-[150px] h-8 md:w-[200px] py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                      readOnly
-                    />
-                  </div>
-                  */}
-
                   <div className="mb-4 flex sm:flex-col  sm:gap-2  sm:md:w-max-[380px] md:w-[400px]">
                     <label
                       htmlFor="input1"
@@ -527,7 +507,7 @@ function CreateComponent({ closeSearchModal, option }) {
                     topicData?.map((data) => {
                       return (
                         <div
-                          className="mb-4 flex sm:flex-col  sm:gap-2  sm:md:w-max-[300px] md:w-[400px]"
+                          className="mb-4 flex sm:flex-col   sm:gap-2  sm:md:w-max-[300px] md:w-[400px]"
                           key={data._id}
                         >
                           <label

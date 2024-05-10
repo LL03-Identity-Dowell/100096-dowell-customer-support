@@ -10,7 +10,7 @@ function TicketDetail() {
   const messageShow = ticketMessages.length > 0 ? ticketMessages.slice(-3) : [];
 
   return (
-    <div className="flex-1 w-full  mx-1 my-3 px-1    border border-[#5B5B5B] md:min-w-[300px] h-svh rounded-lg shadow-lg">
+    <div className="flex-1 md:w-full  sm:mx-3 md:mx-0 my-3 px-1    border border-[#5B5B5B] md:min-w-[300px] h-svh rounded-lg shadow-lg md:h-[600px]">
       <div className="w-[100%] flex flex-col  text-center ">
         <div className="w-full bg-[#22C55E] text-white border-2 rounded-t-lg py-3 sm:text-sm md:text-[16px] font-sans">
           <h3 className="uppercase">Ticket ID </h3>
@@ -49,35 +49,15 @@ function TicketDetail() {
                     <td className="py-3 px-3 text-left">
                       {formatCreatedAt(message.created_at)}
                     </td>
-                    <td className="py-3 px-6 text-left">
-                      {message.message_data}
-                    </td>
+                    <td className="py-3 px-6 text-left">{message.content}</td>
                   </tr>
                 );
               })}
             {messageShow.length === 0 && (
-              <p className="border-none hover:bg-gray-100">
+              <p className="border-none w-full h-full flex justify-center items-center ">
                 No previous messages
               </p>
             )}
-
-            {/* {Object.keys(selectedTicket).length > 0 && loading ? (
-              <div className="d-flex mt-3  justify-center align-items-center mx-auto">
-                <ClipLoader
-                  color={"#22694de1"}
-                  css={{
-                    display: "block",
-                    margin: "0 auto",
-                    width: "50px",
-                    height: "50px",
-                  }}
-                  size={40}
-                />{" "}
-                <small className="text-xs">Loading chat history ...</small>
-              </div>
-            ) : (
-              ""
-            )} */}
           </tbody>
         </table>
       </div>

@@ -1,7 +1,10 @@
 import { Link } from "react-router-dom";
-import { Profile } from "../../assets";
+import { Profile, logo } from "../../assets";
 import { useEffect, useState } from "react";
 import queryString from "query-string";
+import { FaUser } from "react-icons/fa";
+import { IoSettingsSharp } from "react-icons/io5";
+import { FiLogOut } from "react-icons/fi";
 
 //eslint-disable-next-line
 export default function NavItem({ component }) {
@@ -31,19 +34,25 @@ export default function NavItem({ component }) {
   };
 
   return (
-    <div className="flex w-full md:px-5 top-0 fixed  justify-start z-50 bg-[#e3fded] items-center text-center">
+    <div className="flex w-full px-2 md:px-5 top-0   fixed  justify-start z-50 border-b-2  h-16 bg-[#e9fdf1] items-center text-center">
       <div className="flex justify-start  w-full flex-2">
-        <a className="flex justify-start  items-start ps-2.5 md:mb-2 sm:mb-2 md:mr-2 h-16">
-          <img
-            src="https://psp-logos.uptimerobot.com/logos/2021049-1676548510.png"
-            className="md:w-16 md:h-16   rounded-md border-none"
-            alt="Flowbite Logo"
-          />
-        </a>
-        <h2 className="text-lg font-bold text-center max-md:hidden text-[#22C55E] flex justify-center items-center  ">
-          Customer Support | Line Manager
-        </h2>
-        {/* <hr className="border-b-1 bg-slate-500 mx-auto w-[90%]" /> */}
+        <Link
+          to={`/linemanage/?${queryParams}`}
+          className="flex justify-start flex-2"
+        >
+          <a className="flex justify-start text-center items-center  md:mr-2 h-14">
+            <img
+              src={logo}
+              className="w-14 h-14  text-center   rounded-md border-none"
+              alt="Dowell"
+            />
+          </a>
+          <h2 className="text-lg font-bold text-center  text-[#22C55E] flex justify-center items-center  ">
+            <span className="max-md:hidden">Customer Support | </span> Line
+            Manager
+          </h2>
+          {/* <hr className="border-b-1 bg-slate-500 mx-auto w-[90%]" /> */}
+        </Link>
       </div>
       {/* {!component && (
         <div className="flex-1 mr-3">
@@ -66,32 +75,34 @@ export default function NavItem({ component }) {
         </div>
         <div
           onMouseEnter={() => setIsHovered(true)}
-          className={`absolute z-50 min-w-28 -left-16   pt-2  p-4  bg-white border border-gray-300 rounded shadow ${
+          className={`absolute z-50 min-w-28 -left-24 md:-left-20  pt-2  p-4  bg-white border border-gray-300 rounded shadow ${
             isHovered ? "block" : "hidden"
           }`}
         >
-          <ul className="w-full flex flex-col gap-y-3 text-center">
-            <li>
-              <a className="hover:text-[#22C55E]" href="#">
-                Profile
-              </a>
-            </li>
+          <ul className="w-full flex flex-col justify-start items-start gap-y-3 text-start">
             <li>
               <Link
-                className="hover:text-[#22C55E]"
-                to={`/linemanage/settings?${queryParams}`}
+                className="hover:text-[#22C55E] flex justify-center items-center gap-2"
+                href="#"
               >
-                Settings
+                <FaUser className="text-[#22C55E]" /> Profile
               </Link>
             </li>
             <li>
-              <a
-                className="hover:text-[#22C55E]"
-                href="#"
+              <Link
+                className="hover:text-[#22C55E] flex justify-center items-center gap-2"
+                to={`/linemanage/settings?${queryParams}`}
+              >
+                <IoSettingsSharp className="text-[#22C55E]" /> Settings
+              </Link>
+            </li>
+            <li>
+              <Link
+                className="hover:text-[#22C55E] flex justify-center items-center gap-2"
                 onClick={handleLogout}
               >
-                Logout
-              </a>
+                <FiLogOut className="text-[#22C55E] font-bold" /> Logout
+              </Link>
             </li>
           </ul>
         </div>

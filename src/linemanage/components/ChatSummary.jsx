@@ -16,7 +16,7 @@ const Chat = () => {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const selectedTicket = useSelector((state) => state.tickets.selectedTicket);
-  const ticketMessages = useSelector((state) => state.tickets.ticketMessage);
+  // const ticketMessages = useSelector((state) => state.tickets.ticketMessage);
   //console.log("ticket message in chat", ticketMessages);
   let current_user = "1234";
 
@@ -45,22 +45,8 @@ const Chat = () => {
       getTicketMessages(selectedTicket);
     }
   }, [selectedTicket]);
-
+  /*
   useEffect(() => {
-    const targetNode = document.getElementById("scroller");
-
-    const config = { childList: true };
-    //eslint-disable-next-line
-    const callback = function (mutationsList, observer) {
-      for (let mutation of mutationsList) {
-        if (mutation.type === "childList") {
-          targetNode.scrollTop = targetNode.scrollHeight;
-        }
-      }
-    };
-
-    const observer = new MutationObserver(callback);
-    observer.observe(targetNode, config);
     async function chat() {
       if (ticketMessages.length > 0) {
         //  setLoading(false);
@@ -100,71 +86,60 @@ const Chat = () => {
       //setLoading(false);
     }
   }, [ticketMessages]);
+  */
 
   //getting ticket messages and making a chat
   //useEffect(() => {
   //getting ticket messages and making a chat
   useEffect(() => {
-    // setLoading(true);
-    socket.on("ticket_message_response", (data) => {
-      console.log("message data", data);
-      if (
-        typeof data?.data === "object" &&
-        !Array.isArray(data?.data) &&
-        data?.operation === "send_message"
-      ) {
-        console.log("data from tickets ", data?.data);
-        //dispatch(fetchSingleMessage(data?.data));
+    const targetNode = document.getElementById("scroller");
 
-        if (data?.data.ticket_id === selectedTicket._id) {
-          let messageResponse = data?.data;
-          if (Object.keys(data?.data).length > 0) {
-            const { author, is_read, created_at, message_data } =
-              messageResponse;
-            let current_user = "1234";
-            console.log(current_user, author);
-            console.log(
-              "chat datas",
-              author,
-              is_read,
-              created_at,
-              message_data
-            );
-            // if (author !== current_user) {
-            const message = {
-              id: messages.length + 1,
-              sender: author !== current_user ? "user" : "receiver",
-              type: "text",
-              content: message_data,
-              created_at: created_at,
-            };
-
-            setMessages([...messages, message]);
-
-            //  }
-          }
-        }
-      } else {
-        // if (data?.data?.ticket_id === selectedTicket._id) {
-        if (
-          data.status === "success" &&
-          data.operation === "get_ticket_messages"
-        ) {
-          dispatch(fetchTicketMessage(data?.data));
-          //setLoading(false);
-        } else {
-          dispatch(fetchTicketMessage([]));
-          // setLoading(false);
+    const config = { childList: true };
+    //eslint-disable-next-line
+    const callback = function (mutationsList, observer) {
+      for (let mutation of mutationsList) {
+        if (mutation.type === "childList") {
+          targetNode.scrollTop = targetNode.scrollHeight;
         }
       }
-      setLoading(false);
-      // }
+    };
+
+    const observer = new MutationObserver(callback);
+    observer.observe(targetNode, config);
+    socket.on("ticket_message_response", (data) => {
+      if (data.operation === "send_message") {
+        // This scenario occurs when a new message is sent
+        const { author, created_at, message_data } = data.data;
+        const newMessage = {
+          id: messages.length + 1,
+          sender: author !== current_user ? "user" : "receiver",
+          type: "text",
+          content: message_data,
+          created_at: created_at,
+        };
+        setMessages([...messages, newMessage]);
+      } else if (data.operation === "get_ticket_messages") {
+        // This scenario occurs when loading all message history
+        const ticketMessages = data.data; // Assuming data contains all messages
+        const formattedMessages = ticketMessages.map((message) => ({
+          id: message._id,
+          sender: message.author !== current_user ? "user" : "receiver",
+          type: "text",
+          content: message.message_data,
+          created_at: message.created_at,
+        }));
+        setMessages(formattedMessages);
+        dispatch(fetchTicketMessage(formattedMessages));
+      }
+      setLoading(false); // Assuming loading should be set to false in both cases
     });
 
     return () => {
+      // Clean up the socket event listener when the component unmounts
       socket.off("ticket_message_response");
     };
-  }, [socket]);
+  }, [socket, messages]); // Ensure to include all dependencies used inside the effect
+
   const sendChat = async (newMessage) => {
     // let workSpaceID = "646ba835ce27ae02d024a902";
     //let api_key = "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f";
@@ -218,7 +193,7 @@ const Chat = () => {
   };
   return (
     <div
-      className={` flex flex-col  px-2 py-2 rounded-[14.35px] border border-[#5B5B5B] shadow-md h-svh mr-2`}
+      className={`md:h-[600px] flex flex-col max-md:mx-2  px-2 py-2 rounded-[14.35px] border border-[#5B5B5B] shadow-md h-svh mr-2`}
     >
       <div className="flex justify-between  bg-white border border-[#22C55E] py-4 text-[#22C55E]  border-b  px-4 rounded-t-md rounded-b-sm w-full">
         <h2 className=" sm:text-sm mb-5 md:text-[16px]  text-[#22C55E] font-[700]  uppercase">
@@ -302,24 +277,25 @@ const Chat = () => {
           <button className="hover:bg-gray-350 w-6 h-6 text-[#22C55E] bg-white border border-[#22C55E] rounded-full">
             8
           </button>
-          <button className="hover:bg-gray-350 w-6 h-6 text-[#22C55E] bg-white border border-[#22C55E] rounded-full">
-            9
-          </button>
         </div>
         <hr className="bg-slate-500 mt-3 w-full" />
         {/* Chat content goes here */}
 
         {/* Render chat messages */}
 
-        <div className="bg-green-500 rounded-t-md rounded-b-sm py-3">
+        <div
+          className={`bg-green-500 rounded-t-md rounded-b-sm py-3  ${
+            selectedTicket?._id ? "block" : "hidden"
+          }`}
+        >
           <p className="text-white w-full sm:px-5">{selectedTicket._id}</p>
         </div>
         {console.log(messageToDispaly)}
         <div
-          className="space-y-4   py-3 sm:h-[100px]  md:h-[250px] overflow-y-scroll"
+          className="space-y-3   py-3 h-[250px] overflow-y-scroll"
           id="scroller"
         >
-          {Object.keys(messageToDispaly).length > 0 &&
+          {Object.keys(messageToDispaly).length > 0 ? (
             messageToDispaly?.map((message) => (
               <div
                 key={message.created_at}
@@ -362,21 +338,24 @@ const Chat = () => {
                   </div>
                 )}
               </div>
-            ))}
+            ))
+          ) : (
+            <p className="border-none w-full text-sm text-center text-gray-600  flex justify-center  h-full">
+              No previous messages
+            </p>
+          )}
           {Object.keys(messageToDispaly).length <= 0 && ""}
           {Object.keys(selectedTicket).length > 0 && loading ? (
-            <div className="d-flex mt-3  justify-center align-items-center mx-auto">
+            <div className=" flex flex-col w-full justify-center items-center -mt-20 mx-auto h-full gap-y-2 text-gray-600 font-bold ">
               <ClipLoader
                 color={"#22694de1"}
                 css={{
                   display: "block",
-                  margin: "0 auto",
-                  width: "50px",
-                  height: "50px",
+                  margin: "auto auto",
                 }}
                 size={40}
-              />{" "}
-              <small className="text-xs">Loading ticket chat... </small>
+              />
+              <small className="text-sm">Loading Messages... </small>
             </div>
           ) : (
             ""
