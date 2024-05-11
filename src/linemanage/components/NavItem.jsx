@@ -87,12 +87,12 @@ export default function NavItem({ component }) {
               </Link>
             </li>
             <li>
-              <Link
-                className="hover:text-[#22C55E] flex justify-center items-center gap-2"
+              <div
+                className="hover:text-[#22C55E] flex justify-center items-center gap-2 cursor-pointer"
                 onClick={handleLogout}
               >
                 <FiLogOut className="text-[#22C55E] font-bold" /> Logout
-              </Link>
+              </div>
             </li>
           </ul>
         </div>

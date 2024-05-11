@@ -16,8 +16,7 @@ const Chat = () => {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const selectedTicket = useSelector((state) => state.tickets.selectedTicket);
-  // const ticketMessages = useSelector((state) => state.tickets.ticketMessage);
-  //console.log("ticket message in chat", ticketMessages);
+
   let current_user = "1234";
 
   const [newMessage, setNewMessage] = useState("");
@@ -45,51 +44,7 @@ const Chat = () => {
       getTicketMessages(selectedTicket);
     }
   }, [selectedTicket]);
-  /*
-  useEffect(() => {
-    async function chat() {
-      if (ticketMessages.length > 0) {
-        //  setLoading(false);
-        try {
-          let messages = await Promise.all(
-            ticketMessages?.slice().map((message) => {
-              return {
-                id: message._id,
-                sender: message.author !== current_user ? "user" : "receiver",
-                type: "text",
-                content: message.message_data,
-                created_at: message.created_at,
-              };
-            })
-          );
-          //console.log("loading", loading);
-          if (messages.length > 0) {
-            //  console.log("inner loading", loading);
-            setMessages(messages);
-            //  setLoading(false);
-          }
-        } catch (error) {
-          console.log(error);
-          //setLoading(false);
-        }
-        // setLoading(false);
-      } else {
-        setMessages([]);
-        //setLoading(false);
-      }
-    }
-    // console.log("selected ticket", selectedTicket);
-    if (ticketMessages && Object.keys(ticketMessages).length > 0) {
-      chat();
-    } else {
-      setMessages([]);
-      //setLoading(false);
-    }
-  }, [ticketMessages]);
-  */
 
-  //getting ticket messages and making a chat
-  //useEffect(() => {
   //getting ticket messages and making a chat
   useEffect(() => {
     const targetNode = document.getElementById("scroller");
@@ -202,22 +157,7 @@ const Chat = () => {
         <button
           // onClick={onClose}
           className="text-gray-500 hover:text-gray-700 focus:outline-none focus:text-gray-700"
-        >
-          {/* <svg
-              className="h-5 w-5 text-white"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M6 18L18 6M6 6l12 12"
-              ></path> */}
-          {/* </svg> */}
-        </button>
+        ></button>
       </div>
       <div className="w-[100%]  flex flex-col justify-between h-full">
         <div className="mr-auto  lex mb-3   font-sans text-sm flex justify-center items-center mt-2 gap-5 w-[100%]">
@@ -242,14 +182,6 @@ const Chat = () => {
           >
             {selectedTicket?.is_closed ? "closed" : "Close Ticket"}
           </button>
-
-          {/* <button className="bg-[#22694de1] hover:bg-green-700 text-white font-bold py-0 px-2 rounded-lg">
-              Chat Manager
-            </button> */}
-
-          {/* <button className="bg-red-400 ml-auto hover:bg-red-500 text-white font-bold py-1.5 px-2 rounded-lg ">
-            Logout
-          </button> */}
         </div>
         <div className="flex justify-center gap-2  font-sans text-sm">
           <p className="ml-2 text-lg">Level:</p>

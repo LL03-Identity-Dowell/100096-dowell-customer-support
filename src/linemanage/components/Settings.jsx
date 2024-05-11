@@ -5,7 +5,7 @@ import NavItem from "./NavItem";
 import { NavLink } from "react-router-dom";
 import { Logout } from "../../assets";
 import { useState } from "react";
-import { toast } from "react-toastify";
+
 import CreateComponent from "./CreateComponent";
 
 const Settings = () => {

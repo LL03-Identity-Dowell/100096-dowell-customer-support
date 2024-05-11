@@ -2,7 +2,7 @@ import { LuLoader2 } from "react-icons/lu";
 
 export function Loader() {
   return (
-    <div className="p-5 mt-3">
+    <div className="p-5 mt-16">
       <div
         disabled
         className="flex text-gray-400 mx-auto text-4xl justify-center"

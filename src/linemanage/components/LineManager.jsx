@@ -30,31 +30,38 @@ function LineManager() {
   console.log("ticket info.....", ticketInfo["George_Kibetest_product"]);
   const [loading, setLoading] = useState(true);
   const { ticketData } = useTicket();
-  const [waitingTime, setWaitingTime] = useState(0);
-
   const lineManagerCredentials = useSelector(
     (state) => state.lineManagers.lineManagerCredentials
   );
   const lineManagersData = useSelector(
     (state) => state.lineManagers.lineManagersData
   );
+  const [waitingTime, setWaitingTime] = useState(0);
 
-  async function getMetaSetting() {
-    await socket.emit("get_meta_setting", {
-      // workspace_id: "63cf89a0dcc2a171957b290b"
-      //  api_key: "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f",
-      workspace_id: lineManagerCredentials.workspace_id,
-      api_key: lineManagerCredentials.api_key,
-    });
-  }
-  socket.on("setting_response", (data) => {
-    // Handle response for the event
-    // console.log("data", data?.data[0].waiting_time);
-    if (data.operation === "get_meta_setting") {
-      setWaitingTime(data?.data[0]?.waiting_time);
-      //    console.log("data", data);
-    }
-  });
+  useEffect(() => {
+    const fetchData = () => {
+      socket.emit("get_meta_setting", {
+        workspace_id: lineManagerCredentials.workspace_id,
+        api_key: lineManagerCredentials.api_key,
+      });
+
+      socket.on("setting_response", (data) => {
+        // Handle response for the event
+        if (data.operation === "get_meta_setting") {
+          setWaitingTime(data.data[0]?.waiting_time);
+          //      console.log("waitging time ", data.data[0]?.waiting_time);
+        }
+      });
+    };
+
+    fetchData();
+
+    // Cleanup function (if necessary)
+    return () => {
+      // Unsubscribe from socket event if needed
+      socket.off("setting_response");
+    };
+  }, []);
 
   const handlePrevClick = () => {
     if (startIndex > 0) {
@@ -95,7 +102,7 @@ function LineManager() {
     //workSpaceID = "646ba835ce27ae02d024a902";
     //api_key = "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f";
     console.log("test id ===", lineManagerCredentials.workspace_id);
-    getMetaSetting();
+
     /*console.log(
       "space id from dispatch",
       lineManagerCredentials.workspace_id,
@@ -240,15 +247,14 @@ function LineManager() {
                             {waitingTime *
                               (ticketData[
                                 `${data1.user_id}${selectedTopic.name ?? ""}`
-                              ]?.filter((ticket) => !ticket?.is_closed).length -
-                                1 >=
-                              0
+                              ]?.filter((ticket) => !ticket?.is_closed)
+                                .length >= 0
                                 ? ticketData[
                                     `${data1.user_id}${
                                       selectedTopic.name ?? ""
                                     }`
                                   ]?.filter((ticket) => !ticket?.is_closed)
-                                    .length - 1
+                                    .length
                                 : 0)}{" "}
                             Waiting Time
                           </span>

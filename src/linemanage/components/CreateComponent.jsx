@@ -44,19 +44,20 @@ function CreateComponent({ closeSearchModal, option }) {
     (state) => state.lineManagers.lineManagerCredentials
   );
   //setting up loading to get list of managers
-  useEffect(() => {
-    option === "createLineManager"
-      ? members?.length === 0
-        ? setLoading(true)
-        : setLoading(false)
-      : "";
-  }, [members, option]);
+  // useEffect(() => {
+  //   option === "createLineManager"
+  //     ? members?.length === 0
+  //       ? setLoading(true)
+  //       : setLoading(false)
+  //     : "";
+  // }, [members, option]);
   useEffect(() => {
     if (searchInputRef.current) {
       searchInputRef.current.focus();
     }
 
     const getManagerMembers = async () => {
+      setLoading(true);
       if (option === "createLineManager") {
         await getManagersList();
       }
@@ -84,7 +85,7 @@ function CreateComponent({ closeSearchModal, option }) {
 
   function addWaitingTime() {
     //    console.log("waiting time", waitingTime);
-
+    //setLoading(false);
     function createMetaSetting() {
       const lineData = {
         waiting_time: parseInt(waitingTime),
@@ -149,6 +150,7 @@ function CreateComponent({ closeSearchModal, option }) {
     } catch (error) {
       console.error("Error fetching data:", error);
     }
+    setLoading(false);
   };
 
   const handleAddManager = (e) => {
@@ -178,6 +180,7 @@ function CreateComponent({ closeSearchModal, option }) {
           toast.success("successfully created");
         }
       });
+      setLoading(false);
     } catch (error) {
       setLoading(false);
       toast.warning(error.data);
@@ -185,6 +188,7 @@ function CreateComponent({ closeSearchModal, option }) {
   };
 
   const createTopic = async (topic_name) => {
+    setLoading(true);
     try {
       await socket.emit("create_topic", {
         name: topic_name,
@@ -224,7 +228,7 @@ function CreateComponent({ closeSearchModal, option }) {
   };
   const handleLinkSubmit = async (event) => {
     event.preventDefault();
-    setLoading(true);
+    //setLoading(true);
     setActiveLink(false);
     let sum = 0;
     if (!linkNumber || !url) {
@@ -333,10 +337,12 @@ function CreateComponent({ closeSearchModal, option }) {
       if (option === "createTopic") {
         if (!topicName) {
           toast.warning("Please fill the topic name");
+          setLoading(false);
           return;
         }
         topicName && createTopic(topicName);
       } else if (option === "addwaitingtime") {
+        setLoading(false);
         if (!waitingTime || parseInt(waitingTime) < 0) {
           toast.warning("waiting time time must be greater than 0");
           return;
@@ -355,7 +361,7 @@ function CreateComponent({ closeSearchModal, option }) {
         toast.warning(error?.response?.data);
       }
     }
-    setLoading(false);
+    // setLoading(false);
   };
   // Calculate the height of the modal dynamically based on the window height
 
@@ -613,21 +619,7 @@ function CreateComponent({ closeSearchModal, option }) {
               </>
             )
           }
-          {loading && option === "createLineManager" && members?.length <= 0 ? (
-            <div className="d-flex mt-3 justify-content-center align-items-center">
-              <ClipLoader
-                color={"#22694de1"}
-                css={{
-                  display: "block",
-                  margin: "0 auto",
-                  width: "50px",
-                  height: "50px",
-                }}
-                size={30}
-              />{" "}
-              fetching members list...
-            </div>
-          ) : (
+          {
             <>
               {loading && (
                 <div className="d-flex mt-3 justify-content-center align-items-center">
@@ -645,7 +637,7 @@ function CreateComponent({ closeSearchModal, option }) {
                 </div>
               )}
             </>
-          )}
+          }
         </div>
       </div>
     </>
