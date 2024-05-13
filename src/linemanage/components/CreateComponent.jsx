@@ -38,7 +38,7 @@ function CreateComponent({ closeSearchModal, option }) {
   const [linkCopy, setLinkCopy] = useState(false);
   const inputRef = useRef(null);
   const [portfolioCode, setPortfolioCode] = useState("");
-  const [activeLink, setActiveLink] = useState(true);
+  // const [activeLink, setActiveLink] = useState(true);
   //const [userNameCount, setUserNameCount] = useState(0);
   const lineManagerCredentials = useSelector(
     (state) => state.lineManagers.lineManagerCredentials
@@ -57,10 +57,10 @@ function CreateComponent({ closeSearchModal, option }) {
     }
 
     const getManagerMembers = async () => {
-      setLoading(true);
-      if (option === "createLineManager") {
-        await getManagersList();
-      }
+      // setLoading(true);
+      // if (option === "createLineManager") {
+      await getManagersList();
+      //  }
     };
 
     //waiting time
@@ -85,7 +85,7 @@ function CreateComponent({ closeSearchModal, option }) {
 
   function addWaitingTime() {
     //    console.log("waiting time", waitingTime);
-    //setLoading(false);
+    //setLoading(true);
     function createMetaSetting() {
       const lineData = {
         waiting_time: parseInt(waitingTime),
@@ -97,6 +97,7 @@ function CreateComponent({ closeSearchModal, option }) {
       };
 
       socket.emit("create_meta_setting", lineData);
+      //setLoading(false);
     }
     createMetaSetting();
 
@@ -130,13 +131,6 @@ function CreateComponent({ closeSearchModal, option }) {
   const getManagersList = async () => {
     // console.log("line manager");
     try {
-      /* let response = await axios.post(
-        "https://100093.pythonanywhere.com/api/userinfo/",
-        {
-          session_id: lineManagerCredentials.session_id, //"okms05yhlfj6xl7jug9b6f6lyk8okb8o",
-        }
-      );*/
-      //  console.log(response);
       let response = localStorage.getItem("userInfo");
       console.log("data response ", response);
       response = JSON.parse(response)?.selected_product;
@@ -150,7 +144,7 @@ function CreateComponent({ closeSearchModal, option }) {
     } catch (error) {
       console.error("Error fetching data:", error);
     }
-    setLoading(false);
+    //setLoading(false);
   };
 
   const handleAddManager = (e) => {
@@ -160,6 +154,7 @@ function CreateComponent({ closeSearchModal, option }) {
   const createLineManager = async () => {
     // workspace_id = "646ba835ce27ae02d024a902";
     //api_key = "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f";
+    setLoading(true);
     try {
       await socket.emit("create_line_manager", {
         user_id: managerName,
@@ -171,8 +166,6 @@ function CreateComponent({ closeSearchModal, option }) {
         created_at: new Date().toISOString(),
       });
       await socket.on("setting_response", (data) => {
-        // Handle response for the event
-        console.log("created manager data response", data);
         setLoading(false);
         if (data.status === "failure") {
           toast.warning(data?.data);
@@ -180,7 +173,7 @@ function CreateComponent({ closeSearchModal, option }) {
           toast.success("successfully created");
         }
       });
-      setLoading(false);
+      // setLoading(false);
     } catch (error) {
       setLoading(false);
       toast.warning(error.data);
@@ -198,14 +191,13 @@ function CreateComponent({ closeSearchModal, option }) {
       });
 
       await socket.on("setting_response", (data) => {
-        // Handle response for the event
-        console.log(data);
         setLoading(false);
         if (data.status === "failure") {
           toast.warning(data?.data);
         } else if (data.status === "success") {
           toast.success(data?.data);
         }
+
         // console.log("generated topic", data);
         //console.log(data);
       });
@@ -220,16 +212,12 @@ function CreateComponent({ closeSearchModal, option }) {
   };
   const handleLinkCopy = () => {
     inputRef.current.select();
-    //if (!linkCopy) {
-    //document.getElementsByClassName("masterlink").select();
-    //document.execCommand("copy");
-    //}
     setLinkCopy(!linkCopy);
   };
   const handleLinkSubmit = async (event) => {
     event.preventDefault();
-    //setLoading(true);
-    setActiveLink(false);
+    setLoading(true);
+    // setActiveLink(false);
     let sum = 0;
     if (!linkNumber || !url) {
       toast.warning("Please fill in all fields");
@@ -261,11 +249,6 @@ function CreateComponent({ closeSearchModal, option }) {
           item.product === "Dowell Customer Support Centre"
       );
       setPortfolioCode(responseData?.portfolio_code);
-
-      //console.log("workspace id", lineManagerCredentials.workspace_id);
-
-      //setMembers(lineManagerCredentials.workspace_id,);
-      // console.log("response data", responseData.username);
       let usernames = randomUserNames(parseInt(linkNumber));
       const linkData = {
         number_of_links: linkNumber,
@@ -284,6 +267,7 @@ function CreateComponent({ closeSearchModal, option }) {
       ///////console.log("link generated", linkgenerated);
       /// if (linkgenerated) {
       markUserNamesUsedAPI(usernames);
+
       /// }
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -333,16 +317,16 @@ function CreateComponent({ closeSearchModal, option }) {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      setLoading(true);
+      // setLoading(true);
       if (option === "createTopic") {
         if (!topicName) {
           toast.warning("Please fill the topic name");
-          setLoading(false);
+          //   setLoading(false);
           return;
         }
         topicName && createTopic(topicName);
       } else if (option === "addwaitingtime") {
-        setLoading(false);
+        //setLoading(false);
         if (!waitingTime || parseInt(waitingTime) < 0) {
           toast.warning("waiting time time must be greater than 0");
           return;
@@ -356,7 +340,7 @@ function CreateComponent({ closeSearchModal, option }) {
         }
       }
     } catch (error) {
-      setLoading(false);
+      //setLoading(false);
       if (error) {
         toast.warning(error?.response?.data);
       }
@@ -375,15 +359,6 @@ function CreateComponent({ closeSearchModal, option }) {
         <div
           className={`h-[400px] md:h-[80%] bg-white shadow-2xl border-2 border-gray-100 overflow-auto mt-[80px] relative p-4 md:p-6 rounded-lg w-[90%] md:max-w-[60%] `}
         >
-          {/* <div className="flex justify-between w-full relative mb-7 ">
-          <button
-            onClick={closeSearchModal}
-            className=" -top-5 w-10 h-10 font-bold text-2xl text-red-500  rounded-full p-2 hover:text-red-400 absolute right-0"
-          >
-            X
-          </button>
-        </div> */}
-
           {
             // eslint-disable-next-line
             option === "createTopic" && (
@@ -557,7 +532,7 @@ function CreateComponent({ closeSearchModal, option }) {
                       <button
                         type="submit"
                         className="bg-[#22C55E] duration-500 mx-auto mt-5 font-sans text-sm hover:bg-green-700 text-white font-bold py-2 px-2 w-[80%] rounded-md"
-                        disabled={!activeLink}
+                        // disabled={!activeLink}
                       >
                         Generate Link
                       </button>
