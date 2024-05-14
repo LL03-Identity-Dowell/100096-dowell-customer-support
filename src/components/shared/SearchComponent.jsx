@@ -1,7 +1,7 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Await, useLocation } from "react-router-dom";
-import io, { Socket } from "socket.io-client";
-import { faSearch } from "@fortawesome/free-solid-svg-icons";
+import { useEffect, useRef, useState } from "react";
+import { useLocation } from "react-router-dom";
+import io from "socket.io-client";
+import { faSearch, faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import formatCreatedAt from "../../linemanage/utils/datefromat.js";
 import Toggler from "./Toggler.jsx";
@@ -418,18 +418,34 @@ function SearchComponent({ closeSearchModal, linkRes }) {
           } `}
         >
           <div className="p-1 pb-0 w-full">
-            <div className="flex justify-between">
-              <h2
-                className={`text-lg ${
-                  darkMode ? "text-white" : "text-slate-900"
-                } font-semibold p-2 mb-2`}
-              >
-                {
-                  JSON.parse(
-                    localStorage.getItem("create_ticket_detail_search")
-                  )?._id
-                }
-              </h2>
+            <div className="flex justify-between ">
+              <div className="flex justify-center items-center  p-2 gap-x-2">
+                <div className="w-8 h-8 rounded-full border-2 text-center p-1 border-blue-400 bg-white ">
+                  <FontAwesomeIcon
+                    icon={faUser}
+                    className="text-blue-400 w-5 h-5 "
+                  />
+                </div>
+                <h2
+                  className={`text-lg ${
+                    darkMode ? "text-white" : "text-slate-900"
+                  } font-semibold   `}
+                >
+                  <span>{ticket.line_manager}</span>
+                </h2>
+                {/* <h2
+                  className={`text-sm pb-2 ${
+                    darkMode ? "text-white" : "text-slate-900"
+                  } font-semibold p-2 pb-0`}
+                >
+                  {
+                    JSON.parse(
+                      localStorage.getItem("create_ticket_detail_search")
+                    )?._id
+                  }
+                </h2> */}
+              </div>
+              <hr className="h-1 bg-black" />
               <div className="flex justify-end items-end overflow-hidden h-10 min-w-20 pr-1">
                 <Toggler darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
                 <button
