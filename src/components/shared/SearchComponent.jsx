@@ -22,7 +22,7 @@ function SearchComponent({ closeSearchModal, linkRes }) {
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
   const [openChat, setOpenChat] = useState(false);
-  const [darkMode, setDarkMode] = useState(true);
+  const [darkMode, setDarkMode] = useState(false);
   const [message, setMessage] = useState("");
   const containerRef = useRef(null);
   const [ticketDetail, setTicketDetail] = useState({});
@@ -348,7 +348,7 @@ function SearchComponent({ closeSearchModal, linkRes }) {
                 ref={searchInputRef}
                 type="text"
                 id="ticket_id"
-                className=" px-5  outline-1 w-[90%] outline-none mx-auto   rounded-3xl  flex-none"
+                className=" px-5  outline-1 w-[90%] outline-none decoration-none focus:bg-white  mx-auto   rounded-md-lg  flex-none"
                 placeholder="Search with ticket number"
                 value={searchValue}
                 onChange={handleSearchChange}
@@ -409,31 +409,28 @@ function SearchComponent({ closeSearchModal, linkRes }) {
       </div>
 
       {openChat && (
-        <div
-          ref={containerRef}
-          className={`fixed flex left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[38%] max-w-[60%] min-w-[360px] min-h-[85%] max-h-[95%] ${
-            darkMode ? "bg-gray-800" : "bg-neutral-400"
-          } rounded-lg shadow-lg z-10 top-[50%] duration-1000 ${
-            openChat ? "block" : "hidden"
-          } `}
-        >
-          <div className="p-1 pb-0 w-full">
-            <div className="flex justify-between ">
-              <div className="flex justify-center items-center  p-2 gap-x-2">
-                <div className="w-8 h-8 rounded-full border-2 text-center p-1 border-blue-400 bg-white ">
-                  <FontAwesomeIcon
-                    icon={faUser}
-                    className="text-blue-400 w-5 h-5 "
-                  />
-                </div>
-                <h2
-                  className={`text-lg ${
-                    darkMode ? "text-white" : "text-slate-900"
-                  } font-semibold   `}
-                >
-                  <span>{ticket.line_manager}</span>
-                </h2>
-                {/* <h2
+        <div className="w-full z-50 rounded-md flex justify-center items-center mx-auto">
+          <div
+            ref={containerRef}
+            className={`fixed flex transform  -translate-y-1/2 mx-auto  w-[60%] max-w-[100%] min-w-[360px] min-h-[85%] max-h-[98%] ${
+              darkMode ? "bg-gray-800" : "bg-white"
+            } rounded-lg shadow-lg z-50  top-[50%] duration-1000 ${
+              openChat ? "block" : "hidden"
+            } `}
+          >
+            <div className="pb-0 w-full ">
+              <div className="flex justify-between rounded-t-md py-3  bg-[#22C55E] ">
+                <div className="flex justify-center items-center  px-2 gap-x-2">
+                  <div className="w-8 h-8 rounded-full text-center p-1  bg-white ">
+                    <FontAwesomeIcon
+                      icon={faUser}
+                      className="text-[#22C55E] w-5 h-5 "
+                    />
+                  </div>
+                  <h2 className={`text-lg font-semibold text-white  `}>
+                    <span>{ticket.line_manager}</span>
+                  </h2>
+                  {/* <h2
                   className={`text-sm pb-2 ${
                     darkMode ? "text-white" : "text-slate-900"
                   } font-semibold p-2 pb-0`}
@@ -444,132 +441,139 @@ function SearchComponent({ closeSearchModal, linkRes }) {
                     )?._id
                   }
                 </h2> */}
-              </div>
-              <hr className="h-1 bg-black" />
-              <div className="flex justify-end items-end overflow-hidden h-10 min-w-20 pr-1">
-                <Toggler darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
-                <button
-                  className="text-red-600 font-extrabold rounded-full h-10 w-10 text-center px-auto transition-all duration-1000 hover:bg-slate-700"
-                  onClick={toggleChat}
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-6 w-6 mx-auto"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                </button>
-              </div>
-            </div>
-            <div className="p-4 rounded-lg shadow-lg overflow-y-auto h-[79%] pb-10 w-full">
-              <div
-                ref={containerRef}
-                className="custom-scrollbar space-y-4 pl-1 -pr-1 pb-5 w-full"
-              >
-                {!messageToDisplay.length && (
-                  <div className="text-center">
-                    <div className="flex justify-center items-center text-center w-full py-auto ">
-                      <div className="animate-spin h-8 w-8 border-t-2 mt-24 mx-auto text-center   border-indigo-500 rounded-full"></div>
-                    </div>
-                    <p className=" text-18px text-white mt-5">Loading...</p>
-                  </div>
-                )}
-                {messageToDisplay.map((message) => (
-                  <div
-                    key={message.id}
-                    className={`flex font-sans text-sm ${
-                      message.sender === "user"
-                        ? "justify-end"
-                        : "justify-start"
-                    }`}
-                  >
-                    {message.type === "text" && message.content && (
-                      <div
-                        className={`text-[17px] rounded-lg px-4 max-w-[98%] py-2 ${
-                          message.sender === "user"
-                            ? "bg-gray-200 "
-                            : "bg-[#083a26e1] text-white "
-                        } ${
-                          message.sender === "user" && darkMode
-                            ? "bg-gray-400"
-                            : "bg-[#083a26e1] "
-                        }`}
-                      >
-                        <p>{message.content}</p>
-                        <p>
-                          <small
-                            className={`text-sm ${
-                              darkMode ? "text-gray-200" : "text-gray-400"
-                            }`}
-                          >
-                            <i>{formatCreatedAt(message.created_at)}</i>
-                          </small>
-                        </p>
-                      </div>
-                    )}
-                    {message.type === "file" && (
-                      <div
-                        className={`max-w-xs rounded-lg px-4 py-2 ${
-                          message.sender === "user"
-                            ? "bg-gray-200"
-                            : "bg-blue-500 text-white"
-                        }`}
-                      >
-                        <a
-                          href={message.content.dataURL}
-                          download={message.content.fileName}
-                          className="text-blue-500 hover:underline"
-                        >
-                          {message.content.fileName}
-                        </a>
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-            <form onSubmit={(e) => handleSend(e)}>
-              <div
-                className={`pt-5 px-3 ${
-                  darkMode ? "bg-gray-800" : "bg-neutral-400"
-                } duration-1000`}
-              >
-                <div
-                  className="flex gap-x-2"
-                  style={{
-                    position: "relative",
-                    textAlign: "end",
-                    outline: "none",
-                  }}
-                >
-                  <input
-                    id="message"
-                    className="w-full px-3 py-2 bg-gray-200 rounded-lg focus:ring-2 focus:border-blue-400 focus:outline-none"
-                    type="text"
-                    placeholder="Type your message..."
-                    value={message}
-                    onChange={handleMessageChange}
+                </div>
+                <hr className="h-1 bg-black" />
+                <div className="flex justify-end items-end overflow-hidden gap-3 h-10 min-w-20 pr-1">
+                  <Toggler
+                    darkMode={darkMode}
+                    toggleDarkMode={toggleDarkMode}
                   />
                   <button
-                    className="text-white rounded-lg w-[15%]  flex items-center justify-center bg-slate-700 hover:bg-slate-800 transition-delay-1000"
-                    type="submit"
+                    className="text-red-600 font-extrabold rounded-full h-10 w-10 text-center px-auto transition-all duration-1000 hover:bg-slate-700"
+                    onClick={toggleChat}
                   >
-                    <FontAwesomeIcon
-                      className="mx-2 w-7 h-7 text-green-500 "
-                      icon={faTelegramPlane}
-                    />
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-6 w-6 mx-auto"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
                   </button>
                 </div>
               </div>
-            </form>
+              <div className="p-4  rounded-lg shadow-lg overflow-y-auto h-[77%] pb-10 w-full">
+                <div
+                  ref={containerRef}
+                  className="custom-scrollbar space-y-4 pl-1 -pr-1 pb-5 w-full"
+                >
+                  {!messageToDisplay.length && (
+                    <div className="text-center">
+                      <div className="flex justify-center items-center text-center w-full py-auto ">
+                        <div className="animate-spin h-8 w-8 border-t-2 mt-24 mx-auto text-center   border-indigo-500 rounded-full"></div>
+                      </div>
+                      <p className=" text-18px text-white mt-5">Loading...</p>
+                    </div>
+                  )}
+                  {messageToDisplay.map((message) => (
+                    <div
+                      key={message.id}
+                      className={`flex font-sans text-sm ${
+                        message.sender === "user"
+                          ? "justify-end"
+                          : "justify-start"
+                      }`}
+                    >
+                      {message.type === "text" && message.content && (
+                        <div
+                          className={`relative text-[15px] rounded-3xl px-4 py-2 max-w-[75%] mb-4 ${
+                            message.sender === "user"
+                              ? "bg-blue-500 text-white rounded-br-none"
+                              : "bg-gray-300 text-black rounded-bl-none"
+                          } ${
+                            message.sender === "user" && darkMode
+                              ? "bg-gray-600"
+                              : ""
+                          }`}
+                        >
+                          <p>{message.content}</p>
+                          <p className="text-right ">
+                            <small
+                              className={`text-xs ${
+                                darkMode ? "text-gray-400" : "text-gray-500"
+                              }`}
+                            >
+                              <i>{formatCreatedAt(message.created_at)}</i>
+                            </small>
+                          </p>
+                        </div>
+                      )}
+                      {message.type === "file" && (
+                        <div
+                          className={`max-w-xs rounded-lg px-4 py-2 ${
+                            message.sender === "user"
+                              ? "bg-gray-200"
+                              : "bg-blue-500 text-white"
+                          }`}
+                        >
+                          <a
+                            href={message.content.dataURL}
+                            download={message.content.fileName}
+                            className="text-blue-500 hover:underline"
+                          >
+                            {message.content.fileName}
+                          </a>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <form onSubmit={(e) => handleSend(e)}>
+                <div
+                  className={` px-5 ${
+                    darkMode ? "bg-gray-800" : "bg-white"
+                  } duration-1000`}
+                >
+                  <hr className="mb-5 border border-gray-300" />
+                  <div
+                    className="flex px-10 gap-x-2 bg-transparent "
+                    style={{
+                      position: "relative",
+                      textAlign: "end",
+                      outline: "none",
+                    }}
+                  >
+                    <input
+                      id="message"
+                      className={`w-full text-sm px-3 py-2 bg-transparent rounded-lg focus:ring-1 focus:border-gray-400 focus:outline-none ${
+                        !darkMode ? "text-gray-800" : "text-white"
+                      } `}
+                      type="text"
+                      placeholder="Type your message..."
+                      value={message}
+                      onChange={handleMessageChange}
+                    />
+                    <button
+                      className="text-white rounded-lg w-[15%]  flex items-center justify-center bg-transparent transition-delay-1000"
+                      type="submit"
+                    >
+                      <FontAwesomeIcon
+                        className="mx-2 w-7 h-7 hover:w-8 hover:h-8 text-green-500 "
+                        icon={faTelegramPlane}
+                      />
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
       )}
