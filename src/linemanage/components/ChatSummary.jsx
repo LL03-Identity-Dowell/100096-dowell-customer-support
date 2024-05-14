@@ -64,15 +64,17 @@ const Chat = () => {
     socket.on("ticket_message_response", (data) => {
       if (data.operation === "send_message") {
         // This scenario occurs when a new message is sent
-        const { author, created_at, message_data } = data.data;
-        const newMessage = {
-          id: messages.length + 1,
-          sender: author !== current_user ? "user" : "receiver",
-          type: "text",
-          content: message_data,
-          created_at: created_at,
-        };
-        setMessages([...messages, newMessage]);
+        if (data?.data?.ticket_id === selectedTicket._id) {
+          const { author, created_at, message_data } = data.data;
+          const newMessage = {
+            id: messages.length + 1,
+            sender: author !== current_user ? "user" : "receiver",
+            type: "text",
+            content: message_data,
+            created_at: created_at,
+          };
+          setMessages([...messages, newMessage]);
+        }
       } else if (data.operation === "get_ticket_messages") {
         // This scenario occurs when loading all message history
         const ticketMessages = data.data; // Assuming data contains all messages
