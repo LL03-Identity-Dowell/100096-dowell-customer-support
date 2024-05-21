@@ -1,14 +1,19 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import io from "socket.io-client";
-import { faSearch, faUser } from "@fortawesome/free-solid-svg-icons";
+import { faSearch, faSmile, faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import formatCreatedAt from "../../linemanage/utils/datefromat.js";
 import Toggler from "./Toggler.jsx";
 import { faTelegramPlane } from "@fortawesome/free-brands-svg-icons";
+// Emoji mart
+import Picker from "@emoji-mart/react";
+import data from "@emoji-mart/data";
+
 const socket = io.connect("https://www.dowellchat.uxlivinglab.online");
 
 function SearchComponent({ closeSearchModal, linkRes }) {
+  const [isEmojiPickerVisible, setIsEmojiPickerVisible] = useState(false);
   const [messages, setMessages] = useState([]);
   const { search } = useLocation();
   const params = new URLSearchParams(search);
@@ -52,6 +57,9 @@ function SearchComponent({ closeSearchModal, linkRes }) {
 
   const handleMessageChange = (e) => {
     setMessage(e.target.value);
+  };
+  const addEmoji = (e) => {
+    setMessage((prevMessage) => prevMessage + e.native);
   };
 
   const handleSend = async (e) => {
@@ -409,7 +417,7 @@ function SearchComponent({ closeSearchModal, linkRes }) {
       </div>
 
       {openChat && (
-        <div className="w-full z-50 rounded-md flex justify-center items-center mx-auto">
+        <div className="w-full z-50 rounded-md  flex justify-center items-center mx-auto">
           <div
             ref={containerRef}
             className={`fixed flex transform  -translate-y-1/2 mx-auto  w-[60%] max-w-[100%] min-w-[360px] min-h-[85%] max-h-[98%] ${
@@ -551,16 +559,50 @@ function SearchComponent({ closeSearchModal, linkRes }) {
                       outline: "none",
                     }}
                   >
-                    <input
-                      id="message"
-                      className={`w-full text-sm px-3 py-2 bg-transparent rounded-lg focus:ring-1 focus:border-gray-400 focus:outline-none ${
-                        !darkMode ? "text-gray-800" : "text-white"
-                      } `}
-                      type="text"
-                      placeholder="Type your message..."
-                      value={message}
-                      onChange={handleMessageChange}
-                    />
+                    <div className="flex">
+                      <input
+                        id="message"
+                        className={`w-full text-sm px-3 py-2 bg-transparent rounded-lg focus:ring-1 focus:border-gray-400 focus:outline-none ${
+                          !darkMode ? "text-gray-800" : "text-white"
+                        } `}
+                        type="text"
+                        placeholder="Type your message..."
+                        value={message}
+                        onChange={handleMessageChange}
+                      />
+                      <div
+                        className="flex justify-end items-end duration-500 relative "
+                        onClick={() => {
+                          setIsEmojiPickerVisible(!isEmojiPickerVisible);
+                        }}
+                      >
+                        <FontAwesomeIcon
+                          onMouseEnter={() => {
+                            setIsEmojiPickerVisible(true);
+                          }}
+                          icon={faSmile}
+                          className={` p-2  h-6 w-6 px-4 rounded-md duration-500 text-orange-500 cursor-pointer hover:bg-gray-200   `}
+                        />
+                      </div>
+                      <div
+                        className={`${
+                          isEmojiPickerVisible ? "d-block" : "d-none"
+                        } flex-wrap
+             overflow-hidden duration-500 emoji-mart-responsive-container   w-full mx-auto`}
+                        onMouseEnter={() => {
+                          setIsEmojiPickerVisible(true);
+                        }}
+                        onMouseLeave={() => {
+                          setIsEmojiPickerVisible(false);
+                        }}
+                      >
+                        <Picker
+                          data={data}
+                          previewPosition="none"
+                          onEmojiSelect={addEmoji}
+                        />
+                      </div>
+                    </div>
                     <button
                       className="text-white rounded-lg w-[15%]  flex items-center justify-center bg-transparent transition-delay-1000"
                       type="submit"
