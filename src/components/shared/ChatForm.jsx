@@ -71,26 +71,18 @@ const ChatForm = ({
     >
       <div className={` pb-0 w-full `}>
         <div className="flex justify-between #22C55E rounded-t-md py-3 px-5 bg-[#22C55E]">
-          <div className="flex justify-center items-center  px-2 gap-x-2">
-            <div className="w-8 h-8 rounded-full text-center p-1  bg-white ">
-              <FontAwesomeIcon
-                icon={faUser}
-                className="text-[#22C55E] w-5 h-5 "
-              />
-            </div>
-            <h2
-              className={`text-xl ${
-                darkMode ? "text-white" : "text-slate-900"
-              } font-semibold p-2 mb-2`}
-            >
-              {
-                JSON.parse(localStorage.getItem("create_ticket_detail"))
-                  .line_manager
-              }
-            </h2>
-          </div>
           <h2
-            className={`text-xl max-md:hidden ${
+            className={`text-xl ${
+              darkMode ? "text-white" : "text-slate-900"
+            } font-semibold p-2 mb-2`}
+          >
+            {
+              JSON.parse(localStorage.getItem("create_ticket_detail"))
+                .line_manager
+            }
+          </h2>
+          <h2
+            className={`text-xl ${
               darkMode ? "text-white" : "text-slate-900"
             } font-semibold p-2 mb-2`}
           >
