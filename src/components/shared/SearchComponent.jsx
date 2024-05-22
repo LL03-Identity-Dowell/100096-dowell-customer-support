@@ -1,19 +1,18 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import io from "socket.io-client";
-import { faSearch, faSmile, faUser } from "@fortawesome/free-solid-svg-icons";
+import { faSearch, faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSmile } from "@fortawesome/free-solid-svg-icons";
 import formatCreatedAt from "../../linemanage/utils/datefromat.js";
 import Toggler from "./Toggler.jsx";
 import { faTelegramPlane } from "@fortawesome/free-brands-svg-icons";
-// Emoji mart
+const socket = io.connect("https://www.dowellchat.uxlivinglab.online");
+// Emoji Mart
 import Picker from "@emoji-mart/react";
 import data from "@emoji-mart/data";
 
-const socket = io.connect("https://www.dowellchat.uxlivinglab.online");
-
 function SearchComponent({ closeSearchModal, linkRes }) {
-  const [isEmojiPickerVisible, setIsEmojiPickerVisible] = useState(false);
   const [messages, setMessages] = useState([]);
   const { search } = useLocation();
   const params = new URLSearchParams(search);
@@ -51,15 +50,18 @@ function SearchComponent({ closeSearchModal, linkRes }) {
     }
   });
 
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+
+  const addEmoji = (emoji) => {
+    setMessage(message + emoji.native);
+  };
+
   let messageToDisplay = [...messages]
     .filter((message) => message.content !== "") // Filter out items with empty content
     .sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
 
   const handleMessageChange = (e) => {
     setMessage(e.target.value);
-  };
-  const addEmoji = (e) => {
-    setMessage((prevMessage) => prevMessage + e.native);
   };
 
   const handleSend = async (e) => {
@@ -559,7 +561,7 @@ function SearchComponent({ closeSearchModal, linkRes }) {
                       outline: "none",
                     }}
                   >
-                    <div className="flex">
+                    <div className="flex justify-between items-center w-full">
                       <input
                         id="message"
                         className={`w-full text-sm px-3 py-2 bg-transparent rounded-lg focus:ring-1 focus:border-gray-400 focus:outline-none ${
@@ -571,36 +573,27 @@ function SearchComponent({ closeSearchModal, linkRes }) {
                         onChange={handleMessageChange}
                       />
                       <div
-                        className="flex justify-end items-end duration-500 relative "
-                        onClick={() => {
-                          setIsEmojiPickerVisible(!isEmojiPickerVisible);
-                        }}
+                        className="chat p-4 w-10 "
+                        onMouseEnter={() => setShowEmojiPicker(true)}
+                        onMouseLeave={() => setShowEmojiPicker(false)}
                       >
-                        <FontAwesomeIcon
-                          onMouseEnter={() => {
-                            setIsEmojiPickerVisible(true);
-                          }}
-                          icon={faSmile}
-                          className={` p-2  h-6 w-6 px-4 rounded-md duration-500 text-orange-500 cursor-pointer hover:bg-gray-200   `}
-                        />
-                      </div>
-                      <div
-                        className={`${
-                          isEmojiPickerVisible ? "d-block" : "d-none"
-                        } flex-wrap
-             overflow-hidden duration-500 emoji-mart-responsive-container   w-full mx-auto`}
-                        onMouseEnter={() => {
-                          setIsEmojiPickerVisible(true);
-                        }}
-                        onMouseLeave={() => {
-                          setIsEmojiPickerVisible(false);
-                        }}
-                      >
-                        <Picker
-                          data={data}
-                          previewPosition="none"
-                          onEmojiSelect={addEmoji}
-                        />
+                        <div className="input-area w-full flex items-center relative">
+                          {showEmojiPicker && (
+                            <div className="emoji-picker absolute bottom-12 left-0">
+                              <Picker data={data} onEmojiSelect={addEmoji} />
+                            </div>
+                          )}
+                          <div
+                            className="icon-container cursor-pointer"
+                            onMouseEnter={() => setShowEmojiPicker(true)}
+                          >
+                            <FontAwesomeIcon
+                              icon={faSmile}
+                              size="lg"
+                              className="text-yellow-600"
+                            />
+                          </div>
+                        </div>
                       </div>
                     </div>
                     <button
