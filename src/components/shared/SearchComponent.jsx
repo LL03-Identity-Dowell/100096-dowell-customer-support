@@ -579,7 +579,7 @@ function SearchComponent({ closeSearchModal, linkRes }) {
                       >
                         <div className="input-area w-full flex items-center relative">
                           {showEmojiPicker && (
-                            <div className="emoji-picker absolute bottom-12 left-0">
+                            <div className="emoji-picker absolute bottom-10 -right-40">
                               <Picker data={data} onEmojiSelect={addEmoji} />
                             </div>
                           )}
