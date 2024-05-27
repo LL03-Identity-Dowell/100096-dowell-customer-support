@@ -1,10 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import formatCreatedAt from "../../linemanage/utils/datefromat.js";
-import { chat } from "../../assets/index.js";
 import Toggler from "./Toggler.jsx";
 import { faTelegramPlane } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useLocation } from "react-router-dom";
+// Emoji Mart
+import Picker from "@emoji-mart/react";
+import data from "@emoji-mart/data";
+import { faSmile } from "@fortawesome/free-solid-svg-icons";
 
 const ChatForm = ({
   onClose,
@@ -20,6 +23,11 @@ const ChatForm = ({
 
   const { search } = useLocation();
   const params = new URLSearchParams(search);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+
+  const addEmoji = (emoji) => {
+    setMessage(message + emoji.native);
+  };
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -66,7 +74,7 @@ const ChatForm = ({
   return (
     <div
       ref={containerRef}
-      className={`fixed flex left-1/2 transform -translate-x-1/2  -translate-y-1/2 w-[80%] max-w-[100%] min-w-[360px] min-h-[85%] max-h-[95%] ${
+      className={`fixed flex left-1/2 transform -translate-x-1/2  -translate-y-1/2 w-[90%] md:w-[70%]  max-w-[100%] min-w-[360px] min-h-[85%] max-h-[95%] ${
         darkMode ? "bg-gray-600" : "bg-white"
       } rounded-lg shadow-lg z-10 top-[50%] duration-1000`}
     >
@@ -76,6 +84,16 @@ const ChatForm = ({
             className={`text-xl ${
               darkMode ? "text-white" : "text-slate-900"
             } font-semibold p-2 mb-2`}
+          >
+            {
+              JSON.parse(localStorage.getItem("create_ticket_detail"))
+                .line_manager
+            }
+          </h2>
+          <h2
+            className={`text-xl ${
+              darkMode ? "text-white" : "text-slate-900"
+            } font-semibold p-2 mb-2 max-md:hidden`}
           >
             {JSON.parse(localStorage.getItem("create_ticket_detail"))._id}
           </h2>
@@ -172,7 +190,7 @@ const ChatForm = ({
               ))}
           </div>
         </div>
-        <hr className="py-5 md:w-[85%] text-center mx-auto -mt-10" />
+        <hr className="py-5 md:w-[85%] text-center mx-auto -mt-14" />
 
         <form onSubmit={(e) => handleSend(e)}>
           <div className={`-mt-3 md:mx-[5%] px-5  duration-1000  `}>
@@ -184,20 +202,46 @@ const ChatForm = ({
                 outline: "none",
               }}
             >
-              <input
-                id="message"
-                className="w-full md:mx-3 px-3 py-2  rounded-lg  focus:ring-2 focus:border-blue-400 focus:outline-none"
-                type="text"
-                placeholder="Type your message..."
-                value={message}
-                onChange={handleMessageChange}
-              />
+              <div className="flex flex-1 border rounded-md">
+                <input
+                  id="message"
+                  className={`w-full md:mx-3 px-3 text-sm  rounded-sm  m-1 outline-transparent  ${
+                    darkMode ? "bg-gray-600 outline-gray-600 text-white" : ""
+                  } `}
+                  type="text"
+                  placeholder="Type your message..."
+                  value={message}
+                  onChange={handleMessageChange}
+                />
+                <div
+                  className="chat p-2 "
+                  onMouseEnter={() => setShowEmojiPicker(true)}
+                  onMouseLeave={() => setShowEmojiPicker(false)}
+                >
+                  <div className="input-area w-full flex items-center relative">
+                    {showEmojiPicker && (
+                      <div className="emoji-picker absolute bottom-10 -right-40">
+                        <Picker data={data} onEmojiSelect={addEmoji} />
+                      </div>
+                    )}
+                    <div
+                      className="icon-container cursor-pointer mr-2"
+                      onMouseEnter={() => setShowEmojiPicker(true)}
+                    >
+                      <FontAwesomeIcon
+                        icon={faSmile}
+                        className="text-yellow-400 w-5 h-5"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
               <button
-                className="text-white   flex items-center justify-center transition-delay-1000"
+                className="text-white w-10   flex items-center justify-center transition-delay-1000"
                 type="submit"
               >
                 <FontAwesomeIcon
-                  className="mx-2 w-10 h-10  text-green-500 hover:text-green-300 duration-500  "
+                  className="mx-2 w-7 h-7  text-green-500 hover:text-green-300 duration-500  "
                   icon={faTelegramPlane}
                 />
               </button>

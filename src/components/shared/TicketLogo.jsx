@@ -1,10 +1,10 @@
-import { logo } from "../../assets";
+import { logo2 } from "../../assets";
 
 const TicketLogo = () => {
   return (
     <div className="flex justify-center">
       <img
-        src={logo}
+        src={logo2}
         alt="Dowell Logo"
         className=" h-[170px]  max-md:w-[200px] md:w-[250px] max-sm:-mt-5  sm:-pt-16"
       />
