@@ -5,13 +5,26 @@ import queryString from "query-string";
 import { FaUser } from "react-icons/fa";
 import { IoSettingsSharp } from "react-icons/io5";
 import { FiLogOut } from "react-icons/fi";
-
+import { useDispatch, useSelector } from "react-redux";
+import { fetchSelectedTicket } from "../Redux/ticketDetailSlice";
+import io from "socket.io-client";
+const socket = io.connect("https://www.dowellchat.uxlivinglab.online/");
 //eslint-disable-next-line
 export default function NavItem({ component }) {
   const [isHovered, setIsHovered] = useState(false);
+  const [isNotification, setNotification] = useState(false);
+  const messageData = useSelector((state) => state.tickets.messageData);
+  const lineManagerCredentials = useSelector(
+    (state) => state.lineManagers.lineManagerCredentials
+  );
   const [sessionId, setSessionId] = useState(null);
   const [id, setId] = useState(null);
-
+  const dispatch = useDispatch();
+  const [countMessages, setCountMessages] = useState(0);
+  const selectedTopic = useSelector((state) => state.tickets.selectedTopic);
+  const lineManageTime = useSelector(
+    (state) => state.lineManagers.lineManageTime
+  );
   useEffect(() => {
     const url = new URL(window.location.href);
     const sessionParam = url.searchParams.get("session_id");
@@ -20,6 +33,27 @@ export default function NavItem({ component }) {
     setId(idParam);
   }, []);
 
+  useEffect(() => {
+    //  if (messageData.length > 0) {
+    if (messageData.length > 0) {
+      setCountMessages((prev) => prev + 1);
+    }
+    getUnreadMessages();
+    //}
+  }, [messageData]);
+
+  useEffect(() => {
+    getUnreadMessages();
+    socket.on("ticket_message_response", (data) => {
+      //console.log("unread messages", data);
+      // Handle response for the event
+      if (data.operation === "get_unread_messages") {
+        console.log("unread messages", data?.data);
+        //setWaitingTime(data.data[0]?.waiting_time);
+        //      console.log("waitging time ", data.data[0]?.waiting_time);
+      }
+    });
+  }, [selectedTopic, lineManageTime]);
   const queryParams = queryString.stringify({
     session_id: sessionId,
     id: id,
@@ -32,6 +66,17 @@ export default function NavItem({ component }) {
     localStorage.clear();
     window.location.replace(dowellLogoutUrl);
   };
+
+  function getUnreadMessages() {
+    const messageData = {
+      line_manager: lineManagerCredentials.username,
+      ticket_date: lineManageTime,
+      workspace_id: lineManagerCredentials.workspace_id,
+      api_key: lineManagerCredentials.api_key,
+      product: selectedTopic,
+    };
+    socket.emit("get_unread_messages", messageData);
+  }
 
   return (
     <div className="flex w-full px-2 md:px-5 top-0   fixed  justify-start z-50 border-b-2  h-16 bg-[#e9fdf1] items-center text-center">
@@ -54,9 +99,118 @@ export default function NavItem({ component }) {
           {/* <hr className="border-b-1 bg-slate-500 mx-auto w-[90%]" /> */}
         </Link>
       </div>
+      <div className="relative">
+        <div
+          onClick={() => {
+            setNotification(!isNotification);
+            setCountMessages(0);
+          }}
+          className="relative cursor-pointer inline-flex items-center p-3 text-sm font-medium text-center text-[#22C55E] rounded-lg focus:outline-none h-8"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            width="24"
+            height="24"
+            fill="#22C55E"
+          >
+            <path fill="none" d="M0 0h24v24H0z" />
+            <path d="M3 4v12c0 1.1.9 2 2 2h12l4 4V4c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2z" />
+          </svg>
+
+          <span className="sr-only">Notifications</span>
+          {countMessages > 0 && (
+            <div className="absolute inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-red-500 border-2 border-white rounded-full -top-2 -end-2 dark:border-gray-900">
+              {countMessages}
+            </div>
+          )}
+        </div>
+
+        <div
+          className={`absolute -right-[50px] text-left z-50 mt-2  p-4 bg-white border border-gray-300 rounded shadow ${
+            isNotification ? "block" : "hidden"
+          }`}
+        >
+          <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 ">
+            <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+              <tr>
+                <th scope="col" className="px-6 py-3">
+                  Ticket ID
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  Topic
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  Message
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {messageData?.map((item) => {
+                return (
+                  <tr
+                    key={item?.created_at}
+                    className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
+                    onClick={() => dispatch(fetchSelectedTicket(item))}
+                  >
+                    <th
+                      scope="row"
+                      className="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white"
+                    >
+                      <div className="ps-3">
+                        <div className="text-base font-semibold">
+                          {item.ticket_id}
+                        </div>
+                        <div className="font-normal text-gray-500">
+                          {item.author}
+                        </div>
+                      </div>
+                    </th>
+                    <td className="px-6 py-4">{item.product}</td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center">
+                        <div className="h-2.5 w-2.5 rounded-full bg-green-500 me-2"></div>{" "}
+                        {item.message_data}
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+              {countMessages == 0 ? (
+                <span className=" ml-6 text-center block w-[200px]">
+                  No new message
+                </span>
+              ) : (
+                ""
+              )}
+              {/* <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                <th
+                  scope="row"
+                  className="flex items-center px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                >
+                  <div className="ps-3">
+                    <div className="text-base font-semibold">Bonnie Green</div>
+                    <div className="font-normal text-gray-500">
+                      bonnie@flowbite.com
+                    </div>
+                  </div>
+                </th>
+                <td className="px-6 py-4">Designer</td>
+                <td className="px-6 py-4">
+                  <div className="flex items-center">
+                    <div className="h-2.5 w-2.5 rounded-full bg-green-500 me-2"></div>{" "}
+                    Online
+                  </div>
+                </td>
+              </tr> */}
+              {/* Add more rows as needed */}
+            </tbody>
+          </table>
+        </div>
+      </div>
 
       <div
-        className="relative max-w-[50px] text-end"
+        className="relative max-w-[50%] ml-10 text-end"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >

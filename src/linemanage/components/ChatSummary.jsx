@@ -4,7 +4,10 @@ import { useDispatch, useSelector } from "react-redux";
 import formatCreatedAt from "../utils/datefromat";
 import io from "socket.io-client";
 import { toast } from "react-toastify";
-import { fetchTicketMessage } from "../Redux/ticketDetailSlice";
+import {
+  //fetchMessageData,
+  fetchTicketMessage,
+} from "../Redux/ticketDetailSlice";
 import { ClipLoader } from "react-spinners";
 
 const socket = io.connect("https://www.dowellchat.uxlivinglab.online/");
@@ -16,6 +19,7 @@ const Chat = () => {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const selectedTicket = useSelector((state) => state.tickets.selectedTicket);
+  // const messageData = useSelector((state) => state.tickets.messageData);
 
   let current_user = "1234";
 
@@ -24,12 +28,13 @@ const Chat = () => {
   const lineManagerCredentials = useSelector(
     (state) => state.lineManagers.lineManagerCredentials
   );
+
   useEffect(() => {
     setLoading(true);
     const getTicketMessages = async (selectedTicket) => {
       try {
         await socket.emit("get_ticket_messages", {
-          ticket_id: selectedTicket._id,
+          ticket_id: selectedTicket._id ?? selectedTicket.ticket_id,
           product: selectedTicket.product,
           workspace_id: lineManagerCredentials.workspace_id,
           api_key: lineManagerCredentials.api_key,
@@ -64,8 +69,10 @@ const Chat = () => {
     socket.on("ticket_message_response", (data) => {
       if (data.operation === "send_message") {
         // This scenario occurs when a new message is sent
+        console.log("data========", data?.data);
+        const { author, created_at, message_data } = data.data;
         if (data?.data?.ticket_id === selectedTicket._id) {
-          const { author, created_at, message_data } = data.data;
+          //const { author, created_at, message_data } = data.data;
           const newMessage = {
             id: messages.length + 1,
             sender: author !== current_user ? "user" : "receiver",
@@ -75,6 +82,11 @@ const Chat = () => {
           };
           setMessages([...messages, newMessage]);
         }
+        /*     else {
+          // dispatch();
+          console.log("==========enterred================");
+          dispatch(fetchMessageData([...messageData, data?.data]));
+        }*/
       } else if (data.operation === "get_ticket_messages") {
         // This scenario occurs when loading all message history
         const ticketMessages = data.data; // Assuming data contains all messages
@@ -96,6 +108,12 @@ const Chat = () => {
       socket.off("ticket_message_response");
     };
   }, [socket, messages]); // Ensure to include all dependencies used inside the effect
+
+  const handleKeyDown = (event) => {
+    if (event.key === "Enter") {
+      handleSendButtonClick();
+    }
+  };
 
   const sendChat = async (newMessage) => {
     // let workSpaceID = "646ba835ce27ae02d024a902";
@@ -133,7 +151,7 @@ const Chat = () => {
     return dateA - dateB;
   });
   // console.log("message to display", messageToDispaly);
-  const handleSendButtonClick = () => {
+  const handleSendButtonClick = function () {
     if (newMessage.trim() !== "") {
       sendMessage(newMessage);
     }
@@ -317,6 +335,7 @@ const Chat = () => {
             type="text"
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
+            onKeyDown={handleKeyDown}
             className="flex-1  rounded-lg px-2 py-2 outline-none border-2 focus:border-blue-200 ml-2"
             placeholder="Type your message..."
           />

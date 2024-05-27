@@ -72,10 +72,22 @@ function Dropdowns({
     console.log("new ticket", data);
     //console.log()
     if (data?.status === "success") {
-      if (data?.data?.product === selectedTopic.name) {
-        dispatch(fetchTicketInfo([...ticketInfo, data?.data]));
-      }
-
+      const updatedTicketInfo = ticketInfo.map((ticket) => {
+        if (
+          Object.keys(ticket)[0] ===
+          `${data?.data[0]?.line_manager}${selectedTopic.name ?? ""}`
+        ) {
+          let dt = data?.data;
+          return {
+            [`${data?.data[0]?.line_manager}${selectedTopic.name ?? ""}`]: [
+              ...Object.values(ticket),
+              ...dt,
+            ],
+          } /* Update ticket properties here */;
+        }
+        return ticket;
+      });
+      dispatch(fetchTicketInfo(updatedTicketInfo));
       //ticketInfoToShow = [...ticketInfo, data?.data];
       toast.success(`new ticket added in ${data?.data?.product}`, {
         toastId: "success1",

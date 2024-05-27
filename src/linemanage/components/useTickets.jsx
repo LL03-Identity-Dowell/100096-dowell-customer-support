@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchTicketInfo } from "../Redux/ticketDetailSlice";
+import { useSelector } from "react-redux";
 import { io } from "socket.io-client";
 
 const socket = io.connect("https://www.dowellchat.uxlivinglab.online/");
@@ -15,26 +14,30 @@ function useTicket() {
   const lineManageTime = useSelector(
     (state) => state.lineManagers.lineManageTime
   );
-  const dispatch = useDispatch();
+
   const [ticketData, setTicketData] = useState({});
   const topicData = useSelector((state) => state.tickets.topicData);
   const selectedTopic = useSelector((state) => state.tickets.selectedTopic);
 
   useEffect(() => {
-    lineManagersData?.forEach(async (lineManager) => {
-      if (selectedTopic.name !== undefined) {
-        await getData(selectedTopic.name, lineManager);
-      } else {
-        await topicData?.forEach(async (topic) => {
-          await getData(topic.name, lineManager);
-        });
+    async function fetchAllData() {
+      for (const lineManager of lineManagersData) {
+        if (selectedTopic.name !== undefined) {
+          await getData(selectedTopic.name, lineManager.user_id);
+        } else {
+          for (const topic of topicData) {
+            await getData(topic.name, lineManager.user_id);
+          }
+        }
       }
-    });
+    }
+    setTicketData({});
+    fetchAllData();
   }, [lineManageTime, selectedTopic, lineManagersData]);
 
   async function getData(name, lineManager) {
     const ticketDataPayload = {
-      line_manager: lineManager.user_id,
+      line_manager: lineManager,
       ticket_date: lineManageTime,
       workspace_id: lineManagerCredentials.workspace_id,
       api_key: lineManagerCredentials.api_key,
@@ -43,31 +46,31 @@ function useTicket() {
 
     socket.emit("get_tickets_by_date", ticketDataPayload);
 
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       socket.on("ticket_response", (data) => {
         if (
           data?.status === "success" &&
           data?.operation === "get_tickets_by_date"
         ) {
+          // console.log("Received data: ", data?.data);
+          //  if (lineManager === data?.data[0].line_manager) {
           setTicketData((prevData) => ({
             ...prevData,
-            [`${lineManager.user_id}${selectedTopic.name ?? ""}`]: data?.data,
-          }));
-        } else {
-          setTicketData((prevData) => ({
-            ...prevData,
-            [`${lineManager.user_id}${selectedTopic.name ?? ""}`]: [],
+            [`${data?.data[0]?.line_manager}${selectedTopic.name ?? ""}`]:
+              data?.data,
           }));
         }
+        // }
+        /* else {
+          setTicketData((prevData) => ({
+            ...prevData,
+            [`${lineManager}${selectedTopic.name ?? ""}`]: [],
+          }));
+        }*/
         resolve();
       });
     });
   }
-
-  useEffect(() => {
-    // Dispatch the fetched ticket data after all data is fetched
-    dispatch(fetchTicketInfo(ticketData));
-  }, [ticketData, dispatch]);
 
   return { ticketData };
 }

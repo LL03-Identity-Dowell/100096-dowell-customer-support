@@ -5,6 +5,7 @@ const ticketsSlice = createSlice({
   name: 'tickets',
   initialState: {
     topicData: [],
+    messageData: [],
     ticketInfo: {},
     ticketMessage: [],
     selectedTopic:{},
@@ -20,6 +21,10 @@ const ticketsSlice = createSlice({
     fetchTopicData(state, action) {
       state.loading = false;
       state.topicData = action.payload;
+    },
+    fetchMessageData(state, action) {
+      state.loading = false;
+      state.messageData = action.payload;
     },
     fetchSelectedTopic(state, action) {
       state.loading = false;
@@ -42,5 +47,5 @@ const ticketsSlice = createSlice({
   },
 });
 
-export const { fetchTicketDetailsStart, fetchSelectedTopic,fetchSelectedTicket,fetchTopicData, fetchTicketInfo,fetchTicketMessage} = ticketsSlice.actions;
+export const { fetchTicketDetailsStart,fetchMessageData, fetchSelectedTopic,fetchSelectedTicket,fetchTopicData, fetchTicketInfo,fetchTicketMessage} = ticketsSlice.actions;
 export default ticketsSlice.reducer;

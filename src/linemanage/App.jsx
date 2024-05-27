@@ -7,13 +7,12 @@ import "react-toastify/dist/ReactToastify.css";
 import NavItem from "./components/NavItem";
 import { Loader } from "../components/Loader";
 
-import "./index.css";
 import { Provider, useDispatch, useSelector } from "react-redux";
 import { store } from "./Redux/store";
 import axios from "axios";
 import Dashboards from "./components/Dashboard";
 import { fetchLineManagersCredentails } from "./Redux/lineManager";
-
+import "./index.css";
 function App() {
   const dispatch = useDispatch();
   const [searchParams] = useSearchParams();
@@ -193,7 +192,7 @@ function App() {
           session_id,
           "api key",
           lineManagerCredentials.api_key
-        )} 
+        )}
         {loadingFetchUserInfo ? (
           <Loader />
         ) : lineManagerCredentials.workspace_id &&
