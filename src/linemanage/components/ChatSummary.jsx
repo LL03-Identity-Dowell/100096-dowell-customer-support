@@ -14,8 +14,6 @@ const socket = io.connect("https://www.dowellchat.uxlivinglab.online/");
 //eslint-disable-next-line
 
 const Chat = () => {
-  //const dispatch = useDispatch();
-  //console.log("data from chat summary", selectedTicket);
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const selectedTicket = useSelector((state) => state.tickets.selectedTicket);
