@@ -36,9 +36,6 @@ function App() {
     savedSession && savedSession !== "undefined"
       ? JSON.parse(savedSession)
       : null;
-  // const localId = sessionStorage.getItem("id")
-  //   ? JSON.parse(sessionStorage.getItem("id"))
-  //   : null;
 
   const [apiKey, setApiKey] = useState(() => {
     const savedApiKey = localStorage.getItem("apiKey");
@@ -51,7 +48,6 @@ function App() {
   const [userInfo, setUserInfo] = useState(() => {
     const savedUserInfo = localStorage.getItem("userInfo");
 
-    // console.log("user info detail", JSON.parse(savedUserInfo)?.userinfo);
     return savedUserInfo && savedUserInfo !== "undefined"
       ? JSON.parse(savedUserInfo)?.userinfo
       : null;
