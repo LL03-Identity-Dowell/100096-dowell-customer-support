@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { Profile, logo } from "../../assets";
 import { useEffect, useState } from "react";
 import queryString from "query-string";
-import { FaUser } from "react-icons/fa";
+import { FaUser, FaBell } from "react-icons/fa";
 import { IoSettingsSharp } from "react-icons/io5";
 import { FiLogOut } from "react-icons/fi";
 import { useDispatch, useSelector } from "react-redux";
@@ -25,6 +25,16 @@ export default function NavItem({ component }) {
   const lineManageTime = useSelector(
     (state) => state.lineManagers.lineManageTime
   );
+  const notifications = ["Notification 1", "Notification 2", "Notification 3"];
+  const [showNotifications, setShowNotifications] = useState(false);
+
+  const handleMouseEnter = () => {
+    setShowNotifications(true);
+  };
+
+  const handleMouseLeave = () => {
+    setShowNotifications(false);
+  };
   useEffect(() => {
     const url = new URL(window.location.href);
     const sessionParam = url.searchParams.get("session_id");
@@ -208,9 +218,51 @@ export default function NavItem({ component }) {
           </table>
         </div>
       </div>
+      <div
+        className="relative inline-block cursor-pointer "
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+      >
+        <div className="relative">
+          <FaBell
+            className={`text-2xl  text-green-500 ${
+              showNotifications ? "animate-rotate" : ""
+            }`}
+          />
+          <span className="absolute  top-0 right-0 block h-3 w-3 bg-green-500 rounded-full border-2 border-white"></span>
+        </div>
+        {showNotifications && (
+          <div
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+            className="absolute -right-20  md:min-w-[300px] max-w-[400px] p-2 md:min-h-[400px] "
+          >
+            <div className="flex flex-col bg-white border md:min-h-[400px] shadow-lg rounded-lg z-40 px-5 py-2 cursor-auto">
+              <div className="flex justify-between items-center w-full h-10 border-b-2 border-[#B9B9B9]">
+                <h6 className="text-sm text-[#7E7E7E] font-bold">
+                  Notifcations
+                </h6>
+                <h6 className="text-sm text-green-500 cursor-pointer font-bold">
+                  Mark as read
+                </h6>
+              </div>
+              <div className="flex-1">
+                {notifications.map((notification, index) => (
+                  <div key={index} className=""></div>
+                ))}
+              </div>
+              <div className="flex justify-center items-center w-full h-10 border-t border-[#B9B9B9]">
+                <h6 className="text-sm cursor-pointer text-green-500 hover:font-bold duration-500">
+                  Show all notifications
+                </h6>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
 
       <div
-        className="relative max-w-[50%] ml-10 text-end"
+        className="relative max-w-[50%] ml-10 text-end "
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
