@@ -21,7 +21,7 @@ import {
   //fetchTopicData,
   fetchSelectedTopic,
   fetchSelectedTicket,
-  fetchTicketInfo,
+  //fetchTicketInfo,
 } from "../Redux/ticketDetailSlice";
 
 import { ClipLoader } from "react-spinners";
@@ -52,11 +52,11 @@ function Dropdowns({
   const savedUserName = JSON.parse(localStorage.getItem("userInfo"))
     .selected_product.userportfolio;
   console.log("saved user info", savedUserName);
-  let userId = savedUserName.find(
+  let userId = savedUserName?.find(
     (user) =>
       user.member_type === "team_member" &&
       user.product == "Dowell Customer Support Centre"
-  ).username;
+  )?.username;
   // let ticketInfoToShow = [...ticketInfo];
   useTicket();
   const [isDropdownOpen, setDropdownOpen] = useState(false);
@@ -67,35 +67,6 @@ function Dropdowns({
   */
   console.log("date", date);
   date && dispatch(fetchLineManagersTime(formatDate(date)));
-
-  socket.on("new_ticket", (data) => {
-    console.log("new ticket", data);
-    //console.log()
-    if (data?.status === "success") {
-      const updatedTicketInfo = ticketInfo.map((ticket) => {
-        if (
-          Object.keys(ticket)[0] ===
-          `${data?.data[0]?.line_manager}${selectedTopic.name ?? ""}`
-        ) {
-          let dt = data?.data;
-          return {
-            [`${data?.data[0]?.line_manager}${selectedTopic.name ?? ""}`]: [
-              ...Object.values(ticket),
-              ...dt,
-            ],
-          } /* Update ticket properties here */;
-        }
-        return ticket;
-      });
-      dispatch(fetchTicketInfo(updatedTicketInfo));
-      //ticketInfoToShow = [...ticketInfo, data?.data];
-      toast.success(`new ticket added in ${data?.data?.product}`, {
-        toastId: "success1",
-      });
-    } else {
-      return;
-    }
-  });
 
   const toggleDropdown = () => {
     setDropdownOpen(!isDropdownOpen);

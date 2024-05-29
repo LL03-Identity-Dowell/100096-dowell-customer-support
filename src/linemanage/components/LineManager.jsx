@@ -5,6 +5,7 @@ import { fetchLineManagersData } from "../Redux/lineManager";
 import { toast } from "react-toastify";
 import { ClipLoader } from "react-spinners";
 import io from "socket.io-client";
+import _ from "lodash";
 import TextInfo from "./TextInfo";
 import useTicket from "./useTickets";
 import { fetchTicketInfo, fetchTopicData } from "../Redux/ticketDetailSlice";
@@ -118,6 +119,43 @@ function LineManager() {
     }
   }, [lineManagerCredentials]);
 
+  socket.on("new_ticket", async (data) => {
+    console.log("new ticket", data);
+    //console.log()
+
+    if (data?.status === "success") {
+      console.log("ticket infos========", ticketInfo);
+      const ticketinf = _.cloneDeep(ticketInfo);
+      const updatedTicketInfo = await Object.keys(ticketinf).reduce(
+        (acc, ticket) => {
+          console.log("ticket", ticket);
+          console.log(
+            "ticket from data",
+            `${data?.data?.line_manager}${selectedTopic.name ?? ""}`
+          );
+          if (
+            ticket === `${data?.data?.line_manager}${selectedTopic.name ?? ""}`
+          ) {
+            let dt = data?.data;
+            acc[`${ticket}`] = [...ticketinf[ticket], dt];
+          } else {
+            acc[`${ticket}`] = ticketinf[ticket];
+          }
+          return acc;
+        },
+        {}
+      );
+      console.log("updatedTicketInfo", updatedTicketInfo);
+      dispatch(fetchTicketInfo(updatedTicketInfo));
+      //ticketInfoToShow = [...ticketInfo, data?.data];
+      toast.success(`new ticket added in ${data?.data?.product}`, {
+        toastId: "success1",
+      });
+    } else {
+      return;
+    }
+  });
+
   return (
     <section>
       <div className="w-[99%] flex-2 border border-[#7E7E7E] shadow-md my-4 mt-16 mx-1 md:w-[99%] rounded-md md:h-[600px] relative">
@@ -193,11 +231,11 @@ function LineManager() {
                           <span className="text-md text-sm">
                             <span className="font-bold gap-2 flex justify-center items-center w-full text-center text-md">
                               {waitingTime *
-                                (ticketData[
+                                (ticketInfo[
                                   `${data1.user_id}${selectedTopic.name ?? ""}`
                                 ]?.filter((ticket) => !ticket?.is_closed)
                                   .length >= 0
-                                  ? ticketData[
+                                  ? ticketInfo[
                                       `${data1.user_id}${
                                         selectedTopic.name ?? ""
                                       }`
