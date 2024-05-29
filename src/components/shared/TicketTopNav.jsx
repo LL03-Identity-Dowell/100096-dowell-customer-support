@@ -3,7 +3,7 @@ import { faSearch, faUser, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { Link, useLocation } from "react-router-dom";
 import { useState } from "react";
 import SearchComponent from "./SearchComponent";
-
+//eslint-disable-next-line
 const TicketTopNav = ({ openSearchModal }) => {
   const [showSearch, setShowSearch] = useState(false);
 
