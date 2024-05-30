@@ -9,6 +9,7 @@ import _ from "lodash";
 import TextInfo from "./TextInfo";
 import useTicket from "./useTickets";
 import { fetchTicketInfo, fetchTopicData } from "../Redux/ticketDetailSlice";
+import formatDate from "../utils/formatDate";
 const socket = io.connect("https://www.dowellchat.uxlivinglab.online/");
 
 function LineManager() {
@@ -17,6 +18,9 @@ function LineManager() {
   const ticketInfo = useSelector((state) => state.tickets.ticketInfo);
   const selectedTopic = useSelector((state) => state.tickets.selectedTopic);
   const [loading, setLoading] = useState(true);
+  const lineManageTime = useSelector(
+    (state) => state.lineManagers.lineManageTime
+  );
   const { ticketData } = useTicket();
 
   useEffect(() => {
@@ -133,6 +137,7 @@ function LineManager() {
             "ticket from data",
             `${data?.data?.line_manager}${selectedTopic.name ?? ""}`
           );
+
           if (
             ticket === `${data?.data?.line_manager}${selectedTopic.name ?? ""}`
           ) {
@@ -145,6 +150,20 @@ function LineManager() {
         },
         {}
       );
+
+      const selectedDate = lineManageTime;
+      const currentDate = formatDate(new Date());
+
+      if (
+        updatedTicketInfo[
+          `${data?.data?.line_manager}${selectedTopic.name ?? ""}`
+        ].length === 0 &&
+        selectedDate === currentDate
+      ) {
+        updatedTicketInfo[
+          `${data?.data?.line_manager}${selectedTopic.name ?? ""}`
+        ] = [data?.data];
+      }
       console.log("updatedTicketInfo", updatedTicketInfo);
       dispatch(fetchTicketInfo(updatedTicketInfo));
       //ticketInfoToShow = [...ticketInfo, data?.data];
@@ -158,8 +177,8 @@ function LineManager() {
 
   return (
     <section>
-      <div className="w-[99%] flex-2 border border-[#7E7E7E] shadow-md my-4 mt-16 mx-1 md:w-[99%] rounded-md md:h-[600px] relative">
-        <table className="sm:h-[450px] md:h-full w-full">
+      <div className="w-[99%] flex-2   my-4 mt-16 mx-1 md:w-[99%] rounded-md md:h-[600px] relative">
+        <table className="sm:h-[450px] md:h-full w-full  border-b-2 border-[#22C55E]">
           <thead>
             <tr className="bg-[#22C55E] h-[20%] border-b border-[#7E7E7E] text-white uppercase rounded-t-md text-sm leading-normal flex  flex-wrap">
               <th className="px-1 md:w-[33px] flex justify-center items-center text-center md:py-5 border-r border-r-[#7E7E7E]">
@@ -176,108 +195,112 @@ function LineManager() {
               </th>
             </tr>
           </thead>
-          <div className="overflow-y-auto custom-scrollbar h-[65%]">
-            <tbody className="text-gray-600 text-sm border border-t-0 border-l-0 border-r-0 border-[#7E7E7E] h-[550px]  font-light w-full flex sm:flex-col relative">
-              {lineManagersData.length > 0 &&
-                lineManagersData.map((data1, index) => (
-                  <tr
-                    key={data1._id}
-                    className="border-b hover:bg-gray-100 sm:h-[100%] flex-1"
-                  >
-                    <td className="py-3 text-center px-3 md:w-[33px] border-r sm:max-w-[20%] border-[#7E7E7E] sm:w-13">
-                      {index + 1}
-                    </td>
-                    <td className="py-3 w-[100px] md:w-[120px] font-bold border-r border-[#7E7E7E] text-left">
-                      <input
-                        type="checkbox"
-                        className="form-checkbox md:h-4 text-indigo-600 transition duration-150 ease-in-out"
-                      />{" "}
-                      Till-1 common
-                    </td>
-                    <td className="py-3 pl-2 font-bold text-[#7E7E7E] mx-auto w-[100px] md:w-[120px] border-r border-[#7E7E7E] text-left">
-                      {data1.user_id}
-                    </td>
-                    <td className="text-center flex-1 flex-wrap min-h-[350px]">
-                      <div className="flex justify-center w-full items-start flex-wrap gap-1 mx-auto text-center">
-                        <TextInfo
-                          ticketInfo={
-                            ticketInfo[
-                              `${
-                                data1.user_id +
-                                (selectedTopic.name ? selectedTopic.name : "")
-                              }`
-                            ]
-                          }
-                          data1={data1}
-                          handleNextClick={() =>
-                            handleNextClick(
+          <div className="">
+            <div className="overflow-y-auto custom-scrollbar h-[65%] ">
+              <tbody className="text-gray-600 text-sm  border-0 border-[#7E7E7E] h-[550px]  font-light w-full flex sm:flex-col relative">
+                {lineManagersData.length > 0 &&
+                  lineManagersData.map((data1, index) => (
+                    <tr
+                      key={data1._id}
+                      className="border-b-2 border-[#7E7E7E] hover:bg-gray-100 sm:h-[100%]  flex-1"
+                    >
+                      <td className="py-3 text-center px-3 md:w-[33px] border-r sm:max-w-[20%] border-[#7E7E7E] sm:w-11">
+                        {index + 1}
+                      </td>
+                      <td className="py-3 w-[100px] md:w-[120px] font-bold border-r border-[#7E7E7E] text-left">
+                        <input
+                          type="checkbox"
+                          className="form-checkbox md:h-4 text-indigo-600 transition duration-150 ease-in-out"
+                        />{" "}
+                        Till-1 common
+                      </td>
+                      <td className="py-3 pl-2 font-bold text-[#7E7E7E] mx-auto w-[100px] md:w-[120px] border-r border-[#7E7E7E] text-left">
+                        {data1.user_id}
+                      </td>
+                      <td className="text-center flex-1 flex-wrap min-h-[350px]">
+                        <div className="flex justify-center w-full items-start flex-wrap gap-1 mx-auto text-center">
+                          <TextInfo
+                            ticketInfo={
                               ticketInfo[
                                 `${
                                   data1.user_id +
-                                  (selectedTopic.name !== undefined
-                                    ? selectedTopic.name
-                                    : "")
+                                  (selectedTopic.name ? selectedTopic.name : "")
                                 }`
                               ]
-                            )
-                          }
-                          handlePrevClick={handlePrevClick}
-                          startIndex={startIndex}
-                        />
-                      </div>
+                            }
+                            data1={data1}
+                            handleNextClick={() =>
+                              handleNextClick(
+                                ticketInfo[
+                                  `${
+                                    data1.user_id +
+                                    (selectedTopic.name !== undefined
+                                      ? selectedTopic.name
+                                      : "")
+                                  }`
+                                ]
+                              )
+                            }
+                            handlePrevClick={handlePrevClick}
+                            startIndex={startIndex}
+                          />
+                        </div>
 
-                      <div className="flex flex-col align-start justify-end pl-3 w-full flex-1">
-                        <div className="flex flex-col align-middle justify-start pt-1 h-auto w-full gap-x-2">
-                          <span className="text-md text-sm">
-                            <span className="font-bold gap-2 flex justify-center items-center w-full text-center text-md">
-                              {waitingTime *
-                                (ticketInfo[
-                                  `${data1.user_id}${selectedTopic.name ?? ""}`
-                                ]?.filter((ticket) => !ticket?.is_closed)
-                                  .length >= 0
-                                  ? ticketInfo[
-                                      `${data1.user_id}${
-                                        selectedTopic.name ?? ""
-                                      }`
-                                    ]?.filter((ticket) => !ticket?.is_closed)
-                                      .length
-                                  : 0)}{" "}
-                              Waiting Time
+                        <div className="flex flex-col align-start justify-end pl-3 w-full flex-1">
+                          <div className="flex flex-col align-middle justify-start pt-1 h-auto w-full gap-x-2">
+                            <span className="text-md text-sm">
+                              <span className="font-bold gap-2 flex justify-center items-center w-full text-center text-md">
+                                {waitingTime *
+                                  (ticketInfo[
+                                    `${data1.user_id}${
+                                      selectedTopic.name ?? ""
+                                    }`
+                                  ]?.filter((ticket) => !ticket?.is_closed)
+                                    .length >= 0
+                                    ? ticketInfo[
+                                        `${data1.user_id}${
+                                          selectedTopic.name ?? ""
+                                        }`
+                                      ]?.filter((ticket) => !ticket?.is_closed)
+                                        .length
+                                    : 0)}{" "}
+                                Waiting Time
+                              </span>
                             </span>
-                          </span>
-                          <div className="flex justify-between gap-3 w-full items-center">
-                            <div className="flex justify-center items-center gap-2">
-                              <div className="w-3 h-3 rounded-sm bg-blue-400"></div>
-                              <p className="text-blue-400 font-bold">Open</p>
-                            </div>
-                            <div className="flex justify-center items-center gap-2">
-                              <div className="w-3 h-3 rounded-sm bg-red-400"></div>
-                              <p className="text-red-400 font-bold">Closed</p>
+                            <div className="flex justify-between gap-3 w-full items-center">
+                              <div className="flex justify-center items-center gap-2">
+                                <div className="w-3 h-3 rounded-sm bg-blue-400"></div>
+                                <p className="text-blue-400 font-bold">Open</p>
+                              </div>
+                              <div className="flex justify-center items-center gap-2">
+                                <div className="w-3 h-3 rounded-sm bg-red-400"></div>
+                                <p className="text-red-400 font-bold">Closed</p>
+                              </div>
                             </div>
                           </div>
                         </div>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              {loading && lineManagersData.length <= 0 ? (
-                <div className="d-flex gap-y-2 font-bold flex flex-col justify-center items-center mx-auto">
-                  <ClipLoader
-                    color={"#22694de1"}
-                    css={{
-                      display: "block",
-                      margin: "0 auto",
-                      width: "50px",
-                      height: "50px",
-                    }}
-                    size={30}
-                  />{" "}
-                  Loading..
-                </div>
-              ) : (
-                ""
-              )}
-            </tbody>
+                      </td>
+                    </tr>
+                  ))}
+                {loading && lineManagersData.length <= 0 ? (
+                  <div className="d-flex gap-y-2 font-bold flex flex-col justify-center items-center mx-auto">
+                    <ClipLoader
+                      color={"#22694de1"}
+                      css={{
+                        display: "block",
+                        margin: "0 auto",
+                        width: "50px",
+                        height: "50px",
+                      }}
+                      size={30}
+                    />{" "}
+                    Loading..
+                  </div>
+                ) : (
+                  ""
+                )}
+              </tbody>
+            </div>
           </div>
         </table>
       </div>

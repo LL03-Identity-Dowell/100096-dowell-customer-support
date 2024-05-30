@@ -59,7 +59,7 @@ input[type="checkbox"]:checked:after {
 }
 
 .custom-scrollbar::-webkit-scrollbar {
-  width: 6px;
+  width: 4px;
   height: 3px;
 }
 
