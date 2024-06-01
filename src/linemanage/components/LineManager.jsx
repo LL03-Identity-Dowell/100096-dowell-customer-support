@@ -157,7 +157,7 @@ function LineManager() {
       if (
         updatedTicketInfo[
           `${data?.data?.line_manager}${selectedTopic.name ?? ""}`
-        ].length === 0 &&
+        ]?.length === 0 &&
         selectedDate === currentDate
       ) {
         updatedTicketInfo[

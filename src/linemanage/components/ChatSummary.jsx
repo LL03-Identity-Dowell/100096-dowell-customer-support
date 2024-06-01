@@ -29,9 +29,9 @@ const Chat = () => {
 
   useEffect(() => {
     setLoading(true);
-    const getTicketMessages = async (selectedTicket) => {
+    const getTicketMessages = (selectedTicket) => {
       try {
-        await socket.emit("get_ticket_messages", {
+        socket.emit("get_ticket_messages", {
           ticket_id: selectedTicket._id ?? selectedTicket.ticket_id,
           product: selectedTicket.product,
           workspace_id: lineManagerCredentials.workspace_id,
@@ -46,7 +46,7 @@ const Chat = () => {
     if (selectedTicket && Object.keys(selectedTicket).length > 0) {
       getTicketMessages(selectedTicket);
     }
-  }, [selectedTicket]);
+  }, [selectedTicket._id]);
 
   //getting ticket messages and making a chat
   useEffect(() => {
@@ -65,6 +65,7 @@ const Chat = () => {
     const observer = new MutationObserver(callback);
     observer.observe(targetNode, config);
     socket.on("ticket_message_response", (data) => {
+      console.log("ticket data response");
       if (data.operation === "send_message") {
         // This scenario occurs when a new message is sent
         console.log("data========", data?.data);
