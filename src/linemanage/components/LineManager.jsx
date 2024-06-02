@@ -143,6 +143,14 @@ function LineManager() {
           ) {
             let dt = data?.data;
             acc[`${ticket}`] = [...ticketinf[ticket], dt];
+          } else if (
+            acc[`${data?.data?.line_manager}${selectedTopic.name ?? ""}`]
+              ?.length === 0 &&
+            selectedDate === currentDate
+          ) {
+            acc[`${data?.data?.line_manager}${selectedTopic.name ?? ""}`] = [
+              data?.data,
+            ];
           } else {
             acc[`${ticket}`] = ticketinf[ticket];
           }
@@ -153,8 +161,13 @@ function LineManager() {
 
       const selectedDate = lineManageTime;
       const currentDate = formatDate(new Date());
-
-      if (
+      console.log(
+        "ticket number",
+        updatedTicketInfo[
+          `${data?.data?.line_manager}${selectedTopic.name ?? ""}`
+        ]
+      );
+      /* if (
         updatedTicketInfo[
           `${data?.data?.line_manager}${selectedTopic.name ?? ""}`
         ]?.length === 0 &&
@@ -163,7 +176,7 @@ function LineManager() {
         updatedTicketInfo[
           `${data?.data?.line_manager}${selectedTopic.name ?? ""}`
         ] = [data?.data];
-      }
+      }*/
       console.log("updatedTicketInfo", updatedTicketInfo);
       dispatch(fetchTicketInfo(updatedTicketInfo));
       //ticketInfoToShow = [...ticketInfo, data?.data];
