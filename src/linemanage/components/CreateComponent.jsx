@@ -251,7 +251,7 @@ function CreateComponent({ closeSearchModal, option }) {
       // console.log("data response ", response);
       response = JSON.parse(response)?.selected_product;
 
-      let responseData = await response?.userportfolio.find(
+      let responseData = await response?.userportfolio?.find(
         (item) =>
           item.member_type === "public" &&
           item.product === "Dowell Customer Support Centre"
