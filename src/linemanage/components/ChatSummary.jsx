@@ -9,7 +9,11 @@ import {
   fetchTicketMessage,
 } from "../Redux/ticketDetailSlice";
 import { ClipLoader } from "react-spinners";
-
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSmile } from "@fortawesome/free-solid-svg-icons";
+// Emoji Mart
+import Picker from "@emoji-mart/react";
+import data from "@emoji-mart/data";
 const socket = io.connect("https://www.dowellchat.uxlivinglab.online/");
 //eslint-disable-next-line
 
@@ -26,6 +30,11 @@ const Chat = () => {
   const lineManagerCredentials = useSelector(
     (state) => state.lineManagers.lineManagerCredentials
   );
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+
+  const addEmoji = (emoji) => {
+    setNewMessage(newMessage + emoji.native);
+  };
 
   useEffect(() => {
     setLoading(true);
@@ -338,7 +347,28 @@ const Chat = () => {
             className="flex-1  rounded-lg px-2 py-2 outline-none border-2 focus:border-blue-200 ml-2"
             placeholder="Type your message..."
           />
-          {console.log("selected ticket", Object.keys(selectedTicket).length)}
+          <div
+            className="chat p-2 "
+            onMouseEnter={() => setShowEmojiPicker(true)}
+            onMouseLeave={() => setShowEmojiPicker(false)}
+          >
+            <div className="input-area w-full flex items-center relative">
+              {showEmojiPicker && (
+                <div className="emoji-picker  absolute bottom-12 -right-20">
+                  <Picker data={data} onEmojiSelect={addEmoji} />
+                </div>
+              )}
+              <div
+                className="icon-container cursor-pointer mr-2"
+                onMouseEnter={() => setShowEmojiPicker(true)}
+              >
+                <FontAwesomeIcon
+                  icon={faSmile}
+                  className="text-yellow-400 w-6 h-6 p-1 rounded-full border"
+                />
+              </div>
+            </div>
+          </div>
           <button
             onClick={handleSendButtonClick}
             className="ml-2 font-sans text-sm bg-[#22694de1] text-white py-2 px-4 rounded-lg shadow-md hover:bg-[#37755ce1] focus:outline-none "

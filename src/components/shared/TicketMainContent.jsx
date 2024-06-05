@@ -187,13 +187,13 @@ const TicketMainContent = () => {
         product: values.topic,
       };
 
-      console.log(payload);
       await socket.emit("create_ticket", payload);
 
       await new Promise((resolve) => {
         socket.on("ticket_response", (data) => {
           if (data.status === "success") {
             createTicket(data.data);
+            console.log("created ticket response", data.data);
             setTicketNumber(data.data._id);
             localStorage.setItem(
               "create_ticket_detail",
@@ -235,167 +235,167 @@ const TicketMainContent = () => {
 
   return (
     <div className="flex justify-center items-center ">
-      {loading &&
+      {/* {loading &&
       !isCreateTicket &&
       JSON.parse(localStorage.getItem("create_ticket_detail")) ? (
         <Loading />
-      ) : (
-        <div className="main_cont">
-          <TicketLogo />
-          <div className="max-w-md mx-auto py-3 px-5  rounded -mt-10">
-            <Formik
-              initialValues={{ topic: "", email: "", identity: "" }}
-              onSubmit={handleSubmit}
-              validationSchema={CreateTicketSchema}
-            >
-              {({ handleChange, values, isSubmitting, isValid }) => (
-                <Form ref={form} className="text-center">
-                  <div className="mb-4 relative mx-auto my-5">
-                    <Field
-                      as="select"
-                      name="topic"
-                      className="block w-[90%] bg-white border text-neutral-600 border-gray-300 rounded py-2 text-[20px] mx-auto font-sans cursor-pointer focus:outline-none focus:border-gray-500"
-                      onChange={handleChange}
-                    >
-                      <option
-                        value=""
-                        className="text-2xl bg-gray-400 text-neutral-700 text-center px-auto"
-                      >
-                        Products
-                      </option>
-                      {getLinkRes.length >= 0 ? (
-                        getLinkRes.map((linkRes) => {
-                          const objectToArray = Object.entries(
-                            linkRes.product_distribution
-                          );
-                          const filteredArray = objectToArray.filter(
-                            ([key, value]) => value > 0
-                          );
-                          return filteredArray.map((dist, index) => (
-                            <option
-                              value={dist[0]}
-                              key={index}
-                              className="text-center text-gray-700"
-                              onClick={() => handleProductClick(dist[0])}
-                            >
-                              {dist[0]}
-                            </option>
-                          ));
-                        })
-                      ) : (
-                        <ClipLoader
-                          color={"#22694de1"}
-                          css={{
-                            display: "block",
-                            margin: "0 auto",
-                            width: "50px",
-                            height: "40px",
-                          }}
-                          size={20}
-                        />
-                      )}
-                    </Field>
-                    <ErrorMessage
-                      name="topic"
-                      className="text-orange-500"
-                      component="div"
-                    />
-                  </div>
-                  <p className="-mt-2 mb-4 text-slate-500">
-                    Waiting time - 00 Minutes
-                  </p>
-                  <div className="my-3 mx-auto ">
-                    <Field
-                      autoComplete="off"
-                      type="email"
-                      name="email"
-                      placeholder="Email ID"
-                      className="block w-[90%] mx-auto text-center outline-none bg-white border border-gray-300 rounded px-4 py-2 focus:outline-none focus:border-gray-500 text-zinc-800 text-[20px]"
-                      onChange={handleChange}
-                    />
-                    <ErrorMessage
-                      name="email"
-                      className="text-orange-500"
-                      component="div"
-                    />
-                  </div>
-                  <h2 className="text-[26px] font-bold hover:text-black">
-                    Ticket number
-                  </h2>
-                  <h2 className="text-[26px] font-bold text-green-600">
-                    {/* {console.log(typeof ticketNumber)} {Number(ticketNumber)} */}
-
-                    {
-                      JSON.parse(localStorage.getItem("create_ticket_detail"))
-                        ?._id
-                    }
-                  </h2>
-                  <div className="my-4">
-                    <label htmlFor="noIdentity" className="radio_style">
-                      <Field
-                        type="radio"
-                        name="identity"
-                        id="noIdentity"
-                        value="No Identity"
-                        className="form-radio"
-                        onChange={handleChange}
-                      />
-                      <span className="ml-2">No Identity</span>
-                    </label>
-                    <label htmlFor="faceId" className="radio_style">
-                      <Field
-                        type="radio"
-                        name="identity"
-                        id="faceId"
-                        value="Face ID"
-                        className="form-radio"
-                        onChange={handleChange}
-                      />
-                      <span className="ml-2">Face ID</span>
-                    </label>
-                    <label htmlFor="otp" className="radio_style">
-                      <Field
-                        type="radio"
-                        name="identity"
-                        id="otp"
-                        value="OTP"
-                        className="form-radio"
-                        onChange={handleChange}
-                      />
-                      <span className="ml-2">OTP</span>
-                    </label>
-                    <label htmlFor="idNumber" className="radio_style">
-                      <Field
-                        type="radio"
-                        name="identity"
-                        id="idNumber"
-                        value="ID Number"
-                        className="form-radio"
-                        onChange={handleChange}
-                      />
-                      <span className="ml-2">ID Number</span>
-                    </label>
-                  </div>
-
-                  <button
-                    type="submit"
-                    disabled={
-                      !values.email || !values.topic || !isValid || isSubmitting
-                    }
-                    className={`border-2 border-green-300 hover:bg-green-500 transition duration-1000 ease-in-out font-semibold py-1 w-[80%] rounded-3xl focus:outline-none focus:bg-blue-600 text-[18px] disabled:bg-slate-300 disabled:border-gray-300 disabled:text-gray-400`}
+      ) : ( */}
+      <div className="main_cont">
+        <TicketLogo />
+        <div className="max-w-md mx-auto py-3 px-5  rounded -mt-10">
+          <Formik
+            initialValues={{ topic: "", email: "", identity: "" }}
+            onSubmit={handleSubmit}
+            validationSchema={CreateTicketSchema}
+          >
+            {({ handleChange, values, isSubmitting, isValid }) => (
+              <Form ref={form} className="text-center">
+                <div className="mb-4 relative mx-auto my-5">
+                  <Field
+                    as="select"
+                    name="topic"
+                    className="block w-[90%] bg-white border text-neutral-600 border-gray-300 rounded py-2 text-[20px] mx-auto font-sans cursor-pointer focus:outline-none focus:border-gray-500"
+                    onChange={handleChange}
                   >
-                    {!isSubmitting ? (
-                      "Create ticket"
+                    <option
+                      value=""
+                      className="text-2xl bg-gray-400 text-neutral-700 text-center px-auto"
+                    >
+                      Products
+                    </option>
+                    {getLinkRes.length >= 0 ? (
+                      getLinkRes.map((linkRes) => {
+                        const objectToArray = Object.entries(
+                          linkRes.product_distribution
+                        );
+                        const filteredArray = objectToArray.filter(
+                          ([key, value]) => value > 0
+                        );
+                        return filteredArray.map((dist, index) => (
+                          <option
+                            value={dist[0]}
+                            key={index}
+                            className="text-center text-gray-700"
+                            onClick={() => handleProductClick(dist[0])}
+                          >
+                            {dist[0]}
+                          </option>
+                        ));
+                      })
                     ) : (
-                      <div className="flex justify-center items-center ">
-                        <div className="animate-spin h-6 w-6 border-t-2 border-b-2 border-slate-600 rounded-full"></div>
-                      </div>
+                      <ClipLoader
+                        color={"#22694de1"}
+                        css={{
+                          display: "block",
+                          margin: "0 auto",
+                          width: "50px",
+                          height: "40px",
+                        }}
+                        size={20}
+                      />
                     )}
-                  </button>
-                </Form>
-              )}
-            </Formik>
-            {isChatOpen && !loading ? (
+                  </Field>
+                  <ErrorMessage
+                    name="topic"
+                    className="text-orange-500"
+                    component="div"
+                  />
+                </div>
+                <p className="-mt-2 mb-4 text-slate-500">
+                  Waiting time - 00 Minutes
+                </p>
+                <div className="my-3 mx-auto ">
+                  <Field
+                    autoComplete="off"
+                    type="email"
+                    name="email"
+                    placeholder="Email ID"
+                    className="block w-[90%] mx-auto text-center outline-none bg-white border border-gray-300 rounded px-4 py-2 focus:outline-none focus:border-gray-500 text-zinc-800 text-[20px]"
+                    onChange={handleChange}
+                  />
+                  <ErrorMessage
+                    name="email"
+                    className="text-orange-500"
+                    component="div"
+                  />
+                </div>
+                <h2 className="text-[26px] font-bold hover:text-black">
+                  Ticket number
+                </h2>
+                <h2 className="text-[26px] font-bold text-green-600">
+                  {/* {console.log(typeof ticketNumber)} {Number(ticketNumber)} */}
+
+                  {
+                    JSON.parse(localStorage.getItem("create_ticket_detail"))
+                      ?._id
+                  }
+                </h2>
+                <div className="my-4">
+                  <label htmlFor="noIdentity" className="radio_style">
+                    <Field
+                      type="radio"
+                      name="identity"
+                      id="noIdentity"
+                      value="No Identity"
+                      className="form-radio"
+                      onChange={handleChange}
+                    />
+                    <span className="ml-2">No Identity</span>
+                  </label>
+                  <label htmlFor="faceId" className="radio_style">
+                    <Field
+                      type="radio"
+                      name="identity"
+                      id="faceId"
+                      value="Face ID"
+                      className="form-radio"
+                      onChange={handleChange}
+                    />
+                    <span className="ml-2">Face ID</span>
+                  </label>
+                  <label htmlFor="otp" className="radio_style">
+                    <Field
+                      type="radio"
+                      name="identity"
+                      id="otp"
+                      value="OTP"
+                      className="form-radio"
+                      onChange={handleChange}
+                    />
+                    <span className="ml-2">OTP</span>
+                  </label>
+                  <label htmlFor="idNumber" className="radio_style">
+                    <Field
+                      type="radio"
+                      name="identity"
+                      id="idNumber"
+                      value="ID Number"
+                      className="form-radio"
+                      onChange={handleChange}
+                    />
+                    <span className="ml-2">ID Number</span>
+                  </label>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={
+                    !values.email || !values.topic || !isValid || isSubmitting
+                  }
+                  className={`border-2 border-green-300 hover:bg-green-500 transition duration-1000 ease-in-out font-semibold py-1 w-[80%] rounded-3xl focus:outline-none focus:bg-blue-600 text-[18px] disabled:bg-slate-300 disabled:border-gray-300 disabled:text-gray-400`}
+                >
+                  {!isSubmitting ? (
+                    "Create ticket"
+                  ) : (
+                    <div className="flex justify-center items-center ">
+                      <div className="animate-spin h-6 w-6 border-t-2 border-b-2 border-slate-600 rounded-full"></div>
+                    </div>
+                  )}
+                </button>
+              </Form>
+            )}
+          </Formik>
+          {/* {isChatOpen && !loading ? (
               <ChatForm
                 apiKey={apiKey}
                 ticketDetail={ticketDetail}
@@ -407,9 +407,9 @@ const TicketMainContent = () => {
               />
             ) : (
               ""
-            )}
-          </div>
+            )} */}
         </div>
+      </div>
       )}
     </div>
   );
