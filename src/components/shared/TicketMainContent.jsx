@@ -66,7 +66,7 @@ const TicketMainContent = () => {
               if (ticketMessages.length > 0) {
                 try {
                   let messages = await Promise.all(
-                    ticketMessages.map((message) => {
+                    ticketMessages?.map((message) => {
                       return {
                         id: message._id,
                         sender:
@@ -174,6 +174,11 @@ const TicketMainContent = () => {
     setIsCreateTicket((prev) => !prev);
   };
 
+  socket.on("waiting_time_response", (data) => {
+    const ticketDetailString = localStorage.getItem("create_ticket_detail");
+    console.log(ticketDetailString);
+  });
+
   const handleSubmit = async (values, actions) => {
     try {
       actions.setSubmitting(true);
@@ -193,7 +198,10 @@ const TicketMainContent = () => {
         socket.on("ticket_response", (data) => {
           if (data.status === "success") {
             createTicket(data.data);
-            console.log("created ticket response", data.data);
+            console.log(
+              "New ticket is created wiht the following data response",
+              data.data
+            );
             setTicketNumber(data.data._id);
             localStorage.setItem(
               "create_ticket_detail",
@@ -410,7 +418,6 @@ const TicketMainContent = () => {
             )} */}
         </div>
       </div>
-      )}
     </div>
   );
 };
