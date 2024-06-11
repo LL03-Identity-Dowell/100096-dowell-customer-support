@@ -32,6 +32,7 @@ const TicketMainContent = () => {
     email: "",
     identity: "",
   });
+  const [showLoading, setShowLoading] = useState(false);
 
   const [ticketDetail, setTicketDetail] = useState({});
   const [darkMode, setDarkMode] = useState(false);
@@ -182,6 +183,7 @@ const TicketMainContent = () => {
   const handleSubmit = async (values, actions) => {
     try {
       actions.setSubmitting(true);
+      setShowLoading(true);
 
       const payload = {
         email: values.email,
@@ -194,12 +196,12 @@ const TicketMainContent = () => {
 
       await socket.emit("create_ticket", payload);
 
-      await new Promise((resolve) => {
+      await new Promise(() => {
         socket.on("ticket_response", (data) => {
           if (data.status === "success") {
             createTicket(data.data);
             console.log(
-              "New ticket is created wiht the following data response",
+              "New ticket is created with the following data response",
               data.data
             );
             setTicketNumber(data.data._id);
@@ -218,13 +220,14 @@ const TicketMainContent = () => {
             socket.emit("get_ticket_messages", getTicketMessagesPayload);
 
             toggleChat();
+            setShowLoading(false);
           } else {
             setTicketNumber(data.data);
           }
         });
       });
 
-      actions.setSubmitting(false);
+      setShowLoading(false);
       return () => {
         socket.disconnect();
       };
@@ -327,10 +330,10 @@ const TicketMainContent = () => {
                     component="div"
                   />
                 </div>
-                <h2 className="text-[26px] font-bold hover:text-black">
+                <h2 className="text-[26px] font-bold hover:text-black max-md:text-[24px]">
                   Ticket number
                 </h2>
-                <h2 className="text-[26px] font-bold text-green-600">
+                <h2 className="text-[26px] font-bold flex-1 text-green-600 max-md:text-[20px]">
                   {/* {console.log(typeof ticketNumber)} {Number(ticketNumber)} */}
 
                   {
@@ -390,14 +393,18 @@ const TicketMainContent = () => {
                   disabled={
                     !values.email || !values.topic || !isValid || isSubmitting
                   }
-                  className={`border-2 border-green-300 hover:bg-green-500 transition duration-1000 ease-in-out font-semibold py-1 w-[80%] rounded-3xl focus:outline-none focus:bg-blue-600 text-[18px] disabled:bg-slate-300 disabled:border-gray-300 disabled:text-gray-400`}
+                  className={`border-2 border-green-300 hover:bg-green-500 transition duration-1000 ease-in-out font-semibold py-1 w-48 md:w-60 rounded-3xl focus:outline-none focus:bg-blue-600 text-[18px] disabled:bg-slate-300 disabled:border-gray-300 disabled:text-gray-400`}
                 >
-                  {!isSubmitting ? (
-                    "Create ticket"
-                  ) : (
-                    <div className="flex justify-center items-center ">
-                      <div className="animate-spin h-6 w-6 border-t-2 border-b-2 border-slate-600 rounded-full"></div>
+                  {isSubmitting ? (
+                    <div className="flex h-6 justify-center items-center ">
+                      {showLoading ? (
+                        <div className="animate-spin h-6 w-6 border-t-2 border-b-2 border-slate-600 rounded-full"></div>
+                      ) : (
+                        "Create Ticket"
+                      )}
                     </div>
+                  ) : (
+                    <p>Create Ticket</p>
                   )}
                 </button>
               </Form>
