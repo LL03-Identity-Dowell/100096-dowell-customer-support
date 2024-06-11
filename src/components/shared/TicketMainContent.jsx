@@ -439,7 +439,7 @@ const TicketMainContent = () => {
               </Form>
             )}
           </Formik>
-          {/* {isChatOpen && !loading ? (
+          {isChatOpen && !loading ? (
             <ChatForm
               apiKey={apiKey}
               ticketDetail={ticketDetail}
@@ -451,7 +451,7 @@ const TicketMainContent = () => {
             />
           ) : (
             ""
-          )} */}
+          )}
         </div>
       </div>
     </div>
