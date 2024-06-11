@@ -63,11 +63,11 @@ const TicketMainContent = () => {
     return () => clearInterval(timer);
   }, [waitingTime, ticketDetail]);
 
-  useEffect(() => {
-    if (waitingTime === 0) {
-      setIsChatOpen(true);
-    }
-  }, [waitingTime, ticketDetail]);
+  // useEffect(() => {
+  //   if (waitingTime === 0) {
+  //     setIsChatOpen(true);
+  //   }
+  // }, [waitingTime, ticketDetail]);
 
   useEffect(() => {
     if (JSON.parse(localStorage.getItem("create_ticket_detail"))) {
@@ -439,7 +439,7 @@ const TicketMainContent = () => {
               </Form>
             )}
           </Formik>
-          {isChatOpen && !loading ? (
+          {isChatOpen && (
             <ChatForm
               apiKey={apiKey}
               ticketDetail={ticketDetail}
@@ -449,8 +449,6 @@ const TicketMainContent = () => {
               messageToDisplay={messageToDisplay}
               socket={socket}
             />
-          ) : (
-            ""
           )}
         </div>
       </div>
