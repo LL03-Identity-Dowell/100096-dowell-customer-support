@@ -63,11 +63,11 @@ const TicketMainContent = () => {
     return () => clearInterval(timer);
   }, [waitingTime, ticketDetail]);
 
-  // useEffect(() => {
-  //   if (waitingTime === 0 && ticketDetail) {
-  //     setIsChatOpen(true);
-  //   }
-  // }, [waitingTime, ticketDetail]);
+  useEffect(() => {
+    if (waitingTime === 0) {
+      setIsChatOpen(true);
+    }
+  }, [waitingTime, ticketDetail]);
 
   useEffect(() => {
     if (JSON.parse(localStorage.getItem("create_ticket_detail"))) {
@@ -81,14 +81,14 @@ const TicketMainContent = () => {
             localStorage.getItem("create_ticket_detail")
           ).product;
 
-          socket.emit("get_ticket_messages", {
+          await socket.emit("get_ticket_messages", {
             ticket_id: ticketId,
             product: product,
             workspace_id: params.get("workspace_id"),
             api_key: apiKey,
           });
 
-          socket.on("ticket_message_response", (data) => {
+          await socket.on("ticket_message_response", (data) => {
             const ticketMessages = data.data;
             let current_user = "12345";
             async function chats() {
@@ -209,7 +209,7 @@ const TicketMainContent = () => {
     localStorage.setItem("waitingTime", data.data["waiting_time"]);
   });
 
-  const handleSubmit = (values, actions) => {
+  const handleSubmit = async (values, actions) => {
     try {
       actions.setSubmitting(true);
       setShowLoading(true);
@@ -223,35 +223,37 @@ const TicketMainContent = () => {
         product: values.topic,
       };
 
-      socket.emit("create_ticket", payload);
+      await socket.emit("create_ticket", payload);
 
-      socket.on("ticket_response", (data) => {
-        if (data.status === "success") {
-          createTicket(data.data);
-          console.log(
-            "New ticket is created with the following data response",
-            data.data
-          );
-          setTicketNumber(data.data._id);
+      await new Promise(() => {
+        socket.on("ticket_response", (data) => {
+          if (data.status === "success") {
+            createTicket(data.data);
+            console.log(
+              "New ticket is created with the following data response",
+              data.data
+            );
+            setTicketNumber(data.data._id);
+            localStorage.setItem(
+              "create_ticket_detail",
+              JSON.stringify(data.data)
+            );
 
-          setTicketDetail(data.data);
-          localStorage.setItem(
-            "create_ticket_detail",
-            JSON.stringify(data.data)
-          );
-          const getTicketMessagesPayload = {
-            ticket_id: data.data._id,
-            product: data.data.product,
-            workspace_id: params.get("workspace_id"),
-            api_key: apiKey,
-          };
-          socket.emit("get_ticket_messages", getTicketMessagesPayload);
+            setTicketDetail(data.data);
+            const getTicketMessagesPayload = {
+              ticket_id: data.data._id,
+              product: data.data.product,
+              workspace_id: params.get("workspace_id"),
+              api_key: apiKey,
+            };
+            socket.emit("get_ticket_messages", getTicketMessagesPayload);
 
-          toggleChat();
-          setShowLoading(false);
-        } else {
-          setTicketNumber(data.data);
-        }
+            toggleChat();
+            setShowLoading(false);
+          } else {
+            setTicketNumber(data.data);
+          }
+        });
       });
 
       setShowLoading(false);
