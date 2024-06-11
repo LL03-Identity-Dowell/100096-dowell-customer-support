@@ -33,6 +33,10 @@ const TicketMainContent = () => {
     identity: "",
   });
   const [showLoading, setShowLoading] = useState(false);
+  const [waitingTime, setWaitingTime] = useState(() => {
+    const storedWaitingTime = localStorage.getItem("waitingTime");
+    return storedWaitingTime ? parseInt(storedWaitingTime, 10) : 0;
+  });
 
   const [ticketDetail, setTicketDetail] = useState({});
   const [darkMode, setDarkMode] = useState(false);
@@ -40,6 +44,30 @@ const TicketMainContent = () => {
   // useEffect(() => {
   //   setLoading(true);
   // }, [isCreateTicket, isChatOpen]);
+
+  useEffect(() => {
+    let timer;
+    if (waitingTime > 0) {
+      timer = setInterval(() => {
+        setWaitingTime((prevTime) => {
+          const newTime = prevTime - 1;
+          localStorage.setItem("waitingTime", newTime);
+          return newTime;
+        });
+      }, 60000); // Decrease every minute
+    } else if (waitingTime === 0 && ticketDetail) {
+      setIsChatOpen(true);
+      localStorage.removeItem("waitingTime");
+    }
+
+    return () => clearInterval(timer);
+  }, [waitingTime, ticketDetail]);
+
+  useEffect(() => {
+    if (waitingTime === 0 && ticketDetail) {
+      setIsChatOpen(true);
+    }
+  }, [waitingTime, ticketDetail]);
 
   useEffect(() => {
     if (JSON.parse(localStorage.getItem("create_ticket_detail"))) {
@@ -176,8 +204,9 @@ const TicketMainContent = () => {
   };
 
   socket.on("waiting_time_response", (data) => {
-    const ticketDetailString = localStorage.getItem("create_ticket_detail");
-    console.log(ticketDetailString);
+    console.log(data.data);
+    setWaitingTime(data.data["waiting_time"]);
+    localStorage.setItem("waitingTime", data.data["waiting_time"]);
   });
 
   const handleSubmit = async (values, actions) => {
@@ -265,7 +294,7 @@ const TicketMainContent = () => {
                   <Field
                     as="select"
                     name="topic"
-                    className="block w-[90%] bg-white border text-neutral-600 border-gray-300 rounded py-2 text-[20px] mx-auto font-sans cursor-pointer focus:outline-none focus:border-gray-500"
+                    className="block w-[90%]  bg-white border text-neutral-600 border-gray-300 rounded py-2 text-[20px] mx-auto font-sans cursor-pointer focus:outline-none focus:border-gray-500"
                     onChange={handleChange}
                   >
                     <option
@@ -313,7 +342,7 @@ const TicketMainContent = () => {
                   />
                 </div>
                 <p className="-mt-2 mb-4 text-slate-500">
-                  Waiting time - 00 Minutes
+                  Waiting time - {waitingTime} Minutes
                 </p>
                 <div className="my-3 mx-auto ">
                   <Field
@@ -411,18 +440,18 @@ const TicketMainContent = () => {
             )}
           </Formik>
           {/* {isChatOpen && !loading ? (
-              <ChatForm
-                apiKey={apiKey}
-                ticketDetail={ticketDetail}
-                onClose={toggleChat}
-                darkMode={darkMode}
-                toggleDarkMode={toggleDarkMode}
-                messageToDisplay={messageToDisplay}
-                socket={socket}
-              />
-            ) : (
-              ""
-            )} */}
+            <ChatForm
+              apiKey={apiKey}
+              ticketDetail={ticketDetail}
+              onClose={toggleChat}
+              darkMode={darkMode}
+              toggleDarkMode={toggleDarkMode}
+              messageToDisplay={messageToDisplay}
+              socket={socket}
+            />
+          ) : (
+            ""
+          )} */}
         </div>
       </div>
     </div>
