@@ -206,6 +206,7 @@ const TicketMainContent = () => {
   socket.on("waiting_time_response", (data) => {
     console.log(data.data);
     setWaitingTime(data.data["waiting_time"]);
+    setLoading(false);
     localStorage.setItem("waitingTime", data.data["waiting_time"]);
   });
 
@@ -439,7 +440,7 @@ const TicketMainContent = () => {
               </Form>
             )}
           </Formik>
-          {isChatOpen && (
+          {isChatOpen && !loading && (
             <ChatForm
               apiKey={apiKey}
               ticketDetail={ticketDetail}

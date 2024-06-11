@@ -8,14 +8,21 @@ import { useLocation } from "react-router-dom";
 import Picker from "@emoji-mart/react";
 import data from "@emoji-mart/data";
 import { faSmile } from "@fortawesome/free-solid-svg-icons";
-
+//eslint-disable-next-line;
 const ChatForm = ({
+  // eslint-disable-next-line
   onClose,
+  // eslint-disable-next-line
   darkMode,
+  // eslint-disable-next-line
   toggleDarkMode,
+  // eslint-disable-next-line
   messageToDisplay,
+  // eslint-disable-next-line
   ticketDetail,
+  // eslint-disable-next-line
   apiKey,
+  // eslint-disable-next-line
   socket,
 }) => {
   const [message, setMessage] = useState("");
@@ -64,7 +71,7 @@ const ChatForm = ({
         api_key: apiKey,
         created_at: new Date().toISOString(),
       };
-
+      //eslint-disable-next-line
       socket.emit("ticket_message_event", ticketMessagePayload);
 
       setMessage("");
@@ -87,7 +94,7 @@ const ChatForm = ({
           >
             {
               JSON.parse(localStorage.getItem("create_ticket_detail"))
-                .line_manager
+                ?.line_manager
             }
           </h2>
           <h2
@@ -95,7 +102,7 @@ const ChatForm = ({
               darkMode ? "text-white" : "text-slate-900"
             } font-semibold p-2 mb-2 max-md:hidden`}
           >
-            {JSON.parse(localStorage.getItem("create_ticket_detail"))._id}
+            {JSON.parse(localStorage.getItem("create_ticket_detail"))?._id}
           </h2>
           <div className="flex justify-end items-end gap-2 overflow-hidden h-10 min-w-20  pr-1">
             <Toggler darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
