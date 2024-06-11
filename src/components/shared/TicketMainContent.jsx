@@ -32,6 +32,11 @@ const TicketMainContent = () => {
     email: "",
     identity: "",
   });
+  const [showLoading, setShowLoading] = useState(false);
+  const [waitingTime, setWaitingTime] = useState(() => {
+    const storedWaitingTime = localStorage.getItem("waitingTime");
+    return storedWaitingTime ? parseInt(storedWaitingTime, 10) : 0;
+  });
 
   const [ticketDetail, setTicketDetail] = useState({});
   const [darkMode, setDarkMode] = useState(false);
@@ -39,6 +44,30 @@ const TicketMainContent = () => {
   // useEffect(() => {
   //   setLoading(true);
   // }, [isCreateTicket, isChatOpen]);
+
+  useEffect(() => {
+    let timer;
+    if (waitingTime > 0) {
+      timer = setInterval(() => {
+        setWaitingTime((prevTime) => {
+          const newTime = prevTime - 1;
+          localStorage.setItem("waitingTime", newTime);
+          return newTime;
+        });
+      }, 60000); // Decrease every minute
+    } else if (waitingTime === 0 && ticketDetail) {
+      setIsChatOpen(true);
+      localStorage.removeItem("waitingTime");
+    }
+
+    return () => clearInterval(timer);
+  }, [waitingTime, ticketDetail]);
+
+  useEffect(() => {
+    if (waitingTime === 0 && ticketDetail) {
+      setIsChatOpen(true);
+    }
+  }, [waitingTime, ticketDetail]);
 
   useEffect(() => {
     if (JSON.parse(localStorage.getItem("create_ticket_detail"))) {
@@ -66,7 +95,7 @@ const TicketMainContent = () => {
               if (ticketMessages.length > 0) {
                 try {
                   let messages = await Promise.all(
-                    ticketMessages.map((message) => {
+                    ticketMessages?.map((message) => {
                       return {
                         id: message._id,
                         sender:
@@ -174,9 +203,16 @@ const TicketMainContent = () => {
     setIsCreateTicket((prev) => !prev);
   };
 
+  socket.on("waiting_time_response", (data) => {
+    console.log(data.data);
+    setWaitingTime(data.data["waiting_time"]);
+    localStorage.setItem("waitingTime", data.data["waiting_time"]);
+  });
+
   const handleSubmit = async (values, actions) => {
     try {
       actions.setSubmitting(true);
+      setShowLoading(true);
 
       const payload = {
         email: values.email,
@@ -189,11 +225,14 @@ const TicketMainContent = () => {
 
       await socket.emit("create_ticket", payload);
 
-      await new Promise((resolve) => {
+      await new Promise(() => {
         socket.on("ticket_response", (data) => {
           if (data.status === "success") {
             createTicket(data.data);
-            console.log("created ticket response", data.data);
+            console.log(
+              "New ticket is created with the following data response",
+              data.data
+            );
             setTicketNumber(data.data._id);
             localStorage.setItem(
               "create_ticket_detail",
@@ -210,13 +249,14 @@ const TicketMainContent = () => {
             socket.emit("get_ticket_messages", getTicketMessagesPayload);
 
             toggleChat();
+            setShowLoading(false);
           } else {
             setTicketNumber(data.data);
           }
         });
       });
 
-      actions.setSubmitting(false);
+      setShowLoading(false);
       return () => {
         socket.disconnect();
       };
@@ -254,7 +294,7 @@ const TicketMainContent = () => {
                   <Field
                     as="select"
                     name="topic"
-                    className="block w-[90%] bg-white border text-neutral-600 border-gray-300 rounded py-2 text-[20px] mx-auto font-sans cursor-pointer focus:outline-none focus:border-gray-500"
+                    className="block w-[90%]  bg-white border text-neutral-600 border-gray-300 rounded py-2 text-[20px] mx-auto font-sans cursor-pointer focus:outline-none focus:border-gray-500"
                     onChange={handleChange}
                   >
                     <option
@@ -302,7 +342,7 @@ const TicketMainContent = () => {
                   />
                 </div>
                 <p className="-mt-2 mb-4 text-slate-500">
-                  Waiting time - 00 Minutes
+                  Waiting time - {waitingTime} Minutes
                 </p>
                 <div className="my-3 mx-auto ">
                   <Field
@@ -319,10 +359,10 @@ const TicketMainContent = () => {
                     component="div"
                   />
                 </div>
-                <h2 className="text-[26px] font-bold hover:text-black">
+                <h2 className="text-[26px] font-bold hover:text-black max-md:text-[24px]">
                   Ticket number
                 </h2>
-                <h2 className="text-[26px] font-bold text-green-600">
+                <h2 className="text-[26px] font-bold flex-1 text-green-600 max-md:text-[20px]">
                   {/* {console.log(typeof ticketNumber)} {Number(ticketNumber)} */}
 
                   {
@@ -382,35 +422,38 @@ const TicketMainContent = () => {
                   disabled={
                     !values.email || !values.topic || !isValid || isSubmitting
                   }
-                  className={`border-2 border-green-300 hover:bg-green-500 transition duration-1000 ease-in-out font-semibold py-1 w-[80%] rounded-3xl focus:outline-none focus:bg-blue-600 text-[18px] disabled:bg-slate-300 disabled:border-gray-300 disabled:text-gray-400`}
+                  className={`border-2 border-green-300 hover:bg-green-500 transition duration-1000 ease-in-out font-semibold py-1 w-48 md:w-60 rounded-3xl focus:outline-none focus:bg-blue-600 text-[18px] disabled:bg-slate-300 disabled:border-gray-300 disabled:text-gray-400`}
                 >
-                  {!isSubmitting ? (
-                    "Create ticket"
-                  ) : (
-                    <div className="flex justify-center items-center ">
-                      <div className="animate-spin h-6 w-6 border-t-2 border-b-2 border-slate-600 rounded-full"></div>
+                  {isSubmitting ? (
+                    <div className="flex h-6 justify-center items-center ">
+                      {showLoading ? (
+                        <div className="animate-spin h-6 w-6 border-t-2 border-b-2 border-slate-600 rounded-full"></div>
+                      ) : (
+                        "Create Ticket"
+                      )}
                     </div>
+                  ) : (
+                    <p>Create Ticket</p>
                   )}
                 </button>
               </Form>
             )}
           </Formik>
           {/* {isChatOpen && !loading ? (
-              <ChatForm
-                apiKey={apiKey}
-                ticketDetail={ticketDetail}
-                onClose={toggleChat}
-                darkMode={darkMode}
-                toggleDarkMode={toggleDarkMode}
-                messageToDisplay={messageToDisplay}
-                socket={socket}
-              />
-            ) : (
-              ""
-            )} */}
+            <ChatForm
+              apiKey={apiKey}
+              ticketDetail={ticketDetail}
+              onClose={toggleChat}
+              darkMode={darkMode}
+              toggleDarkMode={toggleDarkMode}
+              messageToDisplay={messageToDisplay}
+              socket={socket}
+            />
+          ) : (
+            ""
+          )} */}
         </div>
       </div>
-      )
     </div>
   );
 };
