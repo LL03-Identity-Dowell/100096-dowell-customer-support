@@ -50,20 +50,21 @@ export default function NavItem({ component }) {
     }
     getUnreadMessages();
     //}
-  }, [messageData]);
+  }, []);
 
   useEffect(() => {
     getUnreadMessages();
-    socket.on("ticket_message_response", (data) => {
-      //console.log("unread messages", data);
-      // Handle response for the event
-      if (data.operation === "get_unread_messages") {
-        console.log("unread messages", data?.data);
-        //setWaitingTime(data.data[0]?.waiting_time);
-        //      console.log("waitging time ", data.data[0]?.waiting_time);
-      }
-    });
   }, [selectedTopic, lineManageTime]);
+
+  socket.on("ticket_message_response", (data) => {
+    //console.log("unread messages", data);
+    // Handle response for the event
+    if (data.operation === "get_unread_messages") {
+      console.log("unread messages", data?.data);
+      //setWaitingTime(data.data[0]?.waiting_time);
+      //      console.log("waitging time ", data.data[0]?.waiting_time);
+    }
+  });
   const queryParams = queryString.stringify({
     session_id: sessionId,
     id: id,

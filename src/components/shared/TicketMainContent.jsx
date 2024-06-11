@@ -410,7 +410,7 @@ const TicketMainContent = () => {
             )} */}
         </div>
       </div>
-      )}
+      )
     </div>
   );
 };

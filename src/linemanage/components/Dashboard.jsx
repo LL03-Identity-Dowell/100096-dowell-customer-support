@@ -5,6 +5,9 @@ import Dropdowns from "./Search";
 import React from "react";
 //import lineManager from "../Redux/lineManager";
 const LineManagera = React.memo(LineManager);
+
+const Chats = React.memo(Chat);
+
 //eslint-disable-next-line
 const Dashboards = React.memo(() => {
   return (
@@ -22,7 +25,7 @@ const Dashboards = React.memo(() => {
         <div className="w-full h-auto flex sm:flex-col  md:flex-row">
           <TicketDetail />
           <div className="flex-1 w-full h-full  mt-3">
-            <Chat isOpen={true} />
+            <Chats isOpen={true} />
           </div>
         </div>
       </div>

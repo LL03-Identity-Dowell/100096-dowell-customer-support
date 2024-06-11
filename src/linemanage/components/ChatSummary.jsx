@@ -73,49 +73,45 @@ const Chat = () => {
 
     const observer = new MutationObserver(callback);
     observer.observe(targetNode, config);
-    socket.on("ticket_message_response", (data) => {
-      console.log("ticket data response");
-      if (data.operation === "send_message") {
-        // This scenario occurs when a new message is sent
-        console.log("data========", data?.data);
-        const { author, created_at, message_data } = data.data;
-        if (data?.data?.ticket_id === selectedTicket._id) {
-          //const { author, created_at, message_data } = data.data;
-          const newMessage = {
-            id: messages.length + 1,
-            sender: author !== current_user ? "user" : "receiver",
-            type: "text",
-            content: message_data,
-            created_at: created_at,
-          };
-          setMessages([...messages, newMessage]);
-        }
-        /*     else {
+  }, []);
+  socket.on("ticket_message_response", (data) => {
+    console.log("ticket data response");
+    if (data.operation === "send_message") {
+      // This scenario occurs when a new message is sent
+      console.log("data========", data?.data);
+      const { author, created_at, message_data } = data.data;
+      if (data?.data?.ticket_id === selectedTicket._id) {
+        //const { author, created_at, message_data } = data.data;
+        const newMessage = {
+          id: messages.length + 1,
+          sender: author !== current_user ? "user" : "receiver",
+          type: "text",
+          content: message_data,
+          created_at: created_at,
+        };
+        setMessages([...messages, newMessage]);
+      }
+      /*     else {
           // dispatch();
           console.log("==========enterred================");
           dispatch(fetchMessageData([...messageData, data?.data]));
         }*/
-      } else if (data.operation === "get_ticket_messages") {
-        // This scenario occurs when loading all message history
-        const ticketMessages = data.data; // Assuming data contains all messages
-        const formattedMessages = ticketMessages.map((message) => ({
-          id: message._id,
-          sender: message.author !== current_user ? "user" : "receiver",
-          type: "text",
-          content: message.message_data,
-          created_at: message.created_at,
-        }));
-        setMessages(formattedMessages);
-        dispatch(fetchTicketMessage(formattedMessages));
-      }
-      setLoading(false); // Assuming loading should be set to false in both cases
-    });
-
-    return () => {
-      // Clean up the socket event listener when the component unmounts
-      socket.off("ticket_message_response");
-    };
-  }, [socket, messages]); // Ensure to include all dependencies used inside the effect
+    } else if (data.operation === "get_ticket_messages") {
+      // This scenario occurs when loading all message history
+      const ticketMessages = data.data; // Assuming data contains all messages
+      const formattedMessages = ticketMessages.map((message) => ({
+        id: message._id,
+        sender: message.author !== current_user ? "user" : "receiver",
+        type: "text",
+        content: message.message_data,
+        created_at: message.created_at,
+      }));
+      setMessages(formattedMessages);
+      dispatch(fetchTicketMessage(formattedMessages));
+    }
+    setLoading(false); // Assuming loading should be set to false in both cases
+  });
+  // Ensure to include all dependencies used inside the effect
 
   const handleKeyDown = (event) => {
     if (event.key === "Enter") {
