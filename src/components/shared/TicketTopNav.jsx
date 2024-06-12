@@ -12,7 +12,7 @@ const TicketTopNav = ({ openSearchModal }) => {
   };
 
   return (
-    <nav className=" pr-[20%] max-md:py-5 py-3 flex justify-end  items-center w-full">
+    <nav className=" sm:pr-[30%] max-md:py-5 py-3 flex justify-end  items-center w-full">
       <div className="flex items-center space-x-4">
         <button
           onClick={openSearchModal}

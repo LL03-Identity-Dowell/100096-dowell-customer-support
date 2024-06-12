@@ -45,30 +45,29 @@ const TicketMainContent = () => {
   //   setLoading(true);
   // }, [isCreateTicket, isChatOpen]);
 
-  useEffect(() => {
-    let timer;
-    if (waitingTime > 0) {
-      timer = setInterval(() => {
-        setWaitingTime((prevTime) => {
-          const newTime = prevTime - 1;
-          localStorage.setItem("waitingTime", newTime);
-          return newTime;
-        });
-      }, 60000); // Decrease every minute
-    } else if (waitingTime === 0 && ticketDetail) {
-      setIsChatOpen(true);
-      // localStorage.removeItem("waitingTime");
-    }
-
-    return () => clearInterval(timer);
-  }, [waitingTime, ticketDetail]);
-
   // useEffect(() => {
   //   if (waitingTime === 0) {
   //     setIsChatOpen(true);
   //   }
   // }, [waitingTime, ticketDetail]);
+  useEffect(() => {
+    const endTime = localStorage.getItem("chatEndTime");
+    const checkAndSetChatBox = (endTime) => {
+      const currentTime = Date.now();
+      const remainingTime = endTime - currentTime;
 
+      if (remainingTime > 0) {
+        // Set a timeout to open the chat box after the remaining time
+        setTimeout(() => {
+          setIsChatOpen(true);
+        }, remainingTime);
+      } else {
+        // If the end time has already passed, show the chat box immediately
+        setIsChatOpen(true);
+      }
+    };
+    checkAndSetChatBox(endTime);
+  }, []);
   useEffect(() => {
     if (JSON.parse(localStorage.getItem("create_ticket_detail"))) {
       setIsPrevTicketCreated(true);
@@ -121,12 +120,10 @@ const TicketMainContent = () => {
           });
         } catch (error) {
           console.error("Error fetching ticket messages:", error);
-        } finally {
         }
       };
 
       fetchData();
-    } else {
     }
     if (!socket) return;
 
@@ -156,7 +153,6 @@ const TicketMainContent = () => {
         link_id: params.get("link_id"),
         api_key: apiKey,
       });
-    } else {
     }
   }, [apiKey]);
 
@@ -185,7 +181,6 @@ const TicketMainContent = () => {
 
       setMessages([...messages, message]);
       setLoading(false);
-      setIsChatOpen(true);
     }
   });
 
@@ -207,7 +202,10 @@ const TicketMainContent = () => {
     console.log(data.data);
     setWaitingTime(data.data["waiting_time"]);
     setLoading(false);
-    localStorage.setItem("waitingTime", data.data["waiting_time"]);
+    // localStorage.setItem("waitingTime", data.data["waiting_time"]);
+    const timeInMilliseconds = data.data["waiting_time"] * 60 * 1000;
+    const endTime = Date.now() + timeInMilliseconds;
+    localStorage.setItem("chatEndTime", endTime);
   });
 
   const handleSubmit = (values, actions) => {
@@ -254,7 +252,6 @@ const TicketMainContent = () => {
       };
       socket.emit("get_ticket_messages", getTicketMessagesPayload);
 
-      toggleChat();
       setShowLoading(false);
     } else {
       setTicketNumber(data.data);
@@ -279,7 +276,7 @@ const TicketMainContent = () => {
       ) : ( */}
       <div className="main_cont">
         <TicketLogo />
-        <div className="max-w-md mx-auto py-3 px-5  rounded -mt-10">
+        <div className="max-w-md mx-auto py-3 px-5  rounded -mt-12">
           <Formik
             initialValues={{ topic: "", email: "", identity: "" }}
             onSubmit={handleSubmit}
@@ -291,12 +288,12 @@ const TicketMainContent = () => {
                   <Field
                     as="select"
                     name="topic"
-                    className="block w-[90%]  bg-white border text-neutral-600 border-gray-300 rounded py-2 text-[20px] mx-auto font-sans cursor-pointer focus:outline-none focus:border-gray-500"
+                    className="block w-[90%] max-sm:w-[100%]  bg-white border text-neutral-600 border-gray-300 rounded py-2 max-sm:py-1 text-[20px] mx-auto font-sans cursor-pointer focus:outline-none focus:border-gray-500"
                     onChange={handleChange}
                   >
                     <option
                       value=""
-                      className="text-2xl bg-gray-400 text-neutral-700 text-center px-auto"
+                      className="text-2xl bg-gray-400  text-neutral-700 text-center px-auto"
                     >
                       Products
                     </option>
@@ -312,7 +309,7 @@ const TicketMainContent = () => {
                           <option
                             value={dist[0]}
                             key={index}
-                            className="text-center text-gray-700"
+                            className="text-center text-gray-700 px-auto"
                             onClick={() => handleProductClick(dist[0])}
                           >
                             {dist[0]}
@@ -338,8 +335,10 @@ const TicketMainContent = () => {
                     component="div"
                   />
                 </div>
-                <p className="-mt-2 mb-4 text-slate-500">
-                  Waiting time - {waitingTime} Minutes
+                <p className="-mt-2 mb-4 text-slate-500 font-medium max-sm:text-[14px]">
+                  Waiting time -{" "}
+                  <span className="text-green-500">{waitingTime}</span> minutes
+                  left
                 </p>
                 <div className="my-3 mx-auto ">
                   <Field
@@ -347,7 +346,7 @@ const TicketMainContent = () => {
                     type="email"
                     name="email"
                     placeholder="Email ID"
-                    className="block w-[90%] mx-auto text-center outline-none bg-white border border-gray-300 rounded px-4 py-2 focus:outline-none focus:border-gray-500 text-zinc-800 text-[20px]"
+                    className="block w-[90%] mx-auto text-center outline-none bg-white border border-gray-300 rounded px-4 py-2 max-sm:py-0 focus:outline-none focus:border-gray-500 text-zinc-800 text-[20px]"
                     onChange={handleChange}
                   />
                   <ErrorMessage
@@ -359,9 +358,7 @@ const TicketMainContent = () => {
                 <h2 className="text-[26px] font-bold hover:text-black max-md:text-[24px]">
                   Ticket number
                 </h2>
-                <h2 className="text-[26px] font-bold flex-1 text-green-600 max-md:text-[20px]">
-                  {/* {console.log(typeof ticketNumber)} {Number(ticketNumber)} */}
-
+                <h2 className="text-[22px] font-bold flex-1 text-green-600 max-md:text-[20px] max-sm:text-[14px]">
                   {
                     JSON.parse(localStorage.getItem("create_ticket_detail"))
                       ?._id
@@ -377,7 +374,7 @@ const TicketMainContent = () => {
                       className="form-radio"
                       onChange={handleChange}
                     />
-                    <span className="ml-2">No Identity</span>
+                    <span className="ml-2 max-sm:text-sm">No Identity</span>
                   </label>
                   <label htmlFor="faceId" className="radio_style">
                     <Field
@@ -388,7 +385,7 @@ const TicketMainContent = () => {
                       className="form-radio"
                       onChange={handleChange}
                     />
-                    <span className="ml-2">Face ID</span>
+                    <span className="ml-2 max-sm:text-sm">Face ID</span>
                   </label>
                   <label htmlFor="otp" className="radio_style">
                     <Field
@@ -399,7 +396,7 @@ const TicketMainContent = () => {
                       className="form-radio"
                       onChange={handleChange}
                     />
-                    <span className="ml-2">OTP</span>
+                    <span className="ml-2 max-sm:text-sm">OTP</span>
                   </label>
                   <label htmlFor="idNumber" className="radio_style">
                     <Field
@@ -410,7 +407,7 @@ const TicketMainContent = () => {
                       className="form-radio"
                       onChange={handleChange}
                     />
-                    <span className="ml-2">ID Number</span>
+                    <span className="ml-2 max-sm:text-sm">ID Number</span>
                   </label>
                 </div>
 
@@ -436,7 +433,7 @@ const TicketMainContent = () => {
               </Form>
             )}
           </Formik>
-          {isChatOpen && !loading && (
+          {isChatOpen && !loading ? (
             <ChatForm
               apiKey={apiKey}
               ticketDetail={ticketDetail}
@@ -446,6 +443,8 @@ const TicketMainContent = () => {
               messageToDisplay={messageToDisplay}
               socket={socket}
             />
+          ) : (
+            ""
           )}
         </div>
       </div>
