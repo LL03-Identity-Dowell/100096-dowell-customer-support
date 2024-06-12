@@ -74,38 +74,35 @@ const Chat = () => {
     const observer = new MutationObserver(callback);
     observer.observe(targetNode, config);
   }, []);
-
-  const handleTicketMessageResponse = (data) => {
-    console.log;
-    if (data.operation === "send_message") {
-      const { author, created_at, message_data } = data.data;
-      if (data?.data?.ticket_id === selectedTicket._id) {
-        const newMessage = {
-          id: messages.length + 1,
-          sender: author !== current_user ? "user" : "receiver",
+  useEffect(() => {
+    socket.on("ticket_message_response", (data) => {
+      if (data.operation === "send_message") {
+        const { author, created_at, message_data } = data.data;
+        if (data?.data?.ticket_id === selectedTicket._id) {
+          const newMessage = {
+            id: messages.length + 1,
+            sender: author !== current_user ? "user" : "receiver",
+            type: "text",
+            content: message_data,
+            created_at: created_at,
+          };
+          setMessages((prevMessages) => [...prevMessages, newMessage]);
+        }
+      } else if (data.operation === "get_ticket_messages") {
+        const ticketMessages = data.data;
+        const formattedMessages = ticketMessages.map((message) => ({
+          id: message._id,
+          sender: message.author !== current_user ? "user" : "receiver",
           type: "text",
-          content: message_data,
-          created_at: created_at,
-        };
-        setMessages((prevMessages) => [...prevMessages, newMessage]);
+          content: message.message_data,
+          created_at: message.created_at,
+        }));
+        setMessages(formattedMessages);
+        dispatch(fetchTicketMessage(formattedMessages));
       }
-    } else if (data.operation === "get_ticket_messages") {
-      const ticketMessages = data.data;
-      const formattedMessages = ticketMessages.map((message) => ({
-        id: message._id,
-        sender: message.author !== current_user ? "user" : "receiver",
-        type: "text",
-        content: message.message_data,
-        created_at: message.created_at,
-      }));
-      setMessages(formattedMessages);
-      dispatch(fetchTicketMessage(formattedMessages));
-    }
-    setLoading(false);
-  };
-
-  socket.on("ticket_message_response", handleTicketMessageResponse);
-
+      setLoading(false);
+    });
+  }, [socket]);
   // Ensure to include all dependencies used inside the effect
 
   const handleKeyDown = (event) => {
@@ -247,9 +244,9 @@ const Chat = () => {
           id="scroller"
         >
           {Object.keys(messageToDispaly).length > 0 ? (
-            messageToDispaly?.map((message) => (
+            messageToDispaly?.map((message, index) => (
               <div
-                key={message.created_at}
+                key={message.created_at + index}
                 className={`flex font-sans text-sm ${
                   message.sender === "user" ? "justify-start" : "justify-end"
                 }`}
