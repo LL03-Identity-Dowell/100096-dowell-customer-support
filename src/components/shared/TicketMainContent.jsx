@@ -57,6 +57,9 @@ const TicketMainContent = () => {
     let intervalId;
     if (!endTime) {
       setShowLoading(false);
+      setIsChatOpen(true);
+      setLoading(false);
+      setShowLoading(false);
       return;
     }
 
