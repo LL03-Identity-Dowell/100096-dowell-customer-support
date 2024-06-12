@@ -33,6 +33,7 @@ const TicketMainContent = () => {
     identity: "",
   });
   const [showLoading, setShowLoading] = useState(false);
+  const [isSubmitting, setSubmitting] = useState(false);
   const [waitingTime, setWaitingTime] = useState(() => {
     const storedWaitingTime = localStorage.getItem("waitingTime");
     return storedWaitingTime ? parseInt(storedWaitingTime, 10) : 0;
@@ -50,24 +51,47 @@ const TicketMainContent = () => {
   //     setIsChatOpen(true);
   //   }
   // }, [waitingTime, ticketDetail]);
-  useEffect(() => {
-    const endTime = localStorage.getItem("chatEndTime");
-    const checkAndSetChatBox = (endTime) => {
-      const currentTime = Date.now();
-      const remainingTime = endTime - currentTime;
 
-      if (remainingTime > 0) {
-        // Set a timeout to open the chat box after the remaining time
-        setTimeout(() => {
+  useEffect(() => {
+    const endTime = Number(localStorage.getItem("chatEndTime"));
+    let intervalId;
+    if (!endTime) {
+      setShowLoading(false);
+      return;
+    }
+
+    const checkAndSetChatBox = (endTime) => {
+      const updateRemainingTime = () => {
+        const currentTime = Date.now();
+        const remainingTime = endTime - currentTime;
+
+        if (remainingTime <= 0) {
+          clearInterval(intervalId);
           setIsChatOpen(true);
-        }, remainingTime);
-      } else {
-        // If the end time has already passed, show the chat box immediately
-        setIsChatOpen(true);
-      }
+          setLoading(false);
+          setShowLoading(false);
+        } else {
+          const remainingMinutes = Math.ceil(remainingTime / 60000);
+          console.log(`Remaining time: ${remainingMinutes} minutes`);
+          setWaitingTime(remainingMinutes);
+          setLoading(true);
+          setShowLoading(true);
+        }
+      };
+
+      // Initial check
+      updateRemainingTime();
+
+      // Update the remaining time every minute (60000 milliseconds)
+      intervalId = setInterval(updateRemainingTime, 60000);
+
+      // Cleanup interval on component unmount
+      return () => clearInterval(intervalId);
     };
+
     checkAndSetChatBox(endTime);
-  }, []);
+  }, [waitingTime]);
+
   useEffect(() => {
     if (JSON.parse(localStorage.getItem("create_ticket_detail"))) {
       setIsPrevTicketCreated(true);
@@ -201,16 +225,16 @@ const TicketMainContent = () => {
   socket.on("waiting_time_response", (data) => {
     console.log(data.data);
     setWaitingTime(data.data["waiting_time"]);
-    setLoading(false);
+    // setLoading(false);
     // localStorage.setItem("waitingTime", data.data["waiting_time"]);
     const timeInMilliseconds = data.data["waiting_time"] * 60 * 1000;
     const endTime = Date.now() + timeInMilliseconds;
     localStorage.setItem("chatEndTime", endTime);
   });
 
-  const handleSubmit = (values, actions) => {
+  const handleSubmit = (values) => {
     try {
-      actions.setSubmitting(true);
+      setSubmitting(true);
       setShowLoading(true);
 
       const payload = {
@@ -224,6 +248,37 @@ const TicketMainContent = () => {
 
       socket.emit("create_ticket", payload);
 
+      socket.on("ticket_response", (data) => {
+        //setShowLoading(false);
+        if (data.status === "success") {
+          setSubmitting(false);
+          setShowLoading(false);
+          createTicket(data.data);
+          console.log(
+            "New ticket is created with the following data response",
+            data.data
+          );
+          setTicketNumber(data.data._id);
+          localStorage.setItem(
+            "create_ticket_detail",
+            JSON.stringify(data.data)
+          );
+
+          setTicketDetail(data.data);
+          const getTicketMessagesPayload = {
+            ticket_id: data.data._id,
+            product: data.data.product,
+            workspace_id: params.get("workspace_id"),
+            api_key: apiKey,
+          };
+          socket.emit("get_ticket_messages", getTicketMessagesPayload);
+
+          // setShowLoading(false);
+        } else {
+          setTicketNumber(data.data);
+        }
+      });
+
       return () => {
         socket.disconnect();
       };
@@ -231,32 +286,6 @@ const TicketMainContent = () => {
       console.log(error);
     }
   };
-
-  socket.on("ticket_response", (data) => {
-    setShowLoading(false);
-    if (data.status === "success") {
-      createTicket(data.data);
-      console.log(
-        "New ticket is created with the following data response",
-        data.data
-      );
-      setTicketNumber(data.data._id);
-      localStorage.setItem("create_ticket_detail", JSON.stringify(data.data));
-
-      setTicketDetail(data.data);
-      const getTicketMessagesPayload = {
-        ticket_id: data.data._id,
-        product: data.data.product,
-        workspace_id: params.get("workspace_id"),
-        api_key: apiKey,
-      };
-      socket.emit("get_ticket_messages", getTicketMessagesPayload);
-
-      setShowLoading(false);
-    } else {
-      setTicketNumber(data.data);
-    }
-  });
 
   const toggleChat = () => {
     setIsChatOpen(!isChatOpen);
@@ -282,7 +311,7 @@ const TicketMainContent = () => {
             onSubmit={handleSubmit}
             validationSchema={CreateTicketSchema}
           >
-            {({ handleChange, values, isSubmitting, isValid }) => (
+            {({ handleChange, values, isValid }) => (
               <Form ref={form} className="text-center">
                 <div className="mb-4 relative mx-auto my-5">
                   <Field
@@ -418,6 +447,7 @@ const TicketMainContent = () => {
                   }
                   className={`border-2 border-green-300 hover:bg-green-500 transition duration-1000 ease-in-out font-semibold py-1 w-48 md:w-60 rounded-3xl focus:outline-none focus:bg-blue-600 text-[18px] disabled:bg-slate-300 disabled:border-gray-300 disabled:text-gray-400`}
                 >
+                  {console.log("is submitting", isSubmitting)}
                   {isSubmitting ? (
                     <div className="flex h-6 justify-center items-center ">
                       {showLoading ? (
