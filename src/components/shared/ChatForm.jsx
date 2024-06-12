@@ -144,57 +144,63 @@ const ChatForm = ({
                 </h1>
               </div>
             )} */}
-            {messageToDisplay.length > 0 &&
-              messageToDisplay.map((message) => (
-                <div
-                  key={message.id}
-                  className={`flex font-sans text-sm ${
-                    message.sender === "user" ? "justify-end" : "justify-start"
-                  }`}
-                >
-                  {message.type === "text" && message.content && (
-                    <div
-                      className={`text-[17px] rounded-lg px-4 max-w-[98%] py-2 ${
-                        message.sender === "user"
-                          ? "bg-gray-200 "
-                          : "bg-[#083a26e1] text-white "
-                      } ${
-                        message.sender === "user" && darkMode
-                          ? "bg-gray-400"
-                          : "bg-[#083a26e1] "
-                      }`}
-                    >
-                      <p>{message.content}</p>
-                      <p>
-                        <small
-                          className={`text-sm ${
-                            darkMode ? "text-gray-200" : "text-gray-400"
-                          }`}
-                        >
-                          <i>{formatCreatedAt(message.created_at)}</i>
-                        </small>
-                      </p>
-                    </div>
-                  )}
-                  {message.type === "file" && (
-                    <div
-                      className={`max-w-xs rounded-lg px-4 py-2 ${
-                        message.sender === "user"
-                          ? "bg-gray-200"
-                          : "bg-blue-500 text-white"
-                      }`}
-                    >
-                      <a
-                        href={message.content.dataURL}
-                        download={message.content.fileName}
-                        className="text-blue-500 hover:underline"
+            {
+              //eslint-disable-next-line
+              messageToDisplay.length > 0 &&
+                //eslint-disable-next-line
+                messageToDisplay.map((message) => (
+                  <div
+                    key={message.id}
+                    className={`flex font-sans text-sm ${
+                      message.sender === "user"
+                        ? "justify-end"
+                        : "justify-start"
+                    }`}
+                  >
+                    {message.type === "text" && message.content && (
+                      <div
+                        className={`text-[17px] rounded-lg px-4 max-w-[98%] py-2 ${
+                          message.sender === "user"
+                            ? "bg-gray-200 "
+                            : "bg-[#083a26e1] text-white "
+                        } ${
+                          message.sender === "user" && darkMode
+                            ? "bg-gray-400"
+                            : "bg-[#083a26e1] "
+                        }`}
                       >
-                        {message.content.fileName}
-                      </a>
-                    </div>
-                  )}
-                </div>
-              ))}
+                        <p>{message.content}</p>
+                        <p>
+                          <small
+                            className={`text-sm ${
+                              darkMode ? "text-gray-200" : "text-gray-400"
+                            }`}
+                          >
+                            <i>{formatCreatedAt(message.created_at)}</i>
+                          </small>
+                        </p>
+                      </div>
+                    )}
+                    {message.type === "file" && (
+                      <div
+                        className={`max-w-xs rounded-lg px-4 py-2 ${
+                          message.sender === "user"
+                            ? "bg-gray-200"
+                            : "bg-blue-500 text-white"
+                        }`}
+                      >
+                        <a
+                          href={message.content.dataURL}
+                          download={message.content.fileName}
+                          className="text-blue-500 hover:underline"
+                        >
+                          {message.content.fileName}
+                        </a>
+                      </div>
+                    )}
+                  </div>
+                ))
+            }
           </div>
         </div>
         <hr className="py-5 md:w-[85%] text-center mx-auto -mt-14" />

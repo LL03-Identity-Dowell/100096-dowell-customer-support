@@ -263,6 +263,7 @@ function LineManager() {
                           <div className="flex flex-col align-middle justify-start pt-1 h-auto w-full gap-x-2">
                             <span className="text-md text-sm">
                               <span className="font-bold gap-2 flex justify-center items-center w-full text-center text-md">
+                                Waiting Time: &nbsp;
                                 {waitingTime *
                                   (ticketInfo[
                                     `${data1.user_id}${
@@ -277,7 +278,7 @@ function LineManager() {
                                       ]?.filter((ticket) => !ticket?.is_closed)
                                         .length
                                     : 0)}{" "}
-                                Waiting Time
+                                minutes | {data1?.ticket_count} Open tickets
                               </span>
                             </span>
                             <div className="flex justify-between gap-3 w-full items-center">
