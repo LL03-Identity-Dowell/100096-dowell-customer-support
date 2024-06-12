@@ -35,7 +35,7 @@ const TicketMainContent = () => {
   const [showLoading, setShowLoading] = useState(false);
   const [isSubmitting, setSubmitting] = useState(false);
   const [waitingTime, setWaitingTime] = useState(() => {
-    const storedWaitingTime = localStorage.getItem("waitingTime");
+    const storedWaitingTime = localStorage.getItem("chatEndTime");
     return storedWaitingTime ? parseInt(storedWaitingTime, 10) : 0;
   });
 
@@ -56,26 +56,30 @@ const TicketMainContent = () => {
     const endTime = Number(localStorage.getItem("chatEndTime"));
     let intervalId;
     if (!endTime) {
-      setShowLoading(false);
-      setIsChatOpen(true);
-      setLoading(false);
-      setShowLoading(false);
+      //setShowLoading(false);
+      //setIsChatOpen(true);
+      //setLoading(false);
       return;
     }
 
     const checkAndSetChatBox = (endTime) => {
       const updateRemainingTime = () => {
-        const currentTime = Date.now();
+        const currentTime = Number(Date.now());
         const remainingTime = endTime - currentTime;
-
+        console.log("endTime", endTime);
+        console.log("currentTime", currentTime);
+        console.log("remaining time", remainingTime);
         if (remainingTime <= 0) {
           clearInterval(intervalId);
           setIsChatOpen(true);
           setLoading(false);
           setShowLoading(false);
+          localStorage.setItem("chatEndTime", remainingTime);
+          return;
         } else {
           const remainingMinutes = Math.ceil(remainingTime / 60000);
           console.log(`Remaining time: ${remainingMinutes} minutes`);
+          localStorage.setItem("chatEndTime", remainingTime + currentTime);
           setWaitingTime(remainingMinutes);
           setLoading(true);
           setShowLoading(true);
@@ -227,12 +231,20 @@ const TicketMainContent = () => {
 
   socket.on("waiting_time_response", (data) => {
     console.log(data.data);
-    setWaitingTime(data.data["waiting_time"]);
-    // setLoading(false);
-    // localStorage.setItem("waitingTime", data.data["waiting_time"]);
-    const timeInMilliseconds = data.data["waiting_time"] * 60 * 1000;
-    const endTime = Date.now() + timeInMilliseconds;
-    localStorage.setItem("chatEndTime", endTime);
+
+    if (!data.data["waiting_time"] || data.data["waiting_time"] == 0) {
+      setIsChatOpen(true);
+      setLoading(false);
+      setShowLoading(false);
+      return;
+    } else {
+      // setLoading(false);
+      // localStorage.setItem("waitingTime", data.data["waiting_time"]);
+      const timeInMilliseconds = Number(data.data["waiting_time"]) * 60 * 1000;
+      const endTime = Number(Date.now()) + timeInMilliseconds;
+      localStorage.setItem("chatEndTime", endTime);
+      setWaitingTime(data.data["waiting_time"]);
+    }
   });
 
   const handleSubmit = (values) => {
