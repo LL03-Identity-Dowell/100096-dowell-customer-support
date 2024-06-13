@@ -1,4 +1,4 @@
-import Chat from "./ChatSummary";
+import Chats from "./ChatSummary";
 import LineManager from "./LineManager";
 import TicketDetail from "./TicketDetail";
 import Dropdowns from "./Search";
@@ -6,7 +6,7 @@ import React from "react";
 //import lineManager from "../Redux/lineManager";
 const LineManagera = React.memo(LineManager);
 
-const Chats = React.memo(Chat);
+//const Chats = React.memo(Chat);
 
 //eslint-disable-next-line
 const Dashboards = React.memo(() => {

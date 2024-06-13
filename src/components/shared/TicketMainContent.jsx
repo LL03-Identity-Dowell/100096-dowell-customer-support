@@ -231,7 +231,7 @@ const TicketMainContent = () => {
 
   socket.on("waiting_time_response", (data) => {
     console.log(data.data);
-
+    // data.data["waiting_time"] = 0;
     if (!data.data["waiting_time"] || data.data["waiting_time"] == 0) {
       setIsChatOpen(true);
       setLoading(false);

@@ -36,6 +36,9 @@ const Chat = () => {
     setNewMessage(newMessage + emoji.native);
   };
 
+  //useEffect(() => {
+
+  // }, []);
   useEffect(() => {
     setLoading(true);
     const getTicketMessages = (selectedTicket) => {
@@ -74,35 +77,7 @@ const Chat = () => {
     const observer = new MutationObserver(callback);
     observer.observe(targetNode, config);
   }, []);
-  useEffect(() => {
-    socket.on("ticket_message_response", (data) => {
-      if (data.operation === "send_message") {
-        const { author, created_at, message_data } = data.data;
-        if (data?.data?.ticket_id === selectedTicket._id) {
-          const newMessage = {
-            id: messages.length + 1,
-            sender: author !== current_user ? "user" : "receiver",
-            type: "text",
-            content: message_data,
-            created_at: created_at,
-          };
-          setMessages((prevMessages) => [...prevMessages, newMessage]);
-        }
-      } else if (data.operation === "get_ticket_messages") {
-        const ticketMessages = data.data;
-        const formattedMessages = ticketMessages.map((message) => ({
-          id: message._id,
-          sender: message.author !== current_user ? "user" : "receiver",
-          type: "text",
-          content: message.message_data,
-          created_at: message.created_at,
-        }));
-        setMessages(formattedMessages);
-        dispatch(fetchTicketMessage(formattedMessages));
-      }
-      setLoading(false);
-    });
-  }, [socket]);
+
   // Ensure to include all dependencies used inside the effect
 
   const handleKeyDown = (event) => {
@@ -110,7 +85,9 @@ const Chat = () => {
       handleSendButtonClick();
     }
   };
+  // useEffect(() => {
 
+  //}, [socket]);
   const sendChat = async (newMessage) => {
     // let workSpaceID = "646ba835ce27ae02d024a902";
     //let api_key = "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f";
@@ -133,7 +110,45 @@ const Chat = () => {
     await sendChat(newMessage);
     setNewMessage("");
   };
+  //let x = 0;
+  //useEffect(() => {
+  socket.on("ticket_message_response", (data) => {
+    //console.log("hello", data?.data);
+    //console.log("x",x++);
+    if (data.operation === "send_message") {
+      const dat = data?.data;
+      const { author, created_at, message_data } = dat;
 
+      if (data?.data?.ticket_id === selectedTicket._id) {
+        const newMessage = {
+          id: messages.length + 1,
+          sender: author !== current_user ? "user" : "receiver",
+          type: "text",
+          content: message_data,
+          created_at: created_at,
+        };
+
+        // if (messages[messages.length - 1].created_at !== created_at) {
+        setMessages([...messages, newMessage]);
+        // }
+      }
+    } else if (data.operation === "get_ticket_messages") {
+      const ticketMessages = data?.data;
+      const formattedMessages = ticketMessages.map((message) => ({
+        id: message._id,
+        sender: message.author !== current_user ? "user" : "receiver",
+        type: "text",
+        content: message.message_data,
+        created_at: message.created_at,
+      }));
+      setMessages(formattedMessages);
+      dispatch(fetchTicketMessage(formattedMessages));
+    }
+    setLoading(false);
+    // return;
+    // return;s
+  });
+  //}, [socket]);
   const handleFileChange = (event) => {
     // Handle file upload
     console.log(event);
