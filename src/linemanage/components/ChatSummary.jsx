@@ -14,6 +14,7 @@ import { faSmile } from "@fortawesome/free-solid-svg-icons";
 // Emoji Mart
 import Picker from "@emoji-mart/react";
 import data from "@emoji-mart/data";
+import formatDate from "../utils/formatDate";
 const socket = io.connect("https://www.dowellchat.uxlivinglab.online/");
 //eslint-disable-next-line
 
@@ -46,6 +47,7 @@ const Chat = () => {
         socket.emit("get_ticket_messages", {
           ticket_id: selectedTicket._id ?? selectedTicket.ticket_id,
           product: selectedTicket.product,
+          ticket_date: formatDate(selectedTicket.created_at),
           workspace_id: lineManagerCredentials.workspace_id,
           api_key: lineManagerCredentials.api_key,
         });
