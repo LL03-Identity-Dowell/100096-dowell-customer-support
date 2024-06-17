@@ -188,6 +188,7 @@ const TicketMainContent = () => {
   }, [apiKey]);
 
   socket.on("share_link_response", (data) => {
+    console.log(data.data);
     if (Array.isArray(data?.data)) {
       setGetLinkRes(data?.data);
     } else {
@@ -230,18 +231,15 @@ const TicketMainContent = () => {
   };
 
   socket.on("waiting_time_response", (data) => {
-    console.log(data.data);
-    // data.data["waiting_time"] = 0;
     if (!data.data["waiting_time"] || data.data["waiting_time"] == 0) {
       setIsChatOpen(true);
       setLoading(false);
       setShowLoading(false);
       return;
     } else {
-      // setLoading(false);
-      // localStorage.setItem("waitingTime", data.data["waiting_time"]);
       const timeInMilliseconds = Number(data.data["waiting_time"]) * 60 * 1000;
       const endTime = Number(Date.now()) + timeInMilliseconds;
+      console.log(endTime);
       localStorage.setItem("chatEndTime", endTime);
       setWaitingTime(data.data["waiting_time"]);
     }
@@ -380,9 +378,17 @@ const TicketMainContent = () => {
                   />
                 </div>
                 <p className="-mt-2 mb-4 text-slate-500 font-medium max-sm:text-[14px]">
-                  Waiting time -{" "}
-                  <span className="text-green-500">{waitingTime}</span> minutes
-                  left
+                  <span>
+                    {waitingTime >= 0 ? (
+                      <p>
+                        Waiting time -{" "}
+                        <span className="text-green-500">{waitingTime} </span>
+                        minutes left
+                      </p>
+                    ) : (
+                      <p className="text-green-500">Chat is open</p>
+                    )}
+                  </span>
                 </p>
                 <div className="my-3 mx-auto ">
                   <Field
