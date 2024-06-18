@@ -14,6 +14,7 @@ import { faSmile } from "@fortawesome/free-solid-svg-icons";
 // Emoji Mart
 import Picker from "@emoji-mart/react";
 import data from "@emoji-mart/data";
+//import formatDate from "../utils/formatDate";
 const socket = io.connect("https://www.dowellchat.uxlivinglab.online/");
 //eslint-disable-next-line
 
@@ -35,9 +36,32 @@ const Chat = () => {
   const addEmoji = (emoji) => {
     setNewMessage(newMessage + emoji.native);
   };
+  function formatDates(dateString) {
+    console.log("inside dates====", dateString);
+    const dateObj = new Date(dateString);
 
+    // Check if parsing was successful (optional)
+    if (isNaN(dateObj.getTime())) {
+      console.error(
+        "Invalid date format. Please provide a valid ISO 8601 formatted date string."
+      );
+      // Handle the error case (e.g., return null)
+    } else {
+      // Extract year, month, and day using getter methods
+      const year = dateObj.getUTCFullYear();
+      const month = String(dateObj.getUTCMonth() + 1).padStart(2, "0"); // Months are zero-indexed
+      const day = String(dateObj.getUTCDate()).padStart(2, "0");
+
+      // Format the date as YYYY_MM_DD
+      const formattedDate = `${year}_${month}_${day}`;
+      return formattedDate;
+      // console.log(formattedDate); // Output: 2024_06_11
+    }
+    // Format the date as YYYY_MM_DD
+    // return `${year}_${month}_${day}`;
+  }
   //useEffect(() => {
-
+  console.log("date===", formatDates(selectedTicket?.created_at));
   // }, []);
   useEffect(() => {
     setLoading(true);
@@ -46,6 +70,7 @@ const Chat = () => {
         socket.emit("get_ticket_messages", {
           ticket_id: selectedTicket._id ?? selectedTicket.ticket_id,
           product: selectedTicket.product,
+          ticket_date: formatDates(selectedTicket.created_at),
           workspace_id: lineManagerCredentials.workspace_id,
           api_key: lineManagerCredentials.api_key,
         });
