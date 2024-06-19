@@ -282,7 +282,7 @@ const TicketMainContent = () => {
             "create_ticket_detail",
             JSON.stringify({
               ...data.data,
-              expiryTime: Date.now() + 60000,
+              expiryTime: Date.now() + 4 * 60 * 60 * 1000,
             })
           );
 
