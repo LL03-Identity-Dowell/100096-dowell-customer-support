@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
+import { QueryClient, QueryClientProvider } from "react-query";
 //import Dashboard from "./components/Dashboard";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -17,6 +18,7 @@ function App() {
   const dispatch = useDispatch();
   const [searchParams] = useSearchParams();
   let session_id = searchParams.get("session_id");
+  const queryClient = new QueryClient();
   const id = searchParams.get("id");
   //const [dataFetched, setDataFetched] = useState(false);
   const [loadingFetchUserInfo, setLoadingFetchUserInfo] = useState(false);

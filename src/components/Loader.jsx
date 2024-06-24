@@ -1,6 +1,6 @@
 import { LuLoader2 } from "react-icons/lu";
-
-export function Loader() {
+//eslint-disable-next-line
+export function Loader({ type }) {
   return (
     <div className="p-5 mt-16">
       <div
@@ -10,7 +10,9 @@ export function Loader() {
         <LuLoader2 className="h-10 w-10 text-4xl animate-spin" />
       </div>
       <p className="flex text-gray-400 mx-auto justify-center">
-        Authenticating....
+        {type === "masterlinks"
+          ? "listing created master link"
+          : "Authenticating...."}
       </p>
     </div>
   );

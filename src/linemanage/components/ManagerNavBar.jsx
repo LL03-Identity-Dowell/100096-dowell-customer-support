@@ -9,9 +9,12 @@ export function ManagerNavBar({ tab, setTab, search, setSearch, type }) {
   if (type === "createLineManager") {
     view = "viewLineManager";
     create = "createLineManager";
-  } else {
+  } else if (type === "createTopic") {
     view = "viewTopic";
     create = "createTopic";
+  } else {
+    view = "viewLink";
+    create = "createLink";
   }
   useEffect(() => {
     setTab(view);
@@ -60,12 +63,16 @@ export function ManagerNavBar({ tab, setTab, search, setSearch, type }) {
           onClick={() => setTab(view)}
           type="button"
           className={`text-[#7E7E7E] h-9 border ${
-            tab === "viewLineManager" || tab === "viewTopic"
+            tab === "viewLineManager" ||
+            tab === "viewTopic" ||
+            tab === "viewLink"
               ? "bg-[#2fd26b] text-white"
               : ""
           } hover:text-white border-[#ebe7e7] transition-colors duration-75 ease-in-out hover:bg-[#2fd26b] focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center me-2 dark:bg-[#22ad55] dark:hover:bg-[#2add6c] dark:focus:ring-[#22C55E]`}
         >
-          {type === "createLineManager" ? "View Line Manager" : "view Topic"}
+          {type === "createLineManager" ? "View Line Manager" : ""}
+          {type === "createTopic" ? "view Topic" : ""}
+          {type === "createLink" ? "view Link" : ""}
         </button>
       </div>
 
@@ -74,14 +81,18 @@ export function ManagerNavBar({ tab, setTab, search, setSearch, type }) {
           type="button"
           onClick={() => setTab(create)}
           className={`group text-[#7E7E7E] h-9 border hover:text-white border-[#ebe7e7] transition-colors duration-75 ease-in-out ${
-            tab === "createLineManager" || tab === "createTopic"
+            tab === "createLineManager" ||
+            tab === "createTopic" ||
+            tab === "createLink"
               ? "bg-[#2fd26b] text-white"
               : ""
           } hover:bg-[#2fd26b] focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center me-2 dark:bg-[#22ad55] dark:hover:bg-[#2add6c] dark:focus:ring-[#22C55E]`}
         >
           <svg
             className={`w-4 h-full mr-2 text-[#2add6c] ${
-              tab === "createLineManager" || tab === "createTopic"
+              tab === "createLineManager" ||
+              tab === "createTopic" ||
+              tab === "createLink"
                 ? "text-white"
                 : ""
             } group-hover:text-white dark:text-gray-400`}
@@ -98,7 +109,9 @@ export function ManagerNavBar({ tab, setTab, search, setSearch, type }) {
               d="M10 4v12M4 10h12"
             />
           </svg>
-          {type === "createLineManager" ? "Add Line Manager" : "Add Topic"}
+          {type === "createLineManager" ? "Add Line Manager" : ""}
+          {type === "createTopic" ? "Add Topic" : ""}
+          {type === "createLink" ? "Add Link" : ""}
         </button>
       </div>
     </div>

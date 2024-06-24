@@ -192,12 +192,14 @@ const Chat = () => {
       sendMessage(newMessage);
     }
   };
+  //console.log("date for ticketts=", selectedTicket.created_at);
   const closeTicket = () => {
     const roomData = {
       ticket_id: selectedTicket._id,
       line_manager: lineManagerCredentials.username,
       workspace_id: lineManagerCredentials.workspace_id,
       api_key: lineManagerCredentials.api_key,
+      ticket_date: formatDates(selectedTicket.created_at),
       product: selectedTicket.product,
     };
     socket.emit("close_ticket", roomData);

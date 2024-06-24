@@ -14,6 +14,7 @@ import io from "socket.io-client";
 import { ManagerNavBar } from "./ManagerNavBar";
 import ListData from "./ListData";
 import ListTopic from "./ListTopic";
+import ListLinks from "./ListLinks";
 
 const socket = io.connect("https://www.dowellchat.uxlivinglab.online/");
 
@@ -375,7 +376,15 @@ function CreateComponent({ closeSearchModal, option }) {
               type={option}
             />
           )}
-
+          {option === "createLink" && (
+            <ManagerNavBar
+              tab={tab}
+              setTab={setTab}
+              search={search}
+              setSearch={setSearch}
+              type={option}
+            />
+          )}
           {option === "createLineManager" && (
             <ManagerNavBar
               tab={tab}
@@ -386,7 +395,7 @@ function CreateComponent({ closeSearchModal, option }) {
             />
           )}
           <div
-            className={`w-[600px] md:w-[100%] bg-white shadow-2xl border-2 border-gray-100 overflow-auto  relative p-4 md:p-6 rounded-lg h-[90%] md:max-h-[60%] `}
+            className={`w-[600px] md:w-[100%] bg-white shadow-2xl border-2 border-gray-100 overflow-auto  relative p-4 md:p-6 rounded-lg h-[90%] md:max-h-[70%] `}
           >
             {
               // eslint-disable-next-line
@@ -439,6 +448,17 @@ function CreateComponent({ closeSearchModal, option }) {
               <ListTopic search={search} />
             )}
 
+            {option === "createLink" && tab === "viewLink" && (
+              <div className={`min-h-[80%]`}>
+                <ListLinks search={search} />
+              </div>
+            )}
+            {option === "createLink" && tab === "" && (
+              <div className={`min-h-[80%]`}>
+                <ListLinks search={search} />
+              </div>
+            )}
+
             {option === "addwaitingtime" && (
               <>
                 <div className="max-w-[400px] mx-auto">
@@ -483,12 +503,9 @@ function CreateComponent({ closeSearchModal, option }) {
 
             {
               // eslint-disable-next-line
-              option === "generateLink" && (
+              option === "createLink" && tab === "createLink" && (
                 <>
                   <div className="max-w-[400px]  md:mb-10 mx-auto ">
-                    <h3 className=" w-full text-center text-xl font-bold">
-                      Fill Link Information
-                    </h3>
                     {masterLink && (
                       <div className="flex w-auto justify-center align-middle mx-auto  h-15 p-2  border border-r-8 gap-1">
                         <input
