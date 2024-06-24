@@ -11,9 +11,11 @@ import CreateTicketSchema from "../../schema/CreateTicketSchema.jsx";
 import TicketLogo from "./TicketLogo.jsx";
 import Loading from "../Loading.jsx";
 import ChatForm from "./ChatForm.jsx";
+import usePersistedTicketData from "../../hooks/usePersistedTicketData.js";
 
 const TicketMainContent = () => {
   const form = useRef();
+  usePersistedTicketData();
   const [messages, setMessages] = useState([]);
   const { createTicket } = useCreateTicketContext();
   const [getLinkRes, setGetLinkRes] = useState([]);
@@ -66,9 +68,6 @@ const TicketMainContent = () => {
       const updateRemainingTime = () => {
         const currentTime = Number(Date.now());
         const remainingTime = endTime - currentTime;
-        console.log("endTime", endTime);
-        console.log("currentTime", currentTime);
-        console.log("remaining time", remainingTime);
         if (remainingTime <= 0) {
           clearInterval(intervalId);
           setIsChatOpen(true);
@@ -77,12 +76,15 @@ const TicketMainContent = () => {
           localStorage.setItem("chatEndTime", remainingTime);
           return;
         } else {
-          const remainingMinutes = Math.ceil(remainingTime / 60000);
-          console.log(`Remaining time: ${remainingMinutes} minutes`);
-          localStorage.setItem("chatEndTime", remainingTime + currentTime);
-          setWaitingTime(remainingMinutes);
-          setLoading(true);
-          setShowLoading(true);
+          const ticketFound =
+            localStorage.getItem("create_ticket_detail") && true;
+          if (ticketFound) {
+            const remainingMinutes = Math.ceil(remainingTime / 60000);
+            localStorage.setItem("chatEndTime", remainingTime + currentTime);
+            setWaitingTime(remainingMinutes);
+            setLoading(true);
+            setShowLoading(true);
+          }
         }
       };
 
@@ -237,11 +239,14 @@ const TicketMainContent = () => {
       setShowLoading(false);
       return;
     } else {
-      const timeInMilliseconds = Number(data.data["waiting_time"]) * 60 * 1000;
-      const endTime = Number(Date.now()) + timeInMilliseconds;
-      console.log(endTime);
-      localStorage.setItem("chatEndTime", endTime);
-      setWaitingTime(data.data["waiting_time"]);
+      const ticketFound = localStorage.getItem("create_ticket_detail") && true;
+      if (ticketFound) {
+        const timeInMilliseconds =
+          Number(data.data["waiting_time"]) * 60 * 1000;
+        const endTime = Number(Date.now()) + timeInMilliseconds;
+        localStorage.setItem("chatEndTime", endTime);
+        setWaitingTime(data.data["waiting_time"]);
+      }
     }
   });
 
@@ -271,10 +276,14 @@ const TicketMainContent = () => {
             "New ticket is created with the following data response",
             data.data
           );
+
           setTicketNumber(data.data._id);
           localStorage.setItem(
             "create_ticket_detail",
-            JSON.stringify(data.data)
+            JSON.stringify({
+              ...data.data,
+              expiryTime: Date.now() + 4 * 60 * 60 * 1000,
+            })
           );
 
           setTicketDetail(data.data);
@@ -335,7 +344,7 @@ const TicketMainContent = () => {
                   >
                     <option
                       value=""
-                      className="text-2xl bg-gray-400  text-neutral-700 text-center px-auto"
+                      className="text-2xl bg-gray-400 text-neutral-700 text-center px-auto"
                     >
                       Products
                     </option>
@@ -378,17 +387,24 @@ const TicketMainContent = () => {
                   />
                 </div>
                 <p className="-mt-2 mb-4 text-slate-500 font-medium max-sm:text-[14px]">
-                  <span>
-                    {waitingTime >= 0 ? (
-                      <p>
-                        Waiting time -{" "}
-                        <span className="text-green-500">{waitingTime} </span>
-                        minutes left
-                      </p>
-                    ) : (
-                      <p className="text-green-500">Chat is open</p>
-                    )}
-                  </span>
+                  {localStorage.getItem("create_ticket_detail") ? (
+                    <span>
+                      {waitingTime >= 0 ? (
+                        <p>
+                          Waiting time :
+                          <span className="text-green-500">
+                            {" "}
+                            {waitingTime}{" "}
+                          </span>
+                          minutes left
+                        </p>
+                      ) : (
+                        <p className="text-green-500">Chat is open</p>
+                      )}
+                    </span>
+                  ) : (
+                    <p className=""> Waiting Time : </p>
+                  )}
                 </p>
                 <div className="my-3 mx-auto ">
                   <Field
