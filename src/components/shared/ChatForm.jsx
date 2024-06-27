@@ -8,6 +8,8 @@ import { useLocation } from "react-router-dom";
 import Picker from "@emoji-mart/react";
 import data from "@emoji-mart/data";
 import { faSmile } from "@fortawesome/free-solid-svg-icons";
+import { chat } from "../../assets/index.js";
+import { formatDate } from "../../utils/formatData.js";
 //eslint-disable-next-line;
 const ChatForm = ({
   // eslint-disable-next-line
@@ -24,9 +26,13 @@ const ChatForm = ({
   apiKey,
   // eslint-disable-next-line
   socket,
+  showIntro,
+  toggleIntro,
 }) => {
   const [message, setMessage] = useState("");
   const containerRef = useRef(null);
+  const inputRef = useRef(null);
+  const [ticketData, setTicketData] = useState(null);
 
   const { search } = useLocation();
   const params = new URLSearchParams(search);
@@ -37,6 +43,7 @@ const ChatForm = ({
   };
 
   useEffect(() => {
+    setTicketData(JSON.parse(localStorage.getItem("create_ticket_detail")));
     const handleClickOutside = (event) => {
       if (
         containerRef.current &&
@@ -71,6 +78,7 @@ const ChatForm = ({
         api_key: apiKey,
         created_at: new Date().toISOString(),
       };
+
       //eslint-disable-next-line
       socket.emit("ticket_message_event", ticketMessagePayload);
 
@@ -133,17 +141,58 @@ const ChatForm = ({
             ref={containerRef}
             className="custom-scrollbar space-y-4 pl-1  -pr-1 pb-5  w-full "
           >
-            {/* {!messageToDisplay && (
-              <div className="flex flex-col justify-center mt-10 items-center text-center w-full h-full">
-                <h1 className="text-white text-4xl font-bold font-mono mb-5">
-                  Need help?
+            {messageToDisplay.length === 0 && ticketData && showIntro && (
+              <div className="flex  flex-col bg-gray-200 gap-y-2 md:gap-y-5 font-serif justify-center text-lg   w-full h-[100%] px-5 py-5  rounded-lg ">
+                {console.log(ticketData)}
+                <h1 className="flex flex-col text-center">
+                  Ticket Number:{" "}
+                  <span className="text-green-500 font-sans md:text-xl  font-bold">
+                    {ticketData["_id"]}
+                  </span>
                 </h1>
-                <img src={chat} className="w-[70%] h-auto" alt="Hi" />
-                <h1 className="text-white text-xl font-bold font-mono ">
-                  Ask Us
+                <h1 className="flex mt-5 max-md:flex-col justify-center text-gray-600  text-md text-center">
+                  Your chat is with:{" "}
+                  <span className="font-bold ml-2 font-sans">
+                    {ticketData["line_manager"]}
+                  </span>
                 </h1>
+                <h1 className="flex max-md:flex-col justify-center text-gray-600  text-md text-center">
+                  Selected Product:{" "}
+                  <span className="font-bold ml-2 font-sans">
+                    {ticketData["product"]}
+                  </span>
+                </h1>
+                <h1 className="flex max-md:flex-col justify-center text-gray-600  text-md text-center">
+                  Date Created:{" "}
+                  <span className="font-bold ml-2 font-sans">
+                    {formatDate(ticketData["created_at"])}
+                  </span>
+                </h1>
+
+                <button
+                  onClick={() => {
+                    toggleIntro();
+                  }}
+                  type="button"
+                  className="bg-blue-500 hover:bg-blue-600 duration-500 text-white font-bold py-2 w-36 mx-auto px-2 rounded flex items-center justify-center space-x-1 cursor-pointer text-xs"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-4 w-4"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M13 3H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h2v3l4-3h4a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2zm-1 7H6V5h6v5z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  <span>Start Messaging</span>
+                </button>
               </div>
-            )} */}
+            )}
+
             {
               //eslint-disable-next-line
               messageToDisplay.length > 0 &&
@@ -218,12 +267,13 @@ const ChatForm = ({
               <div className="flex flex-1 border rounded-md">
                 <input
                   id="message"
-                  className={`w-full md:mx-3 px-3 text-sm  rounded-sm  m-1 outline-transparent  ${
+                  className={`w-full md:mx-3 px-3 text-sm  rounded-sm  m-1 outline-none border-transparent  ${
                     darkMode ? "bg-gray-600 outline-gray-600 text-white" : ""
                   } `}
                   type="text"
                   placeholder="Type your message..."
                   value={message}
+                  ref={inputRef}
                   onChange={handleMessageChange}
                 />
                 <div

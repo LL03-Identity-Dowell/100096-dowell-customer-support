@@ -7,7 +7,7 @@
 }
 
 .main_cont {
-  @apply flex flex-col justify-center items-center max-w-md mx-auto pb-12 px-4 bg-white rounded shadow;
+  @apply flex flex-col justify-center items-center max-w-md mx-auto pb-12 px-4 bg-white rounded border border-b-2;
 }
 
 .radio_style {

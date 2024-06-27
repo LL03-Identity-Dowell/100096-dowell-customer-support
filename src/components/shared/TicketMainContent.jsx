@@ -43,6 +43,11 @@ const TicketMainContent = () => {
 
   const [ticketDetail, setTicketDetail] = useState({});
   const [darkMode, setDarkMode] = useState(false);
+  const [showIntro, setShowIntro] = useState(true);
+
+  const toggleIntro = () => {
+    setShowIntro(false);
+  };
 
   // useEffect(() => {
   //   setLoading(true);
@@ -484,7 +489,6 @@ const TicketMainContent = () => {
                   }
                   className={`border-2 border-green-300 hover:bg-green-500 transition duration-1000 ease-in-out font-semibold py-1 w-48 md:w-60 rounded-3xl focus:outline-none focus:bg-blue-600 text-[18px] disabled:bg-slate-300 disabled:border-gray-300 disabled:text-gray-400`}
                 >
-                  {console.log("is submitting", isSubmitting)}
                   {isSubmitting ? (
                     <div className="flex h-6 justify-center items-center ">
                       {showLoading ? (
@@ -506,6 +510,8 @@ const TicketMainContent = () => {
               ticketDetail={ticketDetail}
               onClose={toggleChat}
               darkMode={darkMode}
+              toggleIntro={toggleIntro}
+              showIntro={showIntro}
               toggleDarkMode={toggleDarkMode}
               messageToDisplay={messageToDisplay}
               socket={socket}

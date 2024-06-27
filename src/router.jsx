@@ -3,6 +3,7 @@ import AppLine from "./linemanage/App";
 import SigninForm from "./components/shared/SigninForm";
 import CreateTicket from "./components/CreateTicket";
 import Settings from "./linemanage/components/Settings";
+import LineManagers from "./linemanage/components/Linemanager/LineManagers";
 
 const router = createBrowserRouter([
   {
@@ -22,6 +23,10 @@ const router = createBrowserRouter([
   {
     path: `/linemanage/settings`,
     element: <Settings />,
+  },
+  {
+    path: `/linemanage/linemanagers`,
+    element: <LineManagers />,
   },
 ]);
 export default router;

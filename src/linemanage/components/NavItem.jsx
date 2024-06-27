@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { Profile, logo } from "../../assets";
 import { useEffect, useState } from "react";
 import queryString from "query-string";
-import { FaUser, FaBell } from "react-icons/fa";
+import { FaUser, FaBell, FaUserTie } from "react-icons/fa";
 import { IoSettingsSharp } from "react-icons/io5";
 import { FiLogOut } from "react-icons/fi";
 import { useDispatch, useSelector } from "react-redux";
@@ -112,11 +112,14 @@ export default function NavItem({ component }) {
       </div>
       <div className="relative">
         <div
-          onClick={() => {
-            setNotification(!isNotification);
+          onMouseOver={() => {
+            setNotification(true);
             setCountMessages(0);
           }}
-          className="relative cursor-pointer inline-flex items-center p-3 text-sm font-medium text-center text-[#22C55E] rounded-lg focus:outline-none h-8"
+          onMouseLeave={() => {
+            setNotification(false);
+          }}
+          className="relative cursor-pointer inline-flex items-center p-3   text-sm font-medium text-center text-[#22C55E] rounded-lg focus:outline-none h-8"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -138,7 +141,13 @@ export default function NavItem({ component }) {
         </div>
 
         <div
-          className={`absolute -right-[50px] text-left z-50 mt-2  p-4 bg-white border border-gray-300 rounded shadow ${
+          onMouseOver={() => {
+            setNotification(true);
+          }}
+          onMouseLeave={() => {
+            setNotification(false);
+          }}
+          className={`absolute -right-[50px] text-left z-50 -mt-1  p-4 bg-white border border-gray-300 rounded shadow ${
             isNotification ? "block" : "hidden"
           }`}
         >
@@ -263,16 +272,16 @@ export default function NavItem({ component }) {
       </div>
 
       <div
-        className="relative max-w-[50%] ml-10 text-end "
+        className="relative max-w-[50%] ml-3 mt-1 text-end "
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        <div className="relative inline-block cursor-pointer">
-          <img className="w-8 h-8" src={Profile} alt="Profile" />
+        <div className="relative inline-block  cursor-pointer">
+          <img className="w-9 h-8 p-1" src={Profile} alt="Profile" />
         </div>
         <div
           onMouseEnter={() => setIsHovered(true)}
-          className={`absolute z-50 min-w-28 -left-24 md:-left-20  pt-2  p-4  bg-white border border-gray-300 rounded shadow ${
+          className={`absolute z-50 min-w-44 -left-28 md:-left-32  pt-2  p-4   bg-white border border-gray-300 rounded shadow ${
             isHovered ? "block" : "hidden"
           }`}
         >
@@ -287,10 +296,18 @@ export default function NavItem({ component }) {
             </li>
             <li>
               <Link
-                className="hover:text-[#22C55E] flex justify-center items-center gap-2"
                 to={`/linemanage/settings?${queryParams}`}
+                className="hover:text-[#22C55E] flex justify-center items-center gap-2"
               >
                 <IoSettingsSharp className="text-[#22C55E]" /> Settings
+              </Link>
+            </li>
+            <li>
+              <Link
+                className="hover:text-[#22C55E] flex justify-center items-center gap-2"
+                to={`/linemanage/linemanagers?${queryParams}`}
+              >
+                <FaUserTie className="text-[#22C55E]" /> Line Managers
               </Link>
             </li>
             <li>

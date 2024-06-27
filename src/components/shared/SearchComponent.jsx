@@ -11,6 +11,7 @@ const socket = io.connect("https://www.dowellchat.uxlivinglab.online");
 // Emoji Mart
 import Picker from "@emoji-mart/react";
 import data from "@emoji-mart/data";
+import { formatDate } from "../../utils/formatData.js";
 
 function SearchComponent({ closeSearchModal, linkRes }) {
   const [messages, setMessages] = useState([]);
@@ -31,6 +32,7 @@ function SearchComponent({ closeSearchModal, linkRes }) {
   const containerRef = useRef(null);
   const [ticketDetail, setTicketDetail] = useState({});
   const [products, setProducts] = useState(false);
+  const [ticketData, setTicketData] = useState(null);
 
   socket.on("ticket_message_response", (data) => {
     if (data.status === "success") {
@@ -128,6 +130,8 @@ function SearchComponent({ closeSearchModal, linkRes }) {
   });
 
   useEffect(() => {
+    setTicketData(JSON.parse(localStorage.getItem("create_ticket_detail")));
+
     const fetchApiKey = async () => {
       const apiUrl = `https://100105.pythonanywhere.com/api/v3/user/?type=get_api_key&workspace_id=${params.get(
         "workspace_id"
@@ -486,10 +490,53 @@ function SearchComponent({ closeSearchModal, linkRes }) {
                 >
                   {!messageToDisplay.length && (
                     <div className="text-center">
-                      <div className="flex justify-center items-center text-center w-full py-auto ">
-                        <div className="animate-spin h-8 w-8 border-t-2 mt-24 mx-auto text-center   border-indigo-500 rounded-full"></div>
+                      <div className="flex  flex-col bg-gray-200 gap-y-2 md:gap-y-5 font-serif justify-center text-lg   w-full h-[100%] px-5 py-5  rounded-lg ">
+                        {console.log(ticketData)}
+                        <h1 className="flex flex-col text-center">
+                          Ticket Number:{" "}
+                          <span className="text-green-500 font-sans md:text-xl  font-bold">
+                            {ticketData["_id"]}
+                          </span>
+                        </h1>
+                        <h1 className="flex mt-5 max-md:flex-col justify-center text-gray-600  text-md text-center">
+                          Your chat is with:{" "}
+                          <span className="font-bold ml-2 font-sans">
+                            {ticketData["line_manager"]}
+                          </span>
+                        </h1>
+                        <h1 className="flex max-md:flex-col justify-center text-gray-600  text-md text-center">
+                          Selected Product:{" "}
+                          <span className="font-bold ml-2 font-sans">
+                            {ticketData["product"]}
+                          </span>
+                        </h1>
+                        <h1 className="flex max-md:flex-col justify-center text-gray-600  text-md text-center">
+                          Date Created:{" "}
+                          <span className="font-bold ml-2 font-sans">
+                            {formatDate(ticketData["created_at"])}
+                          </span>
+                        </h1>
+
+                        <button
+                          onClick={() => {}}
+                          type="button"
+                          className="bg-blue-500 hover:bg-blue-600 duration-500 text-white font-bold py-2 w-36 mx-auto px-2 rounded flex items-center justify-center space-x-1 cursor-pointer text-xs"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-4 w-4"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M13 3H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h2v3l4-3h4a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2zm-1 7H6V5h6v5z"
+                              clipRule="evenodd"
+                            />
+                          </svg>
+                          <span>Start Messaging</span>
+                        </button>
                       </div>
-                      <p className=" text-18px text-white mt-5">Loading...</p>
                     </div>
                   )}
                   {messageToDisplay.map((message) => (
