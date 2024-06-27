@@ -14,7 +14,7 @@ import io from "socket.io-client";
 import { ManagerNavBar } from "./ManagerNavBar";
 import ListData from "./ListData";
 import ListTopic from "./ListTopic";
-// import ListLinks from "./ListLinks";
+import ListLinks from "./ListLinks";
 
 const socket = io.connect("https://www.dowellchat.uxlivinglab.online/");
 
@@ -219,9 +219,18 @@ function CreateComponent({ closeSearchModal, option }) {
     const { name, value } = event.target;
     setLinkTopic({ ...linkTopic, [name]: value });
   };
-  const handleLinkCopy = () => {
-    inputRef.current.select();
-    setLinkCopy(!linkCopy);
+  const handleCopy = (text) => {
+    navigator.clipboard
+      .writeText(text)
+      .then(() => {
+        setLinkCopy(true);
+        toast.success("Link copied to clipboard!", {
+          toastId: "custom-id-123",
+        });
+      })
+      .catch((err) => {
+        toast.error("Failed to copy the link.", err.message);
+      });
   };
   const handleLinkSubmit = async (event) => {
     event.preventDefault();
@@ -449,14 +458,14 @@ function CreateComponent({ closeSearchModal, option }) {
             )}
 
             {option === "createLink" && tab === "viewLink" && (
-              <div className={`min-h-[80%]`}>
-                {/* <ListLinks search={search} /> */}
-              </div>
+              // <div className={`min-h-[80%]`}>
+              <ListLinks search={search} />
+              // </div>
             )}
             {option === "createLink" && tab === "" && (
-              <div className={`min-h-[80%]`}>
-                {/* <ListLinks search={search} /> */}
-              </div>
+              // <div className={`min-h-[80%]`}>
+              <ListLinks search={search} />
+              // </div>
             )}
 
             {option === "addwaitingtime" && (
@@ -514,7 +523,10 @@ function CreateComponent({ closeSearchModal, option }) {
                           value={masterLink}
                           ref={inputRef}
                         ></input>
-                        <button className="flex-1" onClick={handleLinkCopy}>
+                        <button
+                          className="flex-1"
+                          onClick={() => handleCopy(masterLink)}
+                        >
                           {linkCopy && masterLink ? "copied" : "copy"}
                         </button>
                       </div>
