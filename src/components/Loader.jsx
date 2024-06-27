@@ -10,9 +10,7 @@ export function Loader({ type }) {
         <LuLoader2 className="h-10 w-10 text-4xl animate-spin" />
       </div>
       <p className="flex text-gray-400 mx-auto justify-center">
-        {type === "masterlinks"
-          ? "listing created master link"
-          : "Authenticating...."}
+        {type === "masterlinks" ? "listing master links" : "Authenticating...."}
       </p>
     </div>
   );

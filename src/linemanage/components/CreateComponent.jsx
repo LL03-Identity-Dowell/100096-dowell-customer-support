@@ -14,7 +14,7 @@ import io from "socket.io-client";
 import { ManagerNavBar } from "./ManagerNavBar";
 import ListData from "./ListData";
 import ListTopic from "./ListTopic";
-// import ListLinks from "./ListLinks";
+import ListLinks from "./ListLinks";
 
 const socket = io.connect("https://www.dowellchat.uxlivinglab.online/");
 
@@ -449,14 +449,14 @@ function CreateComponent({ closeSearchModal, option }) {
             )}
 
             {option === "createLink" && tab === "viewLink" && (
-              <div className={`min-h-[80%]`}>
-                {/* <ListLinks search={search} /> */}
-              </div>
+              // <div className={`min-h-[80%]`}>
+              <ListLinks search={search} />
+              // </div>
             )}
             {option === "createLink" && tab === "" && (
-              <div className={`min-h-[80%]`}>
-                {/* <ListLinks search={search} /> */}
-              </div>
+              // <div className={`min-h-[80%]`}>
+              <ListLinks search={search} />
+              // </div>
             )}
 
             {option === "addwaitingtime" && (
