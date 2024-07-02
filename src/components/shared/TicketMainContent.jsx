@@ -14,6 +14,8 @@ import ChatForm from "./ChatForm.jsx";
 import usePersistedTicketData from "../../hooks/usePersistedTicketData.js";
 
 const TicketMainContent = () => {
+  const token = localStorage.getItem("token");
+  console.log(token);
   const form = useRef();
   usePersistedTicketData();
   const [messages, setMessages] = useState([]);
