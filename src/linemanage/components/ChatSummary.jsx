@@ -24,13 +24,12 @@ const Chat = () => {
   const selectedTicket = useSelector((state) => state.tickets.selectedTicket);
   // const messageData = useSelector((state) => state.tickets.messageData);
 
-  let current_user = "1234";
-
   const [newMessage, setNewMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const lineManagerCredentials = useSelector(
     (state) => state.lineManagers.lineManagerCredentials
   );
+  let current_user = lineManagerCredentials?.username;
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 
   const addEmoji = (emoji) => {
@@ -120,7 +119,7 @@ const Chat = () => {
       ticket_id: selectedTicket._id,
       product: selectedTicket.product,
       message_data: newMessage.trim(),
-      user_id: "1234",
+      user_id: current_user,
       reply_to: "None",
       workspace_id: lineManagerCredentials.workspace_id,
       api_key: lineManagerCredentials.api_key,
