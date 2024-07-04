@@ -369,8 +369,6 @@ function CreateComponent({ closeSearchModal, option }) {
 
   return (
     <>
-      <ToastContainer />
-
       <div
         className={`relative b h-full md:h-[600px] inset-0 z-50 flex items-center justify-center  bg-opacity-50 `}
         onClick={closeModal}
@@ -470,6 +468,7 @@ function CreateComponent({ closeSearchModal, option }) {
 
             {option === "addwaitingtime" && (
               <>
+                <ToastContainer />
                 <div className="max-w-[400px] mx-auto">
                   <h3 className="mb-10 text-center font-bold text-xl w-full">
                     Add Waiting Time
@@ -514,6 +513,7 @@ function CreateComponent({ closeSearchModal, option }) {
               // eslint-disable-next-line
               option === "createLink" && tab === "createLink" && (
                 <>
+                  <ToastContainer />
                   <div className="max-w-[400px]  md:mb-10 mx-auto ">
                     {masterLink && (
                       <div className="flex w-auto justify-center align-middle mx-auto  h-15 p-2  border border-r-8 gap-1">
@@ -613,6 +613,7 @@ function CreateComponent({ closeSearchModal, option }) {
               // eslint-disable-next-line
               option === "createLineManager" && tab === "createLineManager" && (
                 <>
+                  <ToastContainer />
                   <div className="max-w-md mx-auto ">
                     <h3 className="mb-10 w-full text-center text-xl font-[700]">
                       Fill Line Manager Information
