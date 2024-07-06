@@ -375,13 +375,17 @@ function CreateComponent({ closeSearchModal, option }) {
       >
         <div className="flex flex-col mt-[40px] gap-5">
           {option === "createTopic" && (
-            <ManagerNavBar
-              tab={tab}
-              setTab={setTab}
-              search={search}
-              setSearch={setSearch}
-              type={option}
-            />
+            <>
+              {masterLink && setMasterLink("")}
+
+              <ManagerNavBar
+                tab={tab}
+                setTab={setTab}
+                search={search}
+                setSearch={setSearch}
+                type={option}
+              />
+            </>
           )}
           {option === "createLink" && (
             <ManagerNavBar
@@ -393,13 +397,16 @@ function CreateComponent({ closeSearchModal, option }) {
             />
           )}
           {option === "createLineManager" && (
-            <ManagerNavBar
-              tab={tab}
-              setTab={setTab}
-              search={search}
-              setSearch={setSearch}
-              type={option}
-            />
+            <>
+              {masterLink && setMasterLink("")}
+              <ManagerNavBar
+                tab={tab}
+                setTab={setTab}
+                search={search}
+                setSearch={setSearch}
+                type={option}
+              />
+            </>
           )}
           <div
             className={`w-[600px] md:w-[100%] bg-white shadow-2xl border-2 border-gray-100 overflow-auto  relative p-4 md:p-6 rounded-lg h-[90%] md:max-h-[70%] `}
@@ -408,6 +415,7 @@ function CreateComponent({ closeSearchModal, option }) {
               // eslint-disable-next-line
               option === "createTopic" && tab === "createTopic" && (
                 <>
+                  {masterLink && setMasterLink("")}
                   <div className="max-w-[400px] mx-auto">
                     <h3 className="mb-10 text-center font-bold text-xl w-full">
                       Fill Topic Information
@@ -448,27 +456,42 @@ function CreateComponent({ closeSearchModal, option }) {
             }
 
             {option === "createTopic" && tab === "viewTopic" && (
-              <ListTopic search={search} />
+              <>
+                {masterLink && setMasterLink("")}
+                <ListTopic search={search} />
+              </>
             )}
 
             {option === "createTopic" && tab === "" && (
-              <ListTopic search={search} />
+              <>
+                {masterLink && setMasterLink("")}
+                <ListTopic search={search} />
+              </>
             )}
 
             {option === "createLink" && tab === "viewLink" && (
               // <div className={`min-h-[80%]`}>
-              <ListLinks search={search} />
+              <>
+                {masterLink && setMasterLink("")}
+                <ListLinks search={search} />
+              </>
               // </div>
             )}
             {option === "createLink" && tab === "" && (
               // <div className={`min-h-[80%]`}>
-              <ListLinks search={search} />
+              <>
+                {masterLink && setMasterLink("")}
+                <ListLinks search={search} />
+              </>
+              // </div>
+              // <ListLinks search={search} />
               // </div>
             )}
 
             {option === "addwaitingtime" && (
               <>
                 <ToastContainer />
+                {masterLink && setMasterLink("")}
                 <div className="max-w-[400px] mx-auto">
                   <h3 className="mb-10 text-center font-bold text-xl w-full">
                     Add Waiting Time
@@ -614,6 +637,7 @@ function CreateComponent({ closeSearchModal, option }) {
               option === "createLineManager" && tab === "createLineManager" && (
                 <>
                   <ToastContainer />
+                  {masterLink && setMasterLink("")}
                   <div className="max-w-md mx-auto ">
                     <h3 className="mb-10 w-full text-center text-xl font-[700]">
                       Fill Line Manager Information
@@ -662,11 +686,17 @@ function CreateComponent({ closeSearchModal, option }) {
               )
             }
             {option === "createLineManager" && tab === "viewLineManager" && (
-              <ListData search={search} />
+              <>
+                {masterLink && setMasterLink("")}
+                <ListData search={search} />
+              </>
             )}
 
             {option === "createLineManager" && tab === "" && (
-              <ListData search={search} />
+              <>
+                {masterLink && setMasterLink("")}
+                <ListData search={search} />
+              </>
             )}
             {
               <>
