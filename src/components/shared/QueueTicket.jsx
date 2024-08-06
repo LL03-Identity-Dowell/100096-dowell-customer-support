@@ -3,17 +3,25 @@ import { io } from 'socket.io-client';
 import { FaTimes } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 
-const QueueTicket = () => {
+const QueueUpdate = () => {
     const [ticketCount, setTicketCount] = useState(0);
     const [waitingTime, setWaitingTime] = useState('00:00');
 
     useEffect(() => {
         const socket = io.connect("https://www.dowellchat.uxlivinglab.online/");
+        
+        socket.emit('queue_update', {
+            workspace_id: "63cf89a0dcc2a171957b290b",
+            api_key: "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f",
+        });
+
         socket.on('queue_update', (response) => {
             const { ticket_count, waiting_time } = response.data;
             setTicketCount(ticket_count);
             setWaitingTime(waiting_time);
         });
+        
+
         return () => {
             socket.disconnect();
         };
@@ -53,6 +61,6 @@ const QueueTicket = () => {
             </div>
         </div>
     );
-}
+};
 
-export default QueueTicket;
+export default QueueUpdate;
