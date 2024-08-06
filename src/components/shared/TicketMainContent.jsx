@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useCreateTicketContext } from "../../context/CreateTicketContext.jsx";
 import io from "socket.io-client";
@@ -325,6 +325,10 @@ const TicketMainContent = () => {
     setDarkMode((prevMode) => !prevMode);
   };
 
+  const navigate = useNavigate();
+  const handleCreateTicket = () => {
+    navigate('/queueTicket');
+  };
   return (
     <div className="flex justify-center items-center ">
       {/* {loading &&
@@ -486,6 +490,7 @@ const TicketMainContent = () => {
 
                 <button
                   type="submit"
+                  onClick={handleCreateTicket}
                   disabled={
                     !values.email || !values.topic || !isValid || isSubmitting
                   }

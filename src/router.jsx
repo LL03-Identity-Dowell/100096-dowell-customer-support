@@ -4,6 +4,7 @@ import SigninForm from "./components/shared/SigninForm";
 import CreateTicket from "./components/CreateTicket";
 import Settings from "./linemanage/components/Settings";
 import LineManagers from "./linemanage/components/Linemanager/LineManagers";
+import QueueTicket from "./components/shared/QueueTicket";
 
 const router = createBrowserRouter([
   {
