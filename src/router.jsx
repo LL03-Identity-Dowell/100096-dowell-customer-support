@@ -29,5 +29,9 @@ const router = createBrowserRouter([
     path: `/linemanage/linemanagers`,
     element: <LineManagers />,
   },
+  {
+    path: `/queueTicket`,
+    element: <QueueTicket />,
+  },
 ]);
 export default router;

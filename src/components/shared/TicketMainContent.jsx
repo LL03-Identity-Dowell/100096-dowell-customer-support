@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useCreateTicketContext } from "../../context/CreateTicketContext.jsx";
 import io from "socket.io-client";
@@ -189,8 +189,8 @@ const TicketMainContent = () => {
 
     if (apiKey) {
       socket.emit("get_share_link_details", {
-        workspace_id: params.get("workspace_id"),
-        link_id: params.get("link_id"),
+        workspace_id: "63cf89a0dcc2a171957b290b",
+        link_id: "25329911990452546798",
         api_key: apiKey,
       });
     }
@@ -263,12 +263,13 @@ const TicketMainContent = () => {
       setShowLoading(true);
 
       const payload = {
+        user_id: "pOiUtReWsD",
         email: values.email,
-        created_at: new Date().toISOString(),
-        link_id: params.get("link_id"),
-        workspace_id: params.get("workspace_id"),
-        api_key: apiKey,
+        workspace_id: "63cf89a0dcc2a171957b290b",
+        link_id: "25329911990452546798",
+        api_key: "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f",
         product: values.topic,
+        created_at: new Date().toISOString(),
       };
 
       socket.emit("create_ticket", payload);
@@ -325,10 +326,6 @@ const TicketMainContent = () => {
     setDarkMode((prevMode) => !prevMode);
   };
 
-  const navigate = useNavigate();
-  const handleCreateTicket = () => {
-    navigate('/queueTicket');
-  };
   return (
     <div className="flex justify-center items-center ">
       {/* {loading &&
@@ -490,7 +487,6 @@ const TicketMainContent = () => {
 
                 <button
                   type="submit"
-                  onClick={handleCreateTicket}
                   disabled={
                     !values.email || !values.topic || !isValid || isSubmitting
                   }
