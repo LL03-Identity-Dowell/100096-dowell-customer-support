@@ -23,6 +23,7 @@ const CreateTicket = () => {
         "workspace_id"
       )}`;
 
+      
       try {
         const response = await fetch(apiUrl);
         const responseData = await response.json();
@@ -58,6 +59,13 @@ const CreateTicket = () => {
   const closeSearchModal = () => {
     setIsSearchModalOpen(false);
   };
+
+  const token = params.get("token");
+  
+
+  if (token) {
+    localStorage.setItem("token", token);
+  }
 
   return (
     <section>

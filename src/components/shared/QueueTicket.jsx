@@ -6,17 +6,21 @@ import { useNavigate } from 'react-router-dom';
 
 const socket = io.connect("https://www.dowellchat.uxlivinglab.online");
 
-const QueueUpdate = () => {
+const QueueUpdate = ({workspaceId, apiKey}) => {
     const [ticketCount, setTicketCount] = useState(0);
-    const [waitingTime, setWaitingTime] = useState('00:00');
+    // const [waitingTime, setWaitingTime] = useState('00:00');
+    const [waitingTime, setWaitingTime] = useState(() => {
+        const storedWaitingTime = localStorage.getItem("chatEndTime");
+        return storedWaitingTime ? parseInt(storedWaitingTime, 10) : 0;
+      });
     const [loading, setLoading] = useState(true);
     
 
 
     useEffect(() => {
         const queueData = {
-            workspace_id: "63cf89a0dcc2a171957b290b",
-            api_key: "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f",
+            workspace_id: workspaceId,
+            api_key: apiKey,
         };
         socket.emit('queue_update', queueData);
         socket.on('queue_update', (response) => {
@@ -25,7 +29,7 @@ const QueueUpdate = () => {
                 setTicketCount(ticket_count);
                 setWaitingTime(waiting_time);
                 setLoading(false); 
-                console.log(response);
+                console.log('res data ', response);
                 
             } else {
                 console.error('Invalid response:', response);
@@ -40,6 +44,55 @@ const QueueUpdate = () => {
         };
     }, []);
 
+
+
+    useEffect(() => {
+        const endTime = Number(localStorage.getItem("chatEndTime"));
+        let intervalId;
+        if (!endTime) {
+          //setShowLoading(false);
+          //setIsChatOpen(true);
+          //setLoading(false);
+          return;
+        }
+    
+        const checkAndSetChatBox = (endTime) => {
+          const updateRemainingTime = () => {
+            const currentTime = Number(Date.now());
+            const remainingTime = endTime - currentTime;
+            if (remainingTime <= 0) {
+              clearInterval(intervalId);
+              setIsChatOpen(true);
+              setLoading(false);
+              setShowLoading(false);
+              localStorage.setItem("chatEndTime", remainingTime);
+              return;
+            } else {
+              const ticketFound =
+                localStorage.getItem("create_ticket_detail") && true;
+              if (ticketFound) {
+                const remainingMinutes = Math.ceil(remainingTime / 60000);
+                localStorage.setItem("chatEndTime", remainingTime + currentTime);
+                setWaitingTime(remainingMinutes);
+                setLoading(true);
+                setShowLoading(true);
+              }
+            }
+          };
+    
+          // Initial check
+          updateRemainingTime();
+    
+          // Update the remaining time every minute (60000 milliseconds)
+          intervalId = setInterval(updateRemainingTime, 60000);
+    
+          // Cleanup interval on component unmount
+          return () => clearInterval(intervalId);
+        };
+    
+        checkAndSetChatBox(endTime);
+      }, [waitingTime]);
+
     const navigate = useNavigate();
 
     const handleClick = () => {
@@ -47,7 +100,7 @@ const QueueUpdate = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <div className="fixed z-10 top-[50%] duration-1000 left-1/2 transform -translate-x-1/2  -translate-y-1/2 w-[90%] md:w-[70%]  max-w-[100%] min-w-[360px]  max-h-[95%] min-h-screen flex items-center justify-center bg-gray-100">
             <div className="bg-white p-6 relative rounded-lg shadow-lg text-center max-w-lg w-full">
                 <button onClick={handleClick}><FaTimes className='absolute top-4 right-4 bg-orange-500 text-3xl rounded-full text-white' /></button>
                 <p className='text-2 py-2 font-bold'>Queue Ticket</p>

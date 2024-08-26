@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import { useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
+import { jwtDecode } from "jwt-decode";
 import { useCreateTicketContext } from "../../context/CreateTicketContext.jsx";
 import io from "socket.io-client";
 const socket = io.connect("https://www.dowellchat.uxlivinglab.online");
@@ -12,10 +13,10 @@ import TicketLogo from "./TicketLogo.jsx";
 import Loading from "../Loading.jsx";
 import ChatForm from "./ChatForm.jsx";
 import usePersistedTicketData from "../../hooks/usePersistedTicketData.js";
+import QueueUpdate from "./QueueTicket.jsx";
 
 const TicketMainContent = () => {
   const token = localStorage.getItem("token");
-  console.log(token);
   const form = useRef();
   usePersistedTicketData();
   const [messages, setMessages] = useState([]);
@@ -25,6 +26,7 @@ const TicketMainContent = () => {
   const [apiKey, setApiKey] = useState("");
   const { search } = useLocation();
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [isQueueOpen, setIsQueueOpen] = useState(false);
   const params = new URLSearchParams(search);
   const [loading, setLoading] = useState(true);
   const [isCreateTicket, setIsCreateTicket] = useState(false);
@@ -61,6 +63,23 @@ const TicketMainContent = () => {
   //   }
   // }, [waitingTime, ticketDetail]);
 
+
+
+  const decoded_data = jwtDecode(token);
+  console.log('Decoded data ', decoded_data)
+
+
+  const decoded_workspace_id = decoded_data.workspace_id
+  const decoded_api_key = decoded_data.api_key
+  const decoded_link_id = decoded_data.link_id
+
+  const products_options = Object.entries(decoded_data.product_distribution).map(([productName, quantity]) => (
+      <option key={productName} value={productName}>
+        {productName} - {quantity}
+      </option>
+    ));
+
+    
   useEffect(() => {
     const endTime = Number(localStorage.getItem("chatEndTime"));
     let intervalId;
@@ -167,9 +186,7 @@ const TicketMainContent = () => {
     }
     if (!socket) return;
 
-    const storedcData = JSON.parse(
-      localStorage.getItem("create_ticket_detail")
-    );
+    const storedcData = JSON.parse(localStorage.getItem("create_ticket_detail"));
     setTicketDetail(storedcData);
 
     const fetchApiKey = async () => {
@@ -189,9 +206,9 @@ const TicketMainContent = () => {
 
     if (apiKey) {
       socket.emit("get_share_link_details", {
-        workspace_id: "63cf89a0dcc2a171957b290b",
-        link_id: "25329911990452546798",
-        api_key: apiKey,
+        workspace_id: decoded_workspace_id,
+        link_id: decoded_link_id,
+        api_key: decoded_api_key,
       });
     }
   }, [apiKey]);
@@ -265,9 +282,9 @@ const TicketMainContent = () => {
       const payload = {
         user_id: "pOiUtReWsD",
         email: values.email,
-        workspace_id: "63cf89a0dcc2a171957b290b",
-        link_id: "25329911990452546798",
-        api_key: "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f",
+        workspace_id: decoded_workspace_id,
+        link_id: decoded_link_id,
+        api_key: decoded_api_key,
         product: values.topic,
         created_at: new Date().toISOString(),
       };
@@ -280,6 +297,7 @@ const TicketMainContent = () => {
           setSubmitting(false);
           setShowLoading(false);
           createTicket(data.data);
+          setIsQueueOpen(true)
           console.log(
             "New ticket is created with the following data response",
             data.data
@@ -289,20 +307,26 @@ const TicketMainContent = () => {
           localStorage.setItem(
             "create_ticket_detail",
             JSON.stringify({
-              ...data.data,
-              expiryTime: Date.now() + 4 * 60 * 60 * 1000,
+              ...data.data,expiryTime: Date.now() + 4 * 60 * 60 * 1000,
             })
           );
 
+
+          console.log('._id is here ', data.data._id)
           setTicketDetail(data.data);
           const getTicketMessagesPayload = {
             ticket_id: data.data._id,
             product: data.data.product,
-            workspace_id: params.get("workspace_id"),
-            api_key: apiKey,
+            workspace_id: decoded_workspace_id,
+            api_key: decoded_api_key,
           };
+          console.log('get ticket messages payload ', getTicketMessagesPayload)
           socket.emit("get_ticket_messages", getTicketMessagesPayload);
 
+          socket.on('ticket_message_response', (data) => {
+            // Handle response for the event
+            console.log('Ticket response message ', data);
+        })
           // setShowLoading(false);
         } else {
           setTicketNumber(data.data);
@@ -310,6 +334,7 @@ const TicketMainContent = () => {
       });
 
       return () => {
+        socket.off("ticket_response", ticketResponseHandler)
         socket.disconnect();
       };
     } catch (error) {
@@ -326,6 +351,7 @@ const TicketMainContent = () => {
     setDarkMode((prevMode) => !prevMode);
   };
 
+  
   return (
     <div className="flex justify-center items-center ">
       {/* {loading &&
@@ -347,46 +373,19 @@ const TicketMainContent = () => {
                   <Field
                     as="select"
                     name="topic"
-                    className="block w-[90%] max-sm:w-[100%]  bg-white border text-neutral-600 border-gray-300 rounded py-2 max-sm:py-1 text-[20px] mx-auto font-sans cursor-pointer focus:outline-none focus:border-gray-500"
+                    className=" text-center block w-[90%] max-sm:w-[100%]  bg-white border text-neutral-600 border-gray-300 rounded py-2 max-sm:py-1 text-[20px] mx-auto font-sans cursor-pointer focus:outline-none focus:border-gray-500"
                     onChange={handleChange}
                   >
+                    
                     <option
+                    
                       value=""
                       className="text-2xl bg-gray-400 text-neutral-700 text-center px-auto"
                     >
-                      Products
+                     Select a Product
                     </option>
-                    {getLinkRes.length >= 0 ? (
-                      getLinkRes.map((linkRes) => {
-                        const objectToArray = Object.entries(
-                          linkRes.product_distribution
-                        );
-                        const filteredArray = objectToArray.filter(
-                          ([key, value]) => value > 0
-                        );
-                        return filteredArray.map((dist, index) => (
-                          <option
-                            value={dist[0]}
-                            key={index}
-                            className="text-center text-gray-700 px-auto"
-                            onClick={() => handleProductClick(dist[0])}
-                          >
-                            {dist[0]}
-                          </option>
-                        ));
-                      })
-                    ) : (
-                      <ClipLoader
-                        color={"#22694de1"}
-                        css={{
-                          display: "block",
-                          margin: "0 auto",
-                          width: "50px",
-                          height: "40px",
-                        }}
-                        size={20}
-                      />
-                    )}
+                    {products_options}
+                  
                   </Field>
                   <ErrorMessage
                     name="topic"
@@ -507,6 +506,27 @@ const TicketMainContent = () => {
               </Form>
             )}
           </Formik>
+          {isQueueOpen && !loading ? (
+            <QueueUpdate />
+          ): ''}
+          {/* <QueueUpdate
+              apiKey={decoded_api_key}
+              workspaceId={decoded_workspace_id}
+              darkMode={darkMode}
+              toggleIntro={toggleIntro}
+              showIntro={showIntro}
+              toggleDarkMode={toggleDarkMode}
+              messageToDisplay={messageToDisplay}
+              socket={socket}
+             /> */}
+          {/* {isQueueOpen && !loading ?(
+            <QueueUpdate
+            apiKey={decoded_api_key}
+            workspaceId={decoded_workspace_id}
+             />
+          ):(
+            ""
+          )} */}
           {isChatOpen && !loading ? (
             <ChatForm
               apiKey={apiKey}
