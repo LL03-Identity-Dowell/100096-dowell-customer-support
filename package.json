@@ -1,13 +1,11 @@
 {
-  "homepage": "https://LL03-Identity-Dowell.github.io/100096-dowell-customer-support/",
+  "homepage": "dowellchatfrontend",
   "name": "chat_app_frontend",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist",
-    "dev": "vite",
+    "dev": "vite --host",
     "build": "vite build",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
@@ -49,9 +47,6 @@
     "yup": "^1.4.0"
   },
   "devDependencies": {
-    "@tanstack/eslint-plugin-query": "^5.43.1",
-    "@types/react": "^18.2.55",
-    "@types/react-dom": "^18.2.19",
     "@vitejs/plugin-react": "^4.2.1",
     "autoprefixer": "^10.4.17",
     "eslint": "^8.56.0",

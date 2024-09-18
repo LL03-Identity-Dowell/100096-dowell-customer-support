@@ -1,0 +1,21 @@
+version: '3.9'
+services:
+  chat-frontend:
+    build: 
+      context: .  # This refers to the root directory
+      dockerfile: ./Dockerfile
+    container_name: dowellchat-frontend
+    ports:
+      - '5173:5173'
+    restart: always
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    networks:
+      - webnet
+    environment:
+      - VITE_SOCKET_URL=https://www.dowellchat.uxlivinglab.online
+
+networks:
+  webnet:
+    external: true
