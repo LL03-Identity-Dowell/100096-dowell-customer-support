@@ -1,7 +1,8 @@
 version: '3.9'
+
 services:
   chat-frontend:
-    build: 
+    build:
       context: .  # This refers to the root directory
       dockerfile: ./Dockerfile
     container_name: dowellchat-frontend
